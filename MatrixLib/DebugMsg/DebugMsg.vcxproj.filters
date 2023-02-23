@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\DebugMsg\src\StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\DebugMsg\src\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\DebugMsg\src\DebugMsg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\DebugMsg\src\FastBuf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\DebugMsg\src\SynBuf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\DebugMsg\src\StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\DebugMsg\include\DebugMsg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\DebugMsg\include\Main.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\DebugMsg\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{B3CF259A-A598-306F-B6BC-87101911C952}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{362BEE83-6A05-3870-B826-79902B12D5EE}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

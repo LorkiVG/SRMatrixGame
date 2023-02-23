@@ -1,0 +1,7 @@
+﻿  StdAfx.cpp
+  main.cpp
+  DebugMsg.cpp
+  FastBuf.cpp
+  SynBuf.cpp
+  Generating Code...
+Release\StdAfx.obj : fatal error LNK1112: module machine type 'x86' conflicts with target machine type 'x64'
