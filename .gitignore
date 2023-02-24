@@ -1,4 +1,44 @@
 *
-/*
+!/MatrixGame/
+!/MatrixLib/
+!/ThirdParty/
+!/cmake/
 /*/*
+!/*/*/
 /*/*/*
+!/*/*/*/
+/*/*/*/*
+!*.cpp
+!*.hpp
+!*.c
+!*.h
+!*.asm
+!CMakeLists.txt
+!LICENSE
+!README.md
+#Добавление файлов 2 уровня
+!*/*.cpp
+!*/*.hpp
+!*/*.ico
+!*/*.rc
+!*/*.c
+!*/*.h
+!*/*.asm
+!*/CMakeLists.txt
+
+#Добавление файлов 3 уровня
+!*/*/*.cpp
+!*/*/*.hpp
+!*/*/*.c
+!*/*/*.h
+!*/*/*.asm
+!*/*/CMakeLists.txt
+
+#Добавление файлов 4 уровня
+!*/*/*/*.cpp
+!*/*/*/*.hpp
+!*/*/*/*.c
+!*/*/*/*.h
+!*/*/*/*.asm
+!*/*/*/CMakeLists.txt
+

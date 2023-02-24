@@ -35,7 +35,7 @@ list(APPEND COMPILE_DEFINITIONS MATRIXGAME_EXPORTS USE_PNGLIB $<$<CONFIG:Release
 if(MSVC)
     set(COMPILE_OPTIONS
         $<$<CONFIG:Release>:/Zi /SAFESEH:NO /W3 /O2 /Ob2 /Oi /Ot /Oy /GF /EHsc /MT /GS- /Gy- /Gr>
-        $<$<CONFIG:Debug>:/Zi /SAFESEH:NO /W3 /Od /GF /Gm- /RTCc /RTC1 /MTd /Gr>
+        $<$<CONFIG:Debug>:/Zi /SAFESEH:NO /W3 /Od /GF /Gm- /MTd /Gr>
     )
     set(LINK_OPTIONS
         $<$<CONFIG:Release>:/INCREMENTAL:NO /SUBSYSTEM:WINDOWS /OPT:REF /OPT:ICF /DYNAMICBASE:NO /MACHINE:X86>
