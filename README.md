@@ -17,6 +17,8 @@
    Для сборки солюшена вы можете просто ввести данную команду: 
    `cmake -A Win32 -G "Visual Studio 17 2022" -B ./YOUR_DIRECTORY`
 
+   Вместо Visual Studio 17 2022 также может быть ваша версии студии 
+
    Или же вы можете вопользоватся графическим интерфесом от CMake только главное не забудьте выставить что сборка именно 32 битного солюшена
 
 2. #### Билд проекта
@@ -43,7 +45,7 @@ The compile uses CMake, version 3.20+, so you need to install it to do the follo
    To build a solution you can just type the following command: 
    `cmake -A Win32 -G "Visual Studio 17 2022" -B ./YOUR_DIRECTORY`.
 
-   
+   Instead of Visual Studio 17 2022 may also be your version of the Visual Studio
 
    Or you can use CMake's GUI utility but don't forget to set it to build 32 bit versions of the software.
 
