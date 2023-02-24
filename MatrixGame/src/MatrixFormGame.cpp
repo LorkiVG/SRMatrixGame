@@ -98,14 +98,14 @@ void CFormMatrixGame::Draw(void)
         g_MatrixMap->m_DI.T(L"Automatic mode", L"");
     }
 
-    if(FLAG(g_Config.m_DIFlags, DI_DRAWFPS)) g_MatrixMap->m_DI.T(L"FPS", CWStr(g_DrawFPS, g_MatrixHeap).Get());
+    if(FLAG(g_Config.m_DIFlags, DI_DRAWFPS)) g_MatrixMap->m_DI.T(L"FPS", CWStr(g_DrawFPS, Base::g_MatrixHeap).Get());
     if(FLAG(g_Config.m_DIFlags, DI_TMEM))
     {
-        g_MatrixMap->m_DI.T(L"Free Texture Mem", CWStr(g_AvailableTexMem, g_MatrixHeap).Get());
+        g_MatrixMap->m_DI.T(L"Free Texture Mem", CWStr(g_AvailableTexMem, Base::g_MatrixHeap).Get());
     }
     if(FLAG(g_Config.m_DIFlags, DI_TARGETCOORD))
     {
-        CWStr txt(g_MatrixHeap);
+        CWStr txt(Base::g_MatrixHeap);
         txt = Float2Int(g_MatrixMap->m_Camera.GetXYStrategy().x * 10.0f);
         txt.Insert(txt.GetLen() - 1, L".", 1);
         txt += L", ";
@@ -118,7 +118,7 @@ void CFormMatrixGame::Draw(void)
     }
     if(FLAG(g_Config.m_DIFlags, DI_FRUSTUMCENTER))
     {
-        CWStr txt(g_MatrixHeap);
+        CWStr txt(Base::g_MatrixHeap);
 
         txt = Float2Int(g_MatrixMap->m_Camera.GetFrustumCenter().x * 10.0f);
         txt.Insert(txt.GetLen() - 1, L".", 1);

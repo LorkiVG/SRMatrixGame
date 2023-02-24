@@ -183,7 +183,7 @@ static int BuildTexUnions(CStorage& stor, int lp1, int lp2)
                     {
                         // source bitmap not yet loaded
                         inmapb[ibm] = HNew(g_CacheHeap) CBitmap(g_CacheHeap);
-                        inmapb[ibm]->LoadFromPNG(bmpc->GetFirst<BYTE>(ibm), bmpc->GetArrayLength(ibm));
+                        inmapb[ibm]->LoadFromPNG(bmpc->GetFirst<byte>(ibm), bmpc->GetArrayLength(ibm));
                     }
 
                     if(ids >= 0)
@@ -394,9 +394,9 @@ void CMatrixMap::GroupBuild(CStorage &stor)
     CDataBuf *grpc = stor.GetBuf(DATA_GROUPS, DATA_GROUPS_DATA, ST_BYTE);
     for (dword i=0; i<grpc->GetArraysCount(); ++i)
     {
-        BYTE *g = grpc->GetFirst<BYTE>(i);
-        int x = *((WORD*)g); g+=2;
-        int y = *((WORD*)g); g+=2;
+        byte *g = grpc->GetFirst<byte>(i);
+        int x = *((word*)g); g+=2;
+        int y = *((word*)g); g+=2;
 
         int disp = (x / MAP_GROUP_SIZE) + (y / MAP_GROUP_SIZE) * m_GroupSize.x;
         md[disp] = HNew(g_MatrixHeap) CMatrixMapGroup();
@@ -645,11 +645,11 @@ int CMatrixMap::ReloadDynamics(CStorage& stor, CMatrixMap::EReloadStep step, CBu
 
         float* xf = c0->GetFirst<float>(0);
         float* yf = c1->GetFirst<float>(0);
-        BYTE* side = c2->GetFirst<BYTE>(0);
-        BYTE* kind = c3->GetFirst<BYTE>(0);
-        BYTE* shadow = c4->GetFirst<BYTE>(0);
+        byte* side = c2->GetFirst<byte>(0);
+        byte* kind = c3->GetFirst<byte>(0);
+        byte* shadow = c4->GetFirst<byte>(0);
         int* shadowsz = c5->GetFirst<INT32>(0);
-        BYTE* ang = c6->GetFirst<BYTE>(0);
+        byte* ang = c6->GetFirst<byte>(0);
 
         int n = c0->GetArrayLength(0);
         for(int i = 0; i < n; ++i)
@@ -721,8 +721,8 @@ int CMatrixMap::ReloadDynamics(CStorage& stor, CMatrixMap::EReloadStep step, CBu
 
             float* xf = c0->GetFirst<float>(0);
             float* yf = c1->GetFirst<float>(0);
-            BYTE* side = c2->GetFirst<BYTE>(0);
-            BYTE* shadow = c3->GetFirst<BYTE>(0);
+            byte* side = c2->GetFirst<byte>(0);
+            byte* shadow = c3->GetFirst<byte>(0);
             int* shadowsz = c4->GetFirst<INT32>(0);
             int* grp = c5->GetFirst<INT32>(0);
 
@@ -794,9 +794,9 @@ int CMatrixMap::ReloadDynamics(CStorage& stor, CMatrixMap::EReloadStep step, CBu
 
         float* xf = c0->GetFirst<float>(0);
         float* yf = c1->GetFirst<float>(0);
-        BYTE* side = c2->GetFirst<BYTE>(0);
-        BYTE* kind = c3->GetFirst<BYTE>(0);
-        BYTE* shadow = c4->GetFirst<BYTE>(0);
+        byte* side = c2->GetFirst<byte>(0);
+        byte* kind = c3->GetFirst<byte>(0);
+        byte* shadow = c4->GetFirst<byte>(0);
         int* shadowsz = c5->GetFirst<INT32>(0);
         float* ang = c6->GetFirst<float>(0);
         int* pr = c7 ? c7->GetFirst<INT32>(0) : nullptr;
@@ -977,7 +977,8 @@ skip_this_cannon:
 
                         if(ic >= 0)
                         {
-                            if(D3DXVec2LengthSq(&(bup-cpp)) < POW2(300))
+                            D3DXVECTOR2 temp = bup - cpp;
+                            if(D3DXVec2LengthSq(&temp) < POW2(300))
                             {
                                 g_MatrixMap->GetPlayerSide()->Select(BUILDING, ms);
                                 break;
@@ -1226,7 +1227,9 @@ DTRACE();
     D3DXMatrixRotationX(&m1, m_LightMainAngleX);
     D3DXMatrixRotationZ(&m2, m_LightMainAngleZ);
     m3 = m1 * m2;
-    D3DXVec3TransformNormal(&m_LightMain, &D3DXVECTOR3(0.0f, 0.0f, -1.0f), &m3);
+
+    D3DXVECTOR3 temp = { 0.0f, 0.0f, -1.0f };
+    D3DXVec3TransformNormal(&m_LightMain, &temp, &m3);
 
     UnitInit(sizex, sizey);
 
@@ -1307,10 +1310,12 @@ DTRACE();
         int cnt = (m_IdsCnt - 1);
 	    for(int i = 0; i < cnt; ++i)
         {
-            m_Ids[i].CWStr::CWStr(strc->GetAsWStr(i), g_MatrixHeap);
+            new(&m_Ids[i]) CWStr();
+            m_Ids[i] = strc->GetAsWStr(i);
         }
 
-        m_Ids[cnt].CWStr::CWStr(mapname, g_MatrixHeap);
+        new(&m_Ids[cnt]) CWStr();
+        m_Ids[cnt] = mapname;
     }
 
     g_LoadProgress->SetCurLPPos(2000);
@@ -1544,7 +1549,7 @@ DTRACE();
         g_LoadProgress->SetCurLPPos(Float2Int(clp));
         clp += deltalp;
 
-        CTerSurface::LoadM(i + index, srfcm->GetFirst<BYTE>(i));
+        CTerSurface::LoadM(i + index, srfcm->GetFirst<byte>(i));
     }
 
     index = srfcm->GetArraysCount();
@@ -1553,7 +1558,7 @@ DTRACE();
         g_LoadProgress->SetCurLPPos(Float2Int(clp));
         clp += deltalp;
 
-        CTerSurface::Load(i + index, srfc->GetFirst<BYTE>(i));
+        CTerSurface::Load(i + index, srfc->GetFirst<byte>(i));
     }
     //}
 
@@ -1577,7 +1582,7 @@ DTRACE();
     if(roads && roads->GetArrayLength(0) > 0)
     {
         CBuf rnb(g_CacheHeap);
-        rnb.BufAdd(roads->GetFirst<BYTE>(0), roads->GetArrayLength(0));
+        rnb.BufAdd(roads->GetFirst<byte>(0), roads->GetArrayLength(0));
         rnb.Pointer(0);
         dword ver = rnb.Dword();
         if(ver != 27) ERROR_S(L"Please, recompile map with last editor...");
@@ -1762,23 +1767,28 @@ DTRACE();
                 SObjectCore* core = (*sb)->GetCore(DEBUG_CALL_INFO);
                 if((*sb)->AsBuilding()->m_Kind == BUILDING_BASE)
                 {
-                    D3DXVec3TransformCoord(&(*sb)->AsBuilding()->m_TopPoint, &D3DXVECTOR3(-8.896f, -68.774f, 55.495f), &core->m_Matrix);
+                    D3DXVECTOR3 temp = { -8.896f, -68.774f, 55.495f };
+                    D3DXVec3TransformCoord(&(*sb)->AsBuilding()->m_TopPoint, &temp, &core->m_Matrix);
                 }
                 else if((*sb)->AsBuilding()->m_Kind == BUILDING_TITAN)
                 {
-                    D3DXVec3TransformCoord(&(*sb)->AsBuilding()->m_TopPoint, &D3DXVECTOR3(0.455f, 58.688f, 73.993f), &core->m_Matrix);
+                    D3DXVECTOR3 temp = { 0.455f, 58.688f, 73.993f };
+                    D3DXVec3TransformCoord(&(*sb)->AsBuilding()->m_TopPoint, &temp, &core->m_Matrix);
                 }
                 else if((*sb)->AsBuilding()->m_Kind == BUILDING_ELECTRONIC)
                 {
-                    D3DXVec3TransformCoord(&(*sb)->AsBuilding()->m_TopPoint, &D3DXVECTOR3(0.124f, 64.68f, 75.081f), &core->m_Matrix);
+                    D3DXVECTOR3 temp = { 0.124f, 64.68f, 75.081f };
+                    D3DXVec3TransformCoord(&(*sb)->AsBuilding()->m_TopPoint, &temp, &core->m_Matrix);
                 }
                 else if((*sb)->AsBuilding()->m_Kind == BUILDING_ENERGY)
                 {
-                    D3DXVec3TransformCoord(&(*sb)->AsBuilding()->m_TopPoint, &D3DXVECTOR3(0.1f, 110.0f, 51.103f), &core->m_Matrix);
+                    D3DXVECTOR3 temp = { 0.1f, 110.0f, 51.103f };
+                    D3DXVec3TransformCoord(&(*sb)->AsBuilding()->m_TopPoint, &temp, &core->m_Matrix);
                 }
                 else if((*sb)->AsBuilding()->m_Kind == BUILDING_PLASMA)
                 {
-                    D3DXVec3TransformCoord(&(*sb)->AsBuilding()->m_TopPoint, &D3DXVECTOR3(-0.149f, 105.0f, 72.981f), &core->m_Matrix);
+                    D3DXVECTOR3 temp = { -0.149f, 105.0f, 72.981f };
+                    D3DXVec3TransformCoord(&(*sb)->AsBuilding()->m_TopPoint, &temp, &core->m_Matrix);
                 }
 
                 core->Release();

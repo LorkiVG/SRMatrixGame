@@ -214,7 +214,7 @@ public:
         //И удаляем указатель на это здание из массива, перебирающего все здания со сборными точками для их отрисовки
         g_MatrixMap->RemoveGatheringPoint(this);
     }
-    void CMatrixBuilding::ShowGatheringPointTact(int cms);
+    void ShowGatheringPointTact(int cms);
 
     D3DXVECTOR2 m_Pos;
 	int m_Angle;

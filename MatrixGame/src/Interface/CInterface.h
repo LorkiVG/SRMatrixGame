@@ -43,8 +43,8 @@ class CMatrixHint;
 #define MINIMAP_BUTTON_DOWN         SETBIT(8)
 #define MINIMAP_ENABLE_DRAG         SETBIT(9)
 #define POPUP_MENU_ACTIVE           SETBIT(10)
-//#define TURRET_BUILD_MODE           SETBIT(11)
-//#define FLYER_BUILD_MODE            SETBIT(12)
+//#define TURRET_BUILD_MODE         SETBIT(11)
+//#define FLYER_BUILD_MODE          SETBIT(12)
 
 #define PREORDER_FIRE               SETBIT(16)
 #define PREORDER_MOVE               SETBIT(17)
@@ -95,12 +95,12 @@ class CMatrixHint;
 typedef void(*DialogButtonHandler)(void);
 struct SSlide
 {
-    float startX;
-    float startY;
-    float stopX;
-    float stopY;
-    float startLength;
-    float step;
+    float startX = 0.0f;
+    float startY = 0.0f;
+    float stopX = 0.0f;
+    float stopY = 0.0f;
+    float startLength = 0.0f;
+    float step = 0.0f;
 };
 
 enum EHintButton
@@ -121,85 +121,98 @@ enum EHintButton
 //root class
 class CInterface : public CMain
 {
-    int factory_res_income;
-    int base_res_income;
-    int btype;
-    int prev_titan;
-    int prev_energy;
-    int prev_plasma;
-    int prev_electro;
+    int factory_res_income = -1;
+    int base_res_income = -1;
+    int btype = -1;
+    int prev_titan = -1;
+    int prev_energy = -1;
+    int prev_plasma = -1;
+    int prev_electro = -1;
 
-    int blazer_cnt;
-    int keller_cnt;
-    int terron_cnt;
+    int blazer_cnt = -1;
+    int keller_cnt = -1;
+    int terron_cnt = -1;
 
-    int pilon1;
-    int pilon2;
-    int pilon3;
-    int pilon4;
-    int pilon5;
+    int pilon1 = -1;
+    int pilon2 = -1;
+    int pilon3 = -1;
+    int pilon4 = -1;
+    int pilon5 = -1;
 
-    int pilon_ch;
-    int pilon_he;
-    int pilon_hu;
+    int pilon_ch = -1;
+    int pilon_he = -1;
+    int pilon_hu = -1;
 
-    float lives;
-    float max_lives;
-    float spd;
-    float wght;
-    CWStr name;
-    CWStr item_label1;
-    CWStr item_label2;
-    CWStr rcname;
+    float lives = -1;
+    float max_lives = -1;
+    float spd = -1;
+    float wght = -1;
+    CWStr name = (CWStr)L"";
+    CWStr item_label1 = (CWStr)L"";
+    CWStr item_label2 = (CWStr)L"";
+    CWStr rcname = (CWStr)L"";
 
-    ESelection cur_sel;
+    ESelection cur_sel = ESelection(-1);
 
-    int titan_summ;
-    int electronics_summ;
-    int energy_summ;
-    int plasma_summ;
+    int titan_summ = 0;
+    int electronics_summ = 0;
+    int energy_summ = 0;
+    int plasma_summ = 0;
 
-    int titan_unit;
-    int electronics_unit;
-    int energy_unit;
-    int plasma_unit;
+    int titan_unit = -1;
+    int electronics_unit = -1;
+    int energy_unit = -1;
+    int plasma_unit = -1;
 
-    int weight;
-    int speed;
-    int structure;
-    int damage;
+    int weight = -1;
+    int speed = -1;
+    int structure = -1;
+    int damage = -1;
 
-    int turmax;
-    int turhave;
+    int turmax = -1;
+    int turhave = -1;
 
-    int robots;
-    int max_robots;
+    int robots = -1;
+    int max_robots = -1;
 
+    dword titan_color = 0xFFF6c000;
+    dword electronics_color = 0xFFF6c000;
+    dword energy_color = 0xFFF6c000;
+    dword plasm_color = 0xFFF6c000;
 
-    dword titan_color;
-    dword electronics_color;
-    dword energy_color;
-    dword plasm_color;
-
-    dword titan_unit_color;
-    dword electronics_unit_color;
-    dword energy_unit_color;
-    dword plasm_unit_color;
-
+    dword titan_unit_color = 0xFFF6c000;
+    dword electronics_unit_color = 0xFFF6c000;
+    dword energy_unit_color = 0xFFF6c000;
+    dword plasm_unit_color = 0xFFF6c000;
 
 public:
-    SSlide          m_Slider;
-    dword           m_InterfaceFlags;
-    int             m_nTotalElements;
-    BYTE            m_VisibleAlpha;
-    dword           m_AlwaysOnTop;  // it is boolean var. used dword only align reasons
+    SSlide          m_Slider; //Самоинициализируется нулями
+    dword           m_InterfaceFlags = 0;
+    int             m_nTotalElements = 0;
+    byte            m_VisibleAlpha = IS_NOT_VISIBLE;
+    bool            m_AlwaysOnTop = false;
 
-    int             m_nId;
-    CWStr           m_strName;
-    float           m_xPos, m_yPos, m_zPos;
-    CIFaceElement*  m_FirstElement,   *m_LastElement;
-    CIFaceImage*    m_FirstImage,     *m_LastImage;
-    CInterface*     m_PrevInterface,  *m_NextInterface;
+    int             m_nId = 0;
+    CWStr           m_strName = (CWStr)L"";
+    float           m_xPos = 0.0f;
+    float           m_yPos = 0.0f;
+    float           m_zPos = 0.0f;
+    CIFaceElement*  m_FirstElement = nullptr;
+    CIFaceElement*  m_LastElement = nullptr;
+    CIFaceImage*    m_FirstImage = nullptr;
+    CIFaceImage*    m_LastImage = nullptr;
+    CInterface*     m_PrevInterface = nullptr;
+    CInterface*     m_NextInterface = nullptr;
+
+    static CBuf* m_ClearRects;
+
+    CInterface() = default;
+    ~CInterface();
+
+    static void StaticInit()
+    {
+        m_ClearRects = nullptr;
+    }
 
 	void Init();
     bool Load(CBlockPar& bp, const wchar* name);
@@ -213,9 +226,9 @@ public:
     CIFaceImage* FindImageByName(CWStr name);
     CIFaceStatic* CreateStaticFromImage(float x, float y, float z, const CIFaceImage& image, bool fullsize = false);
     
-    BYTE GetAlpha() { return m_VisibleAlpha;}
-    void SetAlpha(BYTE alpha);
-    void BeforeRender(void);
+    byte GetAlpha() { return m_VisibleAlpha;}
+    void SetAlpha(byte alpha);
+    void BeforeRender();
 	void Render();
 
     bool FindElementByName(const CWStr& name);
@@ -239,77 +252,70 @@ public:
     void ReCalcElementsPos();
     
     void LogicTact(int ms);
-    
-	CInterface(); 
-	~CInterface();
 
-    static void StaticInit(void)
-    {
-        m_ClearRects = nullptr;
-    }
-
-    static CBuf* m_ClearRects;
-    static void ClearRects_Clear(void) { m_ClearRects->Clear(); };
+    static void ClearRects_Clear() { m_ClearRects->Clear(); };
     static void ClearRects_Add(const D3DRECT& rect) { m_ClearRects->AnyStruct<D3DRECT>(rect); }
-    static D3DRECT* ClearRects_Get(void) { return (D3DRECT*)m_ClearRects->Get(); }
-    static int  ClearRects_GetCount(void) { return m_ClearRects->Len() / sizeof(D3DRECT); }
+    static D3DRECT* ClearRects_Get() { return (D3DRECT*)m_ClearRects->Get(); }
+    static int  ClearRects_GetCount() { return m_ClearRects->Len() / sizeof(D3DRECT); }
 };
 ////////////////////////////////////////////////////
 enum Focus
 {
 	UNKNOWN = 0,
-	INTERFACE = 1,
-
-    Focus_FORCE_DWORD = 0x7FFFFFFF
+	INTERFACE = 1
 };
 
 class CIFaceList : public CMain {
 
-     float               m_MainX; //IF_MAIN position
-     float               m_MainY;
+     float               m_MainX = 0.0f; //IF_MAIN position
+     float               m_MainY = 0.0f;
 
 public:
-     int                 m_BaseX;
-     int                 m_BaseY;
+     int                 m_BaseX = 0;
+     int                 m_BaseY = 0;
 
-     int                 m_DynamicTY;
-     int                 m_DynamicTX[10];
+     int                 m_DynamicTY = 153;
+     int                 m_DynamicTX[10] = { 280, 262, 304, 242, 279, 316, 231, 265, 299, 333 };
 
-     int                 m_DWeaponX[RUK_WEAPON_PYLONS_COUNT];
-     int                 m_DWeaponY[RUK_WEAPON_PYLONS_COUNT];
+     int                 m_DWeaponX[RUK_WEAPON_PYLONS_COUNT] = { 243, 283, 243, 283, 323 };
+     int                 m_DWeaponY[RUK_WEAPON_PYLONS_COUNT] = { 106, 106,  65,  65,  65 };
 
-     byte(*m_WeaponPylonNumsForPicsInMenu)[RUK_WEAPON_PYLONS_COUNT];
-    
-     CMatrixHint*        m_CurrentHint;
-     CWStr               m_CurrentHintControlName;
+     byte(*m_WeaponPylonNumsForPicsInMenu)[RUK_WEAPON_PYLONS_COUNT] = nullptr; //Указатель на массив байтов
 
-     dword               m_IfListFlags;
-     Focus               m_InFocus;
-     CInterface*         m_First, *m_Last;
-     CInterface*         m_FocusedInterface;
-     CInterface*         m_Hints;
-     CIFaceElement*      m_FocusedElement;
+     CMatrixHint*        m_CurrentHint = nullptr;
+     CWStr               m_CurrentHintControlName = (CWStr)L"";
+
+     dword               m_IfListFlags = 0;
+     Focus               m_InFocus = UNKNOWN;
+     CInterface*         m_First = nullptr;
+     CInterface*         m_Last = nullptr;
+     CInterface*         m_FocusedInterface = nullptr;
+     CInterface*         m_Hints = nullptr;
+     CIFaceElement*      m_FocusedElement = nullptr;
 
      //Полноценно инициализируем их в конструкторе
-     CIFaceElement**     m_Hull;
-     CIFaceElement*      m_ArmorPilon;
+     CIFaceElement**     m_Hull = nullptr;
+     CIFaceElement*      m_ArmorPilon = nullptr;
 
-     CIFaceElement**     m_Chassis;
-     CIFaceElement*      m_ChassisPilon;
+     CIFaceElement**     m_Chassis = nullptr;
+     CIFaceElement*      m_ChassisPilon = nullptr;
 
-     CIFaceElement**     m_Head;
-     CIFaceElement*      m_HeadPilon;
+     CIFaceElement**     m_Head = nullptr;
+     CIFaceElement*      m_HeadPilon = nullptr;
 
-     CIFaceElement**     m_Weapon;
-     CIFaceElement*      m_WeaponPilon[RUK_WEAPON_PYLONS_COUNT];
+     CIFaceElement**     m_Weapon = nullptr;
+     CIFaceElement*      m_WeaponPilon[RUK_WEAPON_PYLONS_COUNT] = { nullptr };
 
-     CIFaceElement*      m_Turrets[TURRET_KINDS_TOTAL];
-     CIFaceElement*      m_BuildCa;
+     CIFaceElement*      m_Turrets[TURRET_KINDS_TOTAL] = { nullptr };
+     CIFaceElement*      m_BuildCa = nullptr;
 
-     CIFaceCounter*      m_RCountControl;
+     CIFaceCounter*      m_RCountControl = nullptr;
 
-     int                 m_IFRadarPosX;
-     int                 m_IFRadarPosY;
+     int                 m_IFRadarPosX = 0;
+     int                 m_IFRadarPosY = 0;
+
+     CIFaceList();
+     ~CIFaceList();
 
      void ResetBuildCaMode()                          { if(m_BuildCa && m_BuildCa->GetState() == IFACE_FOCUSED) { m_BuildCa->SetState(IFACE_NORMAL); } ResetOrderingMode(); }
      void SetMainPos(const float& x, const float& y)  { m_MainX = x; m_MainY = y; }
@@ -371,7 +377,7 @@ public:
      bool CorrectCoordinates(int screen_width, int screen_height, int& posx, int& posy, int width, int height, const CWStr& name);
      void AddHintReplacements(const CWStr& element_name);
      bool CheckShowHintLogic(const CWStr& element_name);
-     void ExitArcadeMode(void);
+     void ExitArcadeMode();
      void EnterArcadeMode(bool pos = false);
      void BeginBuildTurret(int no);
 
@@ -382,9 +388,6 @@ public:
      void __stdcall PlayerAltAction(void* object);
      void __stdcall JumpToBuilding(void* element);
      void __stdcall JumpToRobot(void* element);
-
-     CIFaceList();
-     ~CIFaceList();
 };
 
 #ifdef _DEBUG

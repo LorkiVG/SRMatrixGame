@@ -16,23 +16,23 @@ typedef bool (*REMIND_HANDLER)(dword param);    // returns true, if core is dead
 
 struct SRemindCore
 {
-    static SRemindCore *first;
-    static SRemindCore *last;
-    static SRemindCore *current;
+    static SRemindCore* first;
+    static SRemindCore* last;
+    static SRemindCore* current;
 
     static int  gtime;
     static int  ctime;
 
-    SRemindCore *next;
-    SRemindCore *prev;
-    int          time;
+    SRemindCore* next = nullptr;
+    SRemindCore* prev = nullptr;
+    int          time = 0;
     REMIND_HANDLER handler;
-    dword        param;
+    dword        param = 0;
 
-    SRemindCore(REMIND_HANDLER hand, dword par):next(nullptr),prev(nullptr),time(gtime),handler(hand),param(par) {}
-    ~SRemindCore(void) {Down();}
+    SRemindCore(REMIND_HANDLER hand, dword par) : time(gtime), handler(hand), param(par) {}
+    ~SRemindCore() { Down(); }
 
-    static void StaticInit(void)
+    static void StaticInit()
     {
         first = nullptr;
         last = nullptr;
@@ -41,7 +41,7 @@ struct SRemindCore
         ctime = 0;
     }
 
-    void Down(void)
+    void Down()
     {
         if (current == this) current = this->next;
         LIST_DEL_CLEAR(this, first, last, prev, next);
@@ -49,13 +49,14 @@ struct SRemindCore
 
     void Use(int nexttime)
     {
-        if (first != nullptr)
+        if(first != nullptr)
         {
-            if ((((dword)next)|((dword)prev)) == 0 && (this != first))
+            if((((dword)next) | ((dword)prev)) == 0 && (this != first))
             {
                 LIST_ADD(this, first, last, prev, next);
             }
-        } else
+        }
+        else
         {
             first = this;
             last = this;
@@ -66,13 +67,7 @@ struct SRemindCore
     }
 
     static void Tact(int ms);
-
 };
-
-
-
-
-
 
 
 
@@ -102,7 +97,7 @@ struct SRemindCore
 //
 //class CReminder : public CMain
 //{
-//    CHeap  *m_Heap;
+//    CHeap*  m_Heap;
 //    CBuf    m_Items;
 //    PCBuf   m_TimeArray[REMINDER_MAX_TIME];
 //
@@ -112,19 +107,19 @@ struct SRemindCore
 //
 //    int     m_Ref;
 //
-//    SReminderItem *m_FirstFree;
-//    SReminderItem *m_LastFree;
-//    SReminderItem*  NewItem(void);
-//    void    ReleaseItem(SReminderItem *item);
+//    SReminderItem* m_FirstFree;
+//    SReminderItem* m_LastFree;
+//    SReminderItem* NewItem(void);
+//    void           ReleaseItem(SReminderItem* item);
 //
 //
 //    ~CReminder();
-//    CReminder(CHeap *heap);
+//    CReminder(CHeap* heap);
 //
-//    //void Validate(void);
+//    //void Validate();
 //public:
 //
-//    void Clear(void);
+//    void Clear();
 //    void Tact(int ms);
 //
 //    static CReminder* Build(CHeap *heap)
@@ -132,17 +127,17 @@ struct SRemindCore
 //        return HNew (heap) CReminder(heap);
 //    }
 //
-//    void Release(void)
+//    void Release()
 //    {
 //        //--m_Ref;
-//        //if (m_Ref<=0)
+//        //if (m_Ref <= 0)
 //        HDelete(CReminder, this, m_Heap);
 //    }
 //
-//    //void RefInc(void) {++m_Ref;}
+//    //void RefInc() { ++m_Ref; }
 //
 //
-//    bool  RemindOldest(void);
+//    bool  RemindOldest();
 //
 //
 //    dword Create(dword id, int in_time, REMINDER_HANDLER handler, dword user);

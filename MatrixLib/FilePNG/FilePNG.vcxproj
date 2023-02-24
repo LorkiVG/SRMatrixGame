@@ -14,9 +14,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{BAD34A8F-2C9F-356D-BE52-C3BEA2F022C0}</ProjectGuid>
+    <ProjectGuid>{6A148C84-DCB9-370A-B66E-04B569B6D371}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <WindowsTargetPlatformVersion>10.0.19041.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
     <Platform>Win32</Platform>
     <ProjectName>FilePNG</ProjectName>
     <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
@@ -42,18 +42,18 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">H:\My DLLs\MatrixGame\MatrixLib\FilePNG\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">FilePNG.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">FilePNG</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.lib</TargetExt>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">H:\My DLLs\MatrixGame\MatrixLib\FilePNG\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">FilePNG.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">FilePNG</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.lib</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BufferSecurityCheck>false</BufferSecurityCheck>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -66,25 +66,26 @@
       <Optimization>MaxSpeed</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <StringPooling>true</StringPooling>
-      <StructMemberAlignment>Default</StructMemberAlignment>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_LIB;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_LIB;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <MASM>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_LIB;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
-      <IncludePaths>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(IncludePaths)</IncludePaths>
-      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IncludePaths>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(IncludePaths)</IncludePaths>
+      <AdditionalOptions>%(AdditionalOptions) /O2 /Ob2 /Oi /Ot /Oy /GF /EHsc /MT /GS- /Gy-</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <WarningLevel>3</WarningLevel>
     </MASM>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -97,9 +98,9 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
-      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <ExceptionHandling>Sync</ExceptionHandling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -108,7 +109,6 @@
       <Optimization>Disabled</Optimization>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
-      <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_LIB;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
@@ -116,15 +116,17 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_LIB;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <MASM>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_LIB;_CRT_SECURE_NO_WARNINGS;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
-      <IncludePaths>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(IncludePaths)</IncludePaths>
+      <IncludePaths>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(IncludePaths)</IncludePaths>
+      <AdditionalOptions>%(AdditionalOptions) /ZI /Od /Gm /RTC1 /Gy /MTd</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
+      <WarningLevel>3</WarningLevel>
     </MASM>
     <Midl>
-      <AdditionalIncludeDirectories>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Program Files (x86)\Microsoft DirectX SDK (June 2010)\Include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\LibPNG\include;H:\My DLLs\MatrixGame\MatrixLib\FilePNG\..\..\ThirdParty\ZLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -136,11 +138,12 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\CMakeLists.txt">
+    <CustomBuild Include="H:\My DLLs\MatrixGame\MatrixLib\FilePNG\CMakeLists.txt">
       <UseUtf8Encoding>Always</UseUtf8Encoding>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule E:/!---KR---!/!PROGRAMS/MatrixGame/MatrixLib/FilePNG/CMakeLists.txt</Message>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</BuildInParallel>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Building Custom Rule H:/My DLLs/MatrixGame/MatrixLib/FilePNG/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SE:/!---KR---!/!PROGRAMS/MatrixGame -BE:/!---KR---!/!PROGRAMS/MatrixGame --check-stamp-file E:/!---KR---!/!PROGRAMS/MatrixGame/MatrixLib/FilePNG/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" "-SH:/My DLLs/MatrixGame" "-BH:/My DLLs/MatrixGame" --check-stamp-file "H:/My DLLs/MatrixGame/MatrixLib/FilePNG/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -149,11 +152,12 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">H:\My DLLs\MatrixGame\MatrixLib\FilePNG\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule E:/!---KR---!/!PROGRAMS/MatrixGame/MatrixLib/FilePNG/CMakeLists.txt</Message>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</BuildInParallel>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Building Custom Rule H:/My DLLs/MatrixGame/MatrixLib/FilePNG/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">setlocal
-"C:\Program Files\CMake\bin\cmake.exe" -SE:/!---KR---!/!PROGRAMS/MatrixGame -BE:/!---KR---!/!PROGRAMS/MatrixGame --check-stamp-file E:/!---KR---!/!PROGRAMS/MatrixGame/MatrixLib/FilePNG/CMakeFiles/generate.stamp
+"C:\Program Files\CMake\bin\cmake.exe" "-SH:/My DLLs/MatrixGame" "-BH:/My DLLs/MatrixGame" --check-stamp-file "H:/My DLLs/MatrixGame/MatrixLib/FilePNG/CMakeFiles/generate.stamp"
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -162,33 +166,33 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">H:\My DLLs\MatrixGame\MatrixLib\FilePNG\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\src\FilePNG.cpp" />
-    <ClInclude Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\include\FilePNG.hpp" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\png.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngerror.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngget.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngmem.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngpread.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngread.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngrio.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngrtran.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngrutil.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngset.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngtrans.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngvcrd.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngwio.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngwrite.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngwtran.c" />
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngwutil.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\MatrixLib\FilePNG\src\FilePNG.cpp" />
+    <ClInclude Include="H:\My DLLs\MatrixGame\MatrixLib\FilePNG\include\FilePNG.hpp" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\png.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngerror.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngget.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngmem.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngpread.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngread.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngrio.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngrtran.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngrutil.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngset.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngtrans.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngvcrd.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngwio.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngwrite.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngwtran.c" />
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngwutil.c" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ZERO_CHECK.vcxproj">
-      <Project>{14D91890-F8BC-3C72-B15A-9980C131E38B}</Project>
+    <ProjectReference Include="H:\My DLLs\MatrixGame\ZERO_CHECK.vcxproj">
+      <Project>{065CE21C-3438-32EF-8B6B-8A790A1D9BE9}</Project>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

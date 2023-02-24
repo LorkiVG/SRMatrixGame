@@ -282,8 +282,8 @@ public:
 
     float m_SkyHeight = 0;
 
-	CPoint m_Size = { 0.0f, 0.0f };
-	CPoint m_SizeMove = { 0.0f, 0.0f };
+	CPoint m_Size = { 0, 0 };
+	CPoint m_SizeMove = { 0, 0 };
 	SMatrixMapUnit* m_Module = nullptr;
 	SMatrixMapPoint* m_Point = nullptr;
 	SMatrixMapMove* m_Move = nullptr;
@@ -311,7 +311,7 @@ public:
 
     CMatrixRoadNetwork m_RoadNetwork;
 
-    CPoint            m_GroupSize = { 0.0f, 0.0f };
+    CPoint            m_GroupSize = { 0, 0 };
 	CMatrixMapGroup** m_Group = nullptr;
     SGroupVisibility* m_GroupVis = nullptr;
 
@@ -343,12 +343,13 @@ public:
     int             m_EffectsCnt = 0;
     //CDWORDMap     m_Effects;
 
+    //Массив точек (объектов) для отрисовки статичных визуальных эффектов на карте (дым, огонь, разряды электричества, звуки)
     CEffectSpawner* m_EffectSpawners = nullptr;
     int             m_EffectSpawnersCnt = 0;
 
     CMatrixMapStatic* m_NextLogicObject = nullptr;
 
-    CWStr           m_WaterName;
+    CWStr           m_WaterName = (CWStr)L"";
 
     float m_BiasCannons = 0.0f;
     float m_BiasRobots = 0.0f;
@@ -552,7 +553,7 @@ public:
     }
     template <class O> __forceinline O* StaticAdd(bool add_to_logic = true)
     {
-        O* o = HNew(g_MatrixHeap) O();
+        O* o = HNew(Base::g_MatrixHeap) O();
         //O* o = new O();
         AddObject(o, add_to_logic && o->GetObjectType() != OBJECT_TYPE_MAPOBJECT);
         return o;

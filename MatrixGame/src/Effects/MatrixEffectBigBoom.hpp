@@ -57,8 +57,8 @@ protected:
     CMatrixEffectBigBoom(const D3DXVECTOR3 &pos, float radius, float ttl, dword hitmask, CMatrixMapStatic* skip, dword user, FIRE_END_HANDLER handler, dword light);
 	virtual ~CMatrixEffectBigBoom();
 
-    static bool PrepareDX(void);
-    static void StaticInit(void)
+    static bool PrepareDX();
+    static void StaticInit()
     {
         m_VB = nullptr;
         m_IB = nullptr;
@@ -66,7 +66,7 @@ protected:
         m_VB_ref = 0;
     }
 
-    static void MarkAllBuffersNoNeed(void)
+    static void MarkAllBuffersNoNeed()
     {
 	    if(m_VB) DESTROY_VB(m_VB);
         if(m_IB) DESTROY_IB(m_IB);
@@ -74,17 +74,17 @@ protected:
 
 public:
     friend class CMatrixEffect;
-    friend static bool BoomEnum(const D3DXVECTOR3& center, CMatrixMapStatic* ms, dword user);
-    friend static bool BoomEnumNaklon(const D3DXVECTOR3& center, CMatrixMapStatic* ms, dword user);
+    friend bool BoomEnum(const D3DXVECTOR3& center, CMatrixMapStatic* ms, dword user);
+    friend bool BoomEnumNaklon(const D3DXVECTOR3& center, CMatrixMapStatic* ms, dword user);
 
-    const D3DXVECTOR3 & GetPos(void) const {return *(D3DXVECTOR3*)&m_Mat._41;}
+    const D3DXVECTOR3 & GetPos() const {return *(D3DXVECTOR3*)&m_Mat._41;}
 
-    virtual void BeforeDraw(void);
-    virtual void Draw(void);
+    virtual void BeforeDraw();
+    virtual void Draw();
     virtual void Tact(float step);
-    virtual void Release(void);
+    virtual void Release();
 
-    virtual int  Priority(void) {return 1000;}
+    virtual int  Priority() {return 1000;}
 };
 
 

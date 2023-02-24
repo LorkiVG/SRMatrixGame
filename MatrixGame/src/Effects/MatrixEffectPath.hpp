@@ -28,55 +28,49 @@ struct SPathDot
 
 class CMatrixEffectPath : public CMatrixEffect
 {
-    dword   m_Kill;
+    dword     m_Kill = 0;
 
-    CBuf    m_Points;
-    CBuf    m_Dirs;
-    CBuf    m_Lens;
+    CBuf      m_Points;
+    CBuf      m_Dirs;
+    CBuf      m_Lens;
 
-    int     m_DotsCnt;
-    int     m_DotsMax;
-    SPathDot *m_Dots;
+    int       m_DotsCnt = 0;
+    int       m_DotsMax = 0;
+    SPathDot* m_Dots = nullptr;
 
-    int     m_Cnt;
-    float   m_Len;
-    float   _m_Len;
+    int       m_Cnt = 0;
+    float     m_Len = 0.0f;
+    float    _m_Len = 0.0f;
 
-    //float   m_Time;
-    float     m_Tact;
-    float     m_NextTact;
+    //float   m_Time = 0.0f;
+    float     m_Tact = 0.0f;
+    float     m_NextTact = 0.0f;
 
-    SPathDot    *m_First;
-    SPathDot    *m_Last;
+    SPathDot* m_First = nullptr;
+    SPathDot* m_Last = nullptr;
 
-    float   m_Angle;
-    float   m_Barier;
+    float     m_Angle = 0.0f;
+    float     m_Barier = PATH_HIDE_DISTANCE;
 
 
-    CMatrixEffectPath(const D3DXVECTOR3 *pos, int cnt);
+    CMatrixEffectPath(const D3DXVECTOR3* pos, int cnt);
 	virtual ~CMatrixEffectPath();
 
-
-    void UpdateData(void);
-
+    void UpdateData();
 
 public:
     friend class CMatrixEffect;
 
-    void GetPos(D3DXVECTOR3 *out, float t);
-    void AddPos(const D3DXVECTOR3 &pos);
+    void GetPos(D3DXVECTOR3* out, float t);
+    void AddPos(const D3DXVECTOR3& pos);
 
-
-    virtual void BeforeDraw(void);
-    virtual void Draw(void);
+    virtual void BeforeDraw();
+    virtual void Draw();
     virtual void Tact(float step);
-    virtual void Release(void);
+    virtual void Release();
 
-    virtual int  Priority(void) {return MAX_EFFECT_PRIORITY;};
+    virtual int Priority() { return MAX_EFFECT_PRIORITY; };
 
-    void    Kill(void)
-    {
-        m_Kill = true;
-    }
+    void Kill() { m_Kill = true; }
 };
 

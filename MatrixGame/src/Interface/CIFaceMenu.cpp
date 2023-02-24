@@ -327,10 +327,10 @@ DTRACE();
         {
             LIST_DEL(m_Ramka, main->m_FirstElement, main->m_LastElement, m_PrevElement, m_NextElement);
         }
-        HDelete(CIFaceStatic, m_Ramka, g_MatrixHeap);
+        HDelete(CIFaceStatic, m_Ramka, Base::g_MatrixHeap);
     }
 
-    m_Ramka = HNew(g_MatrixHeap) CIFaceStatic;
+    m_Ramka = HNew(Base::g_MatrixHeap) CIFaceStatic;
     m_Ramka->m_strName = IF_POPUP_RAMKA;
     //if(main->m_xPos > x)
     //{
@@ -368,10 +368,10 @@ DTRACE();
         {
             LIST_DEL(m_Selector, main->m_FirstElement, main->m_LastElement, m_PrevElement, m_NextElement);
         }
-        HDelete(CIFaceStatic, m_Selector, g_MatrixHeap);
+        HDelete(CIFaceStatic, m_Selector, Base::g_MatrixHeap);
     }
 
-    m_Selector = HNew(g_MatrixHeap) CIFaceStatic;
+    m_Selector = HNew(Base::g_MatrixHeap) CIFaceStatic;
     m_Selector->m_strName = IF_POPUP_SELECTOR;
     m_Selector->m_xPos = x;
     m_Selector->m_yPos = y + 11;
@@ -400,7 +400,7 @@ DTRACE();
         {
             CIFaceElement* tmp_e = e->m_NextElement;
             LIST_DEL(e, main->m_FirstElement, main->m_LastElement, m_PrevElement, m_NextElement);
-            HDelete(CIFaceStatic, (CIFaceStatic*)e, g_MatrixHeap);
+            HDelete(CIFaceStatic, (CIFaceStatic*)e, Base::g_MatrixHeap);
             e = tmp_e;
             continue;
         }
@@ -410,7 +410,7 @@ DTRACE();
     int label_el_num = 0;
     for(int i = 0; i < elements; ++i, ++label_el_num)
     {
-        CIFaceStatic* catcher = HNew(g_MatrixHeap) CIFaceStatic;
+        CIFaceStatic* catcher = HNew(Base::g_MatrixHeap) CIFaceStatic;
         catcher->m_strName = L"";
         catcher->m_xPos = x;
         catcher->m_yPos = y + 11 + (UNIT_HEIGHT * i);
@@ -491,7 +491,7 @@ DTRACE();
         {
             LIST_DEL(m_Pointer, main->m_FirstElement, main->m_LastElement, m_PrevElement, m_NextElement);
         }
-        HDelete(CIFaceStatic, m_Pointer, g_MatrixHeap);
+        HDelete(CIFaceStatic, m_Pointer, Base::g_MatrixHeap);
     }
 
     //Рендерим на экране новую текстуру стрелки-указателя
@@ -509,9 +509,9 @@ DTRACE();
     m_CurMenuPos = -1;
     CMatrixSideUnit* ps = g_MatrixMap->GetPlayerSide();
     
-    if(m_RobotConfig) HDelete(SRobotConfig, m_RobotConfig, g_MatrixHeap);
+    if(m_RobotConfig) HDelete(SRobotConfig, m_RobotConfig, Base::g_MatrixHeap);
 
-    m_RobotConfig = HNew(g_MatrixHeap) SRobotConfig;
+    m_RobotConfig = HNew(Base::g_MatrixHeap) SRobotConfig;
     *m_RobotConfig = ps->m_ConstructPanel->m_Configs[ps->m_ConstructPanel->m_CurrentConfig];
 }
 
@@ -593,7 +593,7 @@ void CIFaceMenu::ResetMenu(bool canceled)
             //ps->m_ConstructPanel->m_Configs[cfg] = *m_RobotConfig;
         }
 
-        HDelete(SRobotConfig, m_RobotConfig, g_MatrixHeap);
+        HDelete(SRobotConfig, m_RobotConfig, Base::g_MatrixHeap);
         m_RobotConfig = nullptr;
     }
 

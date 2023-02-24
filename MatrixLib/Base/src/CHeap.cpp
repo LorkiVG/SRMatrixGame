@@ -16,24 +16,24 @@ namespace DeadPtr
         static int last_id;
         return last_id++;
     }
-    BYTE     semetery_heap[SEMETERY_HEAP_SIZE];
+    byte     semetery_heap[SEMETERY_HEAP_SIZE];
     SDeadMem semetery[SEMETERY_SIZE];
 
     int semetery_cnt = 0;
     int semetery_heap_size = 0;
 
-    int find_by_id(int id, BYTE** ptr)
+    int find_by_id(int id, byte** ptr)
     {
         SDeadMemBody* b = (SDeadMemBody*)&semetery_heap;
 
-        while(id != b->id) b = (SDeadMemBody*)(((BYTE*)b) + b->size);
+        while(id != b->id) b = (SDeadMemBody*)(((byte*)b) + b->size);
 
-        *ptr = (BYTE*)b;
+        *ptr = (byte*)b;
         return b->size;
     }
     void remove_by_id(int id)
     {
-        BYTE* ptr;
+        byte* ptr;
         int sz = find_by_id(id, &ptr);
 
         memcpy(ptr, ptr + sz, semetery_heap_size - sz);
@@ -68,7 +68,7 @@ namespace DeadPtr
         {
             if(semetery[i].ptr_was == mem)
             {
-                BYTE* ptr;
+                byte* ptr;
                 int sz = find_by_id(semetery[i].id, &ptr);
                 return ptr + sizeof(SDeadMemBody);
             }
@@ -147,8 +147,8 @@ void SMemHeader::Release(void)
     LIST_DEL(this, first_mem_block, last_mem_block, prev, next);
     fullsize -= blocksize;
 #ifdef MEM_CHECK
-    BYTE* d1 = (BYTE*)(this + 1);
-    BYTE* d2 = ((BYTE*)this) + blocksize - MEM_CHECK_BOUND_SIZE;
+    byte* d1 = (byte*)(this + 1);
+    byte* d2 = ((byte*)this) + blocksize - MEM_CHECK_BOUND_SIZE;
     for(int i = 0; i < MEM_CHECK_BOUND_SIZE; ++i)
     {
         bool begin = *(d1 + i) != MEM_CHECK_FILLER;

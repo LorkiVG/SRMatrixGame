@@ -190,9 +190,9 @@ public:
     HRESULT m_Error;
 
 public:
-    CExceptionD3D(char* file, int line, HRESULT err) : CException(file, line) { m_Error = err; }
+    CExceptionD3D(const char* file, int line, HRESULT err) : CException(file, line) { m_Error = err; }
 
-    virtual CWStr Info(void);
+    virtual CWStr Info();
 };
 
 #define FAILED_DX(x) { HRESULT hr = x; if(hr != D3D_OK) throw new CExceptionD3D(__FILE__, __LINE__, hr); }
@@ -203,12 +203,12 @@ public:
 	#define ASSERT_DX(x) FAILED_DX(x)
 #endif
 
-void L3GInitAsEXE(HINSTANCE hinst, CBlockPar& bpcfg, wchar* sysname, wchar* captionname);
-void L3GInitAsDLL(HINSTANCE hinst, CBlockPar& bpcfg, wchar* sysname, wchar* captionname, HWND hwnd, long FDirect3D, long FD3DDevice);
-void L3GDeinit(void);
-int L3GRun(void);
+void L3GInitAsEXE(HINSTANCE hinst, CBlockPar& bpcfg, const wchar_t* sysname, const wchar_t* captionname);
+void L3GInitAsDLL(HINSTANCE hinst, CBlockPar& bpcfg, const wchar_t* sysname, const wchar_t* captionname, HWND hwnd, long FDirect3D, long FD3DDevice);
+void L3GDeinit();
+int L3GRun();
 
-void S3D_Default(void);
+void S3D_Default();
 
 #include "Texture.hpp"
 #include "DeviceState.hpp"

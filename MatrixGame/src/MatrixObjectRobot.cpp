@@ -676,7 +676,7 @@ calc:
 
         if(m_ShadowProj != nullptr)
         {
-            BYTE* buf = (BYTE*)_alloca(sizeof(CVectorObjectAnim*) * m_ModulesCount + sizeof(int) * m_ModulesCount + sizeof(D3DXMATRIX) * m_ModulesCount);
+            byte* buf = (byte*)_alloca(sizeof(CVectorObjectAnim*) * m_ModulesCount + sizeof(int) * m_ModulesCount + sizeof(D3DXMATRIX) * m_ModulesCount);
             CVectorObjectAnim** obj = (CVectorObjectAnim**)buf;
             int* noframe = (int*)(buf + sizeof(CVectorObjectAnim*) * m_ModulesCount);
             D3DXMATRIX* wm = (D3DXMATRIX*)(buf + sizeof(CVectorObjectAnim*) * m_ModulesCount + sizeof(int) * m_ModulesCount);
@@ -833,7 +833,8 @@ DTRACE();
 
 void CMatrixRobot::ApplyNaklon(const D3DXVECTOR3& dir)
 {
-    D3DXVec3Normalize((D3DXVECTOR3*)&m_Core->m_Matrix._31, &(*(D3DXVECTOR3*)&m_Core->m_Matrix._31 + dir));
+    D3DXVECTOR3 temp = *(D3DXVECTOR3*)&m_Core->m_Matrix._31 + dir;
+    D3DXVec3Normalize((D3DXVECTOR3*)&m_Core->m_Matrix._31, &temp);
 }
 
 void CMatrixRobot::Tact(int cms)

@@ -53,16 +53,16 @@ class CDataBuf : public CBuf
     SDataBufAllocTableEntry * TableEntry(int i)
     {
         SDataBufHeader *header = Buff<SDataBufHeader>();
-        return (SDataBufAllocTableEntry *)(Buff<BYTE>() + header->alloc_table_disp + i*sizeof(SDataBufAllocTableEntry)) ;
+        return (SDataBufAllocTableEntry *)(Buff<byte>() + header->alloc_table_disp + i*sizeof(SDataBufAllocTableEntry)) ;
     }
 
     template <class D> D * GetFirstElement(SDataBufAllocTableEntry *te)
     {
-        return (D *)(Buff<BYTE>() + te->disp);
+        return (D *)(Buff<byte>() + te->disp);
     }
     template <class D> D * GetEndElement(SDataBufAllocTableEntry *te)
     {
-        return ((D *)(Buff<BYTE>() + te->disp)) + te->count;
+        return ((D *)(Buff<byte>() + te->disp)) + te->count;
     }
 
     void ExpandArray(dword i, dword sz)
@@ -71,8 +71,8 @@ class CDataBuf : public CBuf
         SDataBufHeader *header = Buff<SDataBufHeader>();
         ++i;
 
-        BYTE *data0 = (header->arrays_count <= i)?(Buff<BYTE>() + header->alloc_table_disp):GetFirstElement<BYTE>(TableEntry(i));
-        BYTE *data1 = BuffEnd<BYTE>() - sz;
+        byte *data0 = (header->arrays_count <= i)?(Buff<byte>() + header->alloc_table_disp):GetFirstElement<byte>(TableEntry(i));
+        byte *data1 = BuffEnd<byte>() - sz;
 
         for (; i < header->arrays_count; ++i)
         {
@@ -155,8 +155,8 @@ public:
         Expand(sz);
         header = Buff<SDataBufHeader>();
 
-        BYTE *data0 = Buff<BYTE>() + header->alloc_table_disp;
-        BYTE *data1 = BuffEnd<BYTE>() - sz;
+        byte *data0 = Buff<byte>() + header->alloc_table_disp;
+        byte *data1 = BuffEnd<byte>() - sz;
         memmove(data0 + header->element_type_size * 16, data0, data1 - data0);
 
         header->alloc_table_disp += header->element_type_size * 16;
@@ -235,8 +235,8 @@ public:
             {
                 // there are some bytes saved
                 // its need to move data
-                BYTE *data0 = GetFirstElement<BYTE>(te);
-                BYTE *data1 = data0 + te->count * header->element_type_size;
+                byte *data0 = GetFirstElement<byte>(te);
+                byte *data1 = data0 + te->count * header->element_type_size;
                 memcpy(data0 - saved, data0, data1 - data0);
                 te->disp -= saved;
             }
@@ -249,7 +249,7 @@ public:
         if (saved)
         {
             // copy table
-            memcpy(Buff<BYTE>() + (header->alloc_table_disp - saved), Buff<BYTE>() + header->alloc_table_disp, sizeof(SDataBufAllocTableEntry) * header->arrays_count);
+            memcpy(Buff<byte>() + (header->alloc_table_disp - saved), Buff<byte>() + header->alloc_table_disp, sizeof(SDataBufAllocTableEntry) * header->arrays_count);
             SetLenNoShrink(Len() - saved);
             header->alloc_table_disp -= saved;
         }
@@ -286,9 +286,9 @@ public:
 
 class CStorageRecord : public CMain
 {
-    CHeap*              m_Heap;
+    CHeap*              m_Heap = nullptr;
 
-    CWStr               m_Name;         // record name (table name)
+    CWStr               m_Name = CWStr(L""); // record name (table name)
     CStorageRecordItem* m_Items = nullptr;
     int                 m_ItemsCount = 0;
 
@@ -299,11 +299,11 @@ public:
         m_Items = (CStorageRecordItem*)HAlloc(sizeof(CStorageRecordItem) * m_ItemsCount, m_Heap);
         for(int i = 0; i < m_ItemsCount; ++i)
         {
-            m_Items[i].CStorageRecordItem::CStorageRecordItem(rec.m_Items[i]);
+            m_Items[i] = CStorageRecordItem(rec.m_Items[i]);
             m_Items[i].InitBuf(m_Heap);
         }
     }
-    CStorageRecord(CWStr& name, CHeap* heap = nullptr) : m_Heap(heap), m_Name(name, name.GetHeap()) {}
+    CStorageRecord(const CWStr& name, CHeap* heap = nullptr) : m_Heap(heap), m_Name(name, name.GetHeap()) {}
     CStorageRecord(CHeap* heap) : m_Heap(heap), m_Name(heap) {}
     ~CStorageRecord()
     {

@@ -1,7 +1,7 @@
-﻿  Building Custom Rule E:/!---KR---!/!PROGRAMS/MatrixGame/MatrixLib/FilePNG/CMakeLists.txt
+﻿  1>Building Custom Rule H:/My DLLs/MatrixGame/MatrixLib/FilePNG/CMakeLists.txt
   FilePNG.cpp
   png.c
-E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\png.c(341,4): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\png.c(341,4): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   pngerror.c
   pngget.c
   pngmem.c
@@ -9,18 +9,18 @@ E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\png.c(341,4): warning C
   pngread.c
   pngrio.c
   pngrtran.c
-E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngrtran.c(1089,7): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngrtran.c(1089,7): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   pngrutil.c
-E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngrutil.c(1416,7): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngrutil.c(1416,7): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   pngset.c
   pngtrans.c
   pngvcrd.c
   pngwio.c
   pngwrite.c
-E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngwrite.c(239,11): warning C4996: 'gmtime': This function or variable may be unsafe. Consider using gmtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngwrite.c(239,11): warning C4996: 'gmtime': This function or variable may be unsafe. Consider using gmtime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   pngwtran.c
   pngwutil.c
-E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngwutil.c(627,10): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngwutil.c(773,7): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngwutil.c(627,10): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngwutil.c(773,7): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   Generating Code...
-  FilePNG.vcxproj -> E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\Release\FilePNG.lib
+  FilePNG.vcxproj -> H:\My DLLs\MatrixGame\MatrixLib\FilePNG\Release\FilePNG.lib

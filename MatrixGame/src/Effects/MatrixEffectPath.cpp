@@ -12,27 +12,25 @@
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-CMatrixEffectPath::CMatrixEffectPath(const D3DXVECTOR3 *pos, int cnt):
-CMatrixEffect(),  m_Kill(false), m_Points(m_Heap), m_Dirs(m_Heap), m_Lens(m_Heap), m_Cnt(cnt), m_Tact(0), m_NextTact(0), m_Dots(nullptr),
-m_DotsCnt(0), m_First(nullptr), m_Last(nullptr), m_Angle(0), m_Barier(PATH_HIDE_DISTANCE)
+
+CMatrixEffectPath::CMatrixEffectPath(const D3DXVECTOR3* pos, int cnt) :
+   CMatrixEffect(), m_Points(m_Heap), m_Dirs(m_Heap), m_Lens(m_Heap), m_Cnt(cnt)
 
 {
-DTRACE();
-    
     m_EffectType = EFFECT_PATH;
 
     ASSERT(cnt >= 2);
 
-    for (int i = 0; i<cnt; ++i)
+    for(int i = 0; i < cnt; ++i)
     {
         m_Points.AnyStruct<D3DXVECTOR3>(pos[i]);
     }
+
     UpdateData();
 }
 
 void CMatrixEffectPath::AddPos(const D3DXVECTOR3 &pos)
 {
-    DTRACE();
     m_Points.AnyStruct<D3DXVECTOR3>(pos);
     ++m_Cnt;
     UpdateData();
@@ -40,10 +38,9 @@ void CMatrixEffectPath::AddPos(const D3DXVECTOR3 &pos)
 
 CMatrixEffectPath::~CMatrixEffectPath()
 {
-    DTRACE();
-    if (m_Dots) 
+    if(m_Dots) 
     {
-        while (m_DotsCnt > 0)
+        while(m_DotsCnt > 0)
         {
             m_Dots[--m_DotsCnt].dot.Release();
         }
@@ -53,22 +50,20 @@ CMatrixEffectPath::~CMatrixEffectPath()
 }
 
 
-void CMatrixEffectPath::UpdateData(void)
+void CMatrixEffectPath::UpdateData()
 {
-DTRACE();
-
     m_Dirs.Clear();
     m_Lens.Clear();
 
-    D3DXVECTOR3 *pts = (D3DXVECTOR3 *)m_Points.Get();
+    D3DXVECTOR3* pts = (D3DXVECTOR3*)m_Points.Get();
 
     m_Len = 0;
 
-    for (int i = 0; i<(m_Cnt-1); ++i)
+    for(int i = 0; i < (m_Cnt - 1); ++i)
     {
-        D3DXVECTOR3 dir(*(pts+1) - (*pts));
+        D3DXVECTOR3 dir(*(pts + 1) - (*pts));
         float l = D3DXVec3Length(&dir);
-        float _l = (l!=0)?1.0f/l:1.0f;
+        float _l = (l != 0) ? 1.0f / l : 1.0f;
         m_Dirs.AnyStruct<D3DXVECTOR3>(dir * _l);
         m_Lens.Float(l);
 
@@ -79,35 +74,34 @@ DTRACE();
     _m_Len = 1.0f / m_Len;
 
     int m_DotsMax1 = TruncFloat(m_Len * INVERT(PATH_DOT_DISTANCE)) + 2;
-    //if (m_DotsMax1 == 0) m_DotsMax1 = 1;
+    //if(m_DotsMax1 == 0) m_DotsMax1 = 1;
 
-    while (m_DotsMax1 < m_DotsCnt)
+    while(m_DotsMax1 < m_DotsCnt)
     {
         m_Dots[--m_DotsCnt].dot.Release();
         LIST_DEL((m_Dots + m_DotsCnt), m_First, m_Last, prev, next);
-        
     }
     m_DotsMax = m_DotsMax1;
 
-    BYTE * old_base = (BYTE *)m_Dots;
-    m_Dots = (SPathDot *)HAllocEx(m_Dots, sizeof(SPathDot) * m_DotsMax, m_Heap);
+    byte* old_base = (byte*)m_Dots;
+    m_Dots = (SPathDot*)HAllocEx(m_Dots, sizeof(SPathDot) * m_DotsMax, m_Heap);
 
-#define REBASE(ptr) ptr = (SPathDot *)(((BYTE *)ptr) + rebase)
+#define REBASE(ptr) ptr = (SPathDot*)(((byte*)ptr) + rebase)
 
-    if (old_base != nullptr)
+    if(old_base != nullptr)
     {
-        BYTE * new_base = (BYTE *)m_Dots;
-        if (old_base != new_base)
+        byte* new_base = (byte*)m_Dots;
+        if(old_base != new_base)
         {
             // rebasing list
             dword rebase = new_base - old_base;
             REBASE(m_First);
             REBASE(m_Last);
-            SPathDot *temp = m_First;
-            while (temp)
+            SPathDot* temp = m_First;
+            while(temp)
             {
-                if ( temp->next ) REBASE(temp->next);
-                if ( temp->prev ) REBASE(temp->prev);
+                if(temp->next) REBASE(temp->next);
+                if(temp->prev) REBASE(temp->prev);
                 temp = temp->next;
             }
         }
@@ -117,19 +111,17 @@ DTRACE();
 
 void CMatrixEffectPath::GetPos(D3DXVECTOR3* out, float t)
 {
-DTRACE();
-
-    if (t<0) t += (TruncFloat(t) + 1);
+    if(t < 0) t += (TruncFloat(t) + 1);
     t = t - float(TruncFloat(t));
 
     t *= m_Len;
 
-    float *lens = (float *)m_Lens.Get();
+    float* lens = (float*)m_Lens.Get();
 
     float tt0;
     float tt1 = 0;
     int i;
-    for (i = 0; i<(m_Cnt-1); ++i)
+    for(i = 0; i < (m_Cnt - 1); ++i)
     {
         tt0 = tt1;
         tt1 += *lens;
@@ -275,7 +267,7 @@ DTRACE();
             alpha *= alpha1;
         }
         
-        temp->dot.SetAlpha( BYTE(alpha * float(PATH_COLOR >> 24)));
+        temp->dot.SetAlpha( byte(alpha * float(PATH_COLOR >> 24)));
 
             
 
@@ -298,7 +290,7 @@ DTRACE();
 
         for (int i = 0; i<SEL_CNT; ++i)
             for (int j = 0; j<SEL_BLUR_CNT; ++j)
-                m_Points[i].m_Blur[j].SetAlpha( BYTE((m_Radius/m_InitRadius) * float(SEL_COLOR_1 >> 24)));
+                m_Points[i].m_Blur[j].SetAlpha( byte((m_Radius/m_InitRadius) * float(SEL_COLOR_1 >> 24)));
 
     }
     */

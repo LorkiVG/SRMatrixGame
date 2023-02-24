@@ -29,8 +29,8 @@ DTRACE();
     if(bp)
     {
         m_End0 = (CSprite*)HAlloc(sizeof(CSprite), m_Heap);
-        if(m_SpriteTextures[m_SpotSpriteNum].IsSingleBrightTexture()) m_End0->CSprite::CSprite(TRACE_PARAM_CALL m_Pos0, width / 2, 0, color, m_SpriteTextures[m_SpotSpriteNum].tex);
-        else m_End0->CSprite::CSprite(TRACE_PARAM_CALL m_Pos0, width / 2, 0, color, &m_SpriteTextures[m_SpotSpriteNum].spr_tex);
+        if(m_SpriteTextures[m_SpotSpriteNum].IsSingleBrightTexture()) new(m_End0) CSprite(TRACE_PARAM_CALL m_Pos0, width / 2, 0, color, m_SpriteTextures[m_SpotSpriteNum].tex);
+        else new(m_End0) CSprite(TRACE_PARAM_CALL m_Pos0, width / 2, 0, color, &m_SpriteTextures[m_SpotSpriteNum].spr_tex);
     }
 
     m_BL_cnt = 0;
@@ -50,8 +50,16 @@ DTRACE();
     float len = D3DXVec3Length(&m_Dir);
     float _len = 1.0f / len;
     m_Dir *= _len;
-    if(m_Dir.x == 0 && m_Dir.y == 0) D3DXVec3Cross(&m_Perp, &m_Dir, &D3DXVECTOR3(0, 1, 0));
-    else D3DXVec3Cross(&m_Perp, &m_Dir, &D3DXVECTOR3(0, 0, 1));
+    if(m_Dir.x == 0 && m_Dir.y == 0)
+    {
+        D3DXVECTOR3 temp = { 0.0f, 1.0f, 0.0f };
+        D3DXVec3Cross(&m_Perp, &m_Dir, &temp);
+    }
+    else
+    {
+        D3DXVECTOR3 temp = { 0.0f, 0.0f, 1.0f };
+        D3DXVec3Cross(&m_Perp, &m_Dir, &temp);
+    }
 
     int cnt = TruncFloat(len * INVERT(LIGHTENING_SEGMENT_LENGTH)) + 1;
 
@@ -77,7 +85,7 @@ DTRACE();
         m_BL = (CSpriteLine*)HAllocEx(m_BL, sizeof(CSpriteLine) * cnt, m_Heap);
         while(m_BL_cnt < cnt)
         {
-            m_BL[m_BL_cnt].CSpriteLine::CSpriteLine(TRACE_PARAM_CALL pos0, pos1, m_Width, m_Color, GetSingleBrightSpriteTex(m_BeamSpriteNum));
+            m_BL[m_BL_cnt] = CSpriteLine(TRACE_PARAM_CALL pos0, pos1, m_Width, m_Color, GetSingleBrightSpriteTex(m_BeamSpriteNum));
             ++m_BL_cnt;
         }
     }
@@ -244,8 +252,16 @@ DTRACE();
     m_Len = D3DXVec3Length(&m_Dir);
     float _len = 1.0f / m_Len;
     m_Dir *= _len;
-    if(m_Dir.x == 0 && m_Dir.y == 0) D3DXVec3Cross(&m_Perp, &m_Dir, &D3DXVECTOR3(0, 1, 0));
-    else D3DXVec3Cross(&m_Perp, &m_Dir, &D3DXVECTOR3(0, 0, 1));
+    if(m_Dir.x == 0 && m_Dir.y == 0)
+    {
+        D3DXVECTOR3 temp = { 0.0f, 1.0f, 0.0f };
+        D3DXVec3Cross(&m_Perp, &m_Dir, &temp);
+    }
+    else
+    {
+        D3DXVECTOR3 temp = { 0.0f, 0.0f, 1.0f };
+        D3DXVec3Cross(&m_Perp, &m_Dir, &temp);
+    }
 
     int cnt = TruncFloat(m_Len * INVERT(SHORTED_SEGMENT_LENGTH)) + 1;
 
@@ -270,7 +286,7 @@ DTRACE();
         m_BL = (CSpriteLine*)HAllocEx(m_BL, sizeof(CSpriteLine) * cnt, m_Heap);
         while(m_BL_cnt < cnt)
         {
-            m_BL[m_BL_cnt].CSpriteLine::CSpriteLine(TRACE_PARAM_CALL pos0, pos1, SHORTED_WIDTH, m_Color, GetSingleBrightSpriteTex(m_BeamSpriteNum));
+            m_BL[m_BL_cnt] = CSpriteLine(TRACE_PARAM_CALL pos0, pos1, SHORTED_WIDTH, m_Color, GetSingleBrightSpriteTex(m_BeamSpriteNum));
             ++m_BL_cnt;
         }
     }

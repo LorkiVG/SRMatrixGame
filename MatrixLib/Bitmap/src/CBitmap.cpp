@@ -59,120 +59,123 @@ using namespace Base;
 
 void CBitmap::Clear()
 {
-	m_Pos.x=0; m_Pos.y=0;
-	m_Size.x=0; m_Size.y=0;
+    m_Pos.x = 0; m_Pos.y = 0;
+    m_Size.x = 0; m_Size.y = 0;
 
-	m_Format=BMF_USER;
-	m_BytePP=0;
-	m_BitPP=0;
-	m_MColor[0]=0; m_MColor[1]=0; m_MColor[2]=0; m_MColor[3]=0;
+    m_Format = BMF_USER;
+    m_BytePP = 0;
+    m_BitPP = 0;
+    m_MColor[0] = 0; m_MColor[1] = 0; m_MColor[2] = 0; m_MColor[3] = 0;
 
-	if(m_Data!=nullptr && !m_DataExt) HFree(m_Data,m_Heap);
-	m_Data=nullptr;
-	m_Pitch=0;
-	m_DataExt=false;
+    if(m_Data != nullptr && !m_DataExt) HFree(m_Data, m_Heap);
+    m_Data = nullptr;
+    m_Pitch = 0;
+    m_DataExt = false;
 
-	for(int i=0;i<4;i++) {
-		if(m_AddData[i]!=nullptr && !m_AddDataExt[i]) HFree(m_AddData[i],m_Heap);
-		m_AddData[i]=nullptr;
-		m_AddDataExt[i]=false;
-		m_AddDataVal[i]=0;
-	}
+    for(int i = 0; i < 4; ++i)
+    {
+        if(m_AddData[i] != nullptr && !m_AddDataExt[i]) HFree(m_AddData[i], m_Heap);
+        m_AddData[i] = nullptr;
+        m_AddDataExt[i] = false;
+        m_AddDataVal[i] = 0;
+    }
 }
 
-void CBitmap::CreatePalate(int lenx,int leny,int palcnt)
+void CBitmap::CreatePalate(int lenx, int leny, int palcnt)
 {
 	Clear();
 
-	m_Size.x=lenx;
-	m_Size.y=leny;
+    m_Size.x = lenx;
+    m_Size.y = leny;
 
-	m_Format=BMF_PALATE;
-	m_BytePP=1;
-	m_BitPP=8;
-	m_MColor[0]=0x0ff;
-	m_Pitch=lenx;
-	m_Data=HAlloc(m_Pitch*m_Size.y,m_Heap);
-	m_AddData[0]=HAlloc(palcnt*4,m_Heap);
-	m_AddDataVal[0]=palcnt;
+    m_Format = BMF_PALATE;
+    m_BytePP = 1;
+    m_BitPP = 8;
+    m_MColor[0] = 0x0ff;
+    m_Pitch = lenx;
+    m_Data = HAlloc(m_Pitch * m_Size.y, m_Heap);
+    m_AddData[0] = HAlloc(palcnt * 4, m_Heap);
+    m_AddDataVal[0] = palcnt;
 }
 
-void CBitmap::CreateGrayscale(int lenx,int leny)
+void CBitmap::CreateGrayscale(int lenx, int leny)
 {
 	Clear();
 
-	m_Size.x=lenx;
-	m_Size.y=leny;
+    m_Size.x = lenx;
+    m_Size.y = leny;
 
-	m_Format=BMF_FLAT;
-	m_BytePP=1;
-	m_BitPP=8;
-	m_MColor[0]=0x0ff;
-	m_Pitch=lenx;
-	m_Data=HAlloc(m_Pitch*m_Size.y,m_Heap);
+    m_Format = BMF_FLAT;
+    m_BytePP = 1;
+    m_BitPP = 8;
+    m_MColor[0] = 0x0ff;
+    m_Pitch = lenx;
+    m_Data = HAlloc(m_Pitch * m_Size.y, m_Heap);
 }
 
-void CBitmap::Recrate(int lenx,int leny,int pitch)
+void CBitmap::Recrate(int lenx, int leny, int pitch)
 {
-    m_Size.x=lenx;
-    m_Size.y=leny;
-    m_Pitch=pitch;
-    m_Data=HAllocEx(m_Data,m_Pitch*m_Size.y,m_Heap);
+    m_Size.x = lenx;
+    m_Size.y = leny;
+    m_Pitch = pitch;
+    m_Data = HAllocEx(m_Data, m_Pitch * m_Size.y, m_Heap);
 }
 
 void CBitmap::AllocData()
 {
-	m_Data=HAllocEx(m_Data,m_Pitch*m_Size.y,m_Heap);
+    m_Data = HAllocEx(m_Data, m_Pitch * m_Size.y, m_Heap);
 }
 
-void CBitmap::BitmapDuplicate(CBitmap & des)
+void CBitmap::BitmapDuplicate(CBitmap& des)
 {
 	des.Clear();
 
-	des.m_Pos=m_Pos;
-	des.m_Size=m_Size;
-	des.m_Format=m_Format;
-	des.m_BytePP=m_BytePP;
-	des.m_BitPP=m_BitPP;
-	des.m_MColor[0]=m_MColor[0]; des.m_MColor[1]=m_MColor[1]; des.m_MColor[2]=m_MColor[2]; des.m_MColor[3]=m_MColor[3];
+    des.m_Pos = m_Pos;
+    des.m_Size = m_Size;
+    des.m_Format = m_Format;
+    des.m_BytePP = m_BytePP;
+    des.m_BitPP = m_BitPP;
+    des.m_MColor[0] = m_MColor[0]; des.m_MColor[1] = m_MColor[1]; des.m_MColor[2] = m_MColor[2]; des.m_MColor[3] = m_MColor[3];
 
-	des.m_Pitch=m_Pitch;
+    des.m_Pitch = m_Pitch;
 
-	des.m_UserData=m_UserData;
+    des.m_UserData = m_UserData;
 
-	if(des.m_Size.x>0 && des.m_Size.y>0 && des.m_Pitch>0 && m_Data) {
-		des.m_Data=HAlloc(des.m_Pitch*des.m_Size.y,des.m_Heap);
-		CopyMemory(des.m_Data,m_Data,des.m_Pitch*des.m_Size.y);
-	}
+    if(des.m_Size.x > 0 && des.m_Size.y > 0 && des.m_Pitch > 0 && m_Data)
+    {
+        des.m_Data = HAlloc(des.m_Pitch * des.m_Size.y, des.m_Heap);
+        CopyMemory(des.m_Data, m_Data, des.m_Pitch * des.m_Size.y);
+    }
 }
 
-void BuildByMask(dword m,dword * s,dword * cb,dword * c)
+void BuildByMask(dword m, dword* s, dword* cb, dword* c)
 {
-	*s=0; // бит до начала
-	*cb=0;// бит в цвете
-	*c=0; // кол-во цветов
-	if(m) {
-		for (; !(m & 1); (*s)++, m >>= 1);
-		for (; m & 1; (*cb)++, m >>= 1);
-		*c=1<<(*cb);
-	}
+    *s = 0; // бит до начала
+    *cb = 0;// бит в цвете
+    *c = 0; // кол-во цветов
+    if(m)
+    {
+        for(; !(m & 1); (*s)++, m >>= 1);
+        for(; m & 1; (*cb)++, m >>= 1);
+        *c = 1 << (*cb);
+    }
 }
 
 void CBitmap::Convert32To16(void)
 {
     ASSERT(m_BitPP == 32);
 
-    dword *src = (dword *)m_Data;
-    WORD  *dst = (WORD *)m_Data;
+    dword* src = (dword*)m_Data;
+    word* dst = (word*)m_Data;
     int cnt = m_Pitch * m_Size.y / m_BytePP;
 
-    while (cnt-- > 0)
+    while(cnt-- > 0)
     {
 
         dword s = *(src);
-        *dst = WORD( ((s >> 8) & 0xF800) |
-                     ((s >> 5) & 0x07E0) |
-                     ((s >> 3) & 0x001F) );
+        *dst = word(((s >> 8) & 0xF800) |
+            ((s >> 5) & 0x07E0) |
+            ((s >> 3) & 0x001F));
 
         ++src;
         ++dst;
@@ -180,60 +183,64 @@ void CBitmap::Convert32To16(void)
     m_BitPP = 16;
     m_BytePP = 2;
     m_Pitch >>= 1;
-
 }
 
-bool CBitmap::ConvertFrom(CBitmap & bm)
+bool CBitmap::ConvertFrom(CBitmap& bm)
 {
-	if(m_Size.x<=0 || m_Size.y<=0) return false;
-	if(m_Size.x!=bm.m_Size.x || m_Size.y!=bm.m_Size.y) return false;
+    if(m_Size.x <= 0 || m_Size.y <= 0) return false;
+    if(m_Size.x != bm.m_Size.x || m_Size.y != bm.m_Size.y) return false;
 
-	if(m_BytePP>=1 && m_BytePP<=4 && bm.m_BytePP>=1 && bm.m_BytePP<=4 && m_Format==BMF_FLAT && bm.m_Format==BMF_FLAT) {
-		dword sR,cbR,cR;
-		dword sG,cbG,cG;
-		dword sB,cbB,cB;
-		dword sA,cbA,cA;
-		dword _sR,_cbR,_cR;
-		dword _sG,_cbG,_cG;
-		dword _sB,_cbB,_cB;
-		dword _sA,_cbA,_cA;
-		dword color,r,g,b,a;
+    if(m_BytePP >= 1 && m_BytePP <= 4 && bm.m_BytePP >= 1 && bm.m_BytePP <= 4 && m_Format == BMF_FLAT && bm.m_Format == BMF_FLAT)
+    {
+        dword sR, cbR, cR;
+        dword sG, cbG, cG;
+        dword sB, cbB, cB;
+        dword sA, cbA, cA;
+        dword _sR, _cbR, _cR;
+        dword _sG, _cbG, _cG;
+        dword _sB, _cbB, _cB;
+        dword _sA, _cbA, _cA;
+        dword color, r, g, b, a;
 
-		BuildByMask(bm.m_MColor[0],&sR,&cbR,&cR); int ssR=8-cbR;
-		BuildByMask(bm.m_MColor[1],&sG,&cbG,&cG); int ssG=8-cbG;
-		BuildByMask(bm.m_MColor[2],&sB,&cbB,&cB); int ssB=8-cbB;
-		BuildByMask(bm.m_MColor[3],&sA,&cbA,&cA); int ssA=8-cbA;
+        BuildByMask(bm.m_MColor[0], &sR, &cbR, &cR); int ssR = 8 - cbR;
+        BuildByMask(bm.m_MColor[1], &sG, &cbG, &cG); int ssG = 8 - cbG;
+        BuildByMask(bm.m_MColor[2], &sB, &cbB, &cB); int ssB = 8 - cbB;
+        BuildByMask(bm.m_MColor[3], &sA, &cbA, &cA); int ssA = 8 - cbA;
 
-		BuildByMask(m_MColor[0],&_sR,&_cbR,&_cR); int _ssR=8-_cbR;
-		BuildByMask(m_MColor[1],&_sG,&_cbG,&_cG); int _ssG=8-_cbG;
-		BuildByMask(m_MColor[2],&_sB,&_cbB,&_cB); int _ssB=8-_cbB;
-		BuildByMask(m_MColor[3],&_sA,&_cbA,&_cA); int _ssA=8-_cbA;
+        BuildByMask(m_MColor[0], &_sR, &_cbR, &_cR); int _ssR = 8 - _cbR;
+        BuildByMask(m_MColor[1], &_sG, &_cbG, &_cG); int _ssG = 8 - _cbG;
+        BuildByMask(m_MColor[2], &_sB, &_cbB, &_cB); int _ssB = 8 - _cbB;
+        BuildByMask(m_MColor[3], &_sA, &_cbA, &_cA); int _ssA = 8 - _cbA;
 
-		byte * sou=(byte *)bm.Data();
-		byte * des=(byte *)Data();
-		for(int y=0;y<m_Size.y;y++,sou+=bm.m_Pitch-bm.m_Size.x*bm.m_BytePP,des+=m_Pitch-m_Size.x*m_BytePP) {
-			for(int x=0;x<m_Size.x;x++,sou+=bm.m_BytePP,des+=m_BytePP) {
-				switch(bm.m_BytePP) {
-					case 1: color=*(BYTE *)sou; break;
-					case 2: color=*(WORD *)sou; break;
-					case 3: color=*(WORD *)sou+((*(BYTE *)(sou+2)) << 16); break;
-					case 4: color=*(dword *)sou; break;
-				}
+        byte* sou = (byte*)bm.Data();
+        byte* des = (byte*)Data();
+        for(int y = 0; y < m_Size.y; ++y, sou += bm.m_Pitch - bm.m_Size.x * bm.m_BytePP, des += m_Pitch - m_Size.x * m_BytePP)
+        {
+            for(int x = 0; x < m_Size.x; ++x, sou += bm.m_BytePP, des += m_BytePP)
+            {
+                switch(bm.m_BytePP)
+                {
+                    case 1: color = *(byte*)sou; break;
+                    case 2: color = *(word*)sou; break;
+                    case 3: color = *(word*)sou + ((*(byte*)(sou + 2)) << 16); break;
+                    case 4: color = *(dword*)sou; break;
+                }
 
-				r=BYTE((color>>sR)<<ssR);
-				g=BYTE((color>>sG)<<ssG);
-				b=BYTE((color>>sB)<<ssB);
-				a=BYTE((color>>sA)<<ssA);
-				color=dword(((r>>(_ssR))<<_sR)|((g>>(_ssG))<<_sG)|((b>>(_ssB))<<_sB)|((a>>(_ssA))<<_sA));
+                r = byte((color >> sR) << ssR);
+                g = byte((color >> sG) << ssG);
+                b = byte((color >> sB) << ssB);
+                a = byte((color >> sA) << ssA);
+                color = dword(((r >> (_ssR)) << _sR) | ((g >> (_ssG)) << _sG) | ((b >> (_ssB)) << _sB) | ((a >> (_ssA)) << _sA));
 
-				switch(m_BytePP) {
-					case 1: *(BYTE *)des=(BYTE)color; break;
-					case 2: *(WORD *)des=(WORD)color; break;
-					case 3: *(WORD *)des=WORD(color); *(BYTE *)(des+2)=BYTE(color >> 16);  break;
-					case 4: *(dword *)des=(dword)color; break;
-				}
-			}
-		}
+                switch(m_BytePP)
+                {
+                    case 1: *(byte*)des = (byte)color; break;
+                    case 2: *(word*)des = (word)color; break;
+                    case 3: *(word*)des = word(color); *(byte*)(des + 2) = byte(color >> 16);  break;
+                    case 4: *(dword*)des = (dword)color; break;
+                }
+            }
+        }
 
 		return true;
 	}
@@ -248,33 +255,33 @@ dword CBitmap::ARGB(float x, float y) // get interpolated ARGB for specified coo
 {
     float xf = x * (m_Size.x - 1) + 0.5f;
     int x0 = TruncFloat(xf);
-    int x1 = x0 +1;
+    int x1 = x0 + 1;
     float yf = y * (m_Size.y - 1) + 0.5f;
     int y0 = TruncFloat(yf);
-    int y1 = y0 +1;
+    int y1 = y0 + 1;
 
-    dword cl = LIC( ARGBPixel(x0,y0),ARGBPixel(x0,y1), yf-y0 );
-    dword cr = LIC( ARGBPixel(x1,y0),ARGBPixel(x1,y1), yf-y0 );
+    dword cl = LIC(ARGBPixel(x0, y0), ARGBPixel(x0, y1), yf - y0);
+    dword cr = LIC(ARGBPixel(x1, y0), ARGBPixel(x1, y1), yf - y0);
     return LIC(cl, cr, xf - x0);
 }
 
 #pragma warning (disable : 4731)
-void CBitmap::Make2xSmaller(void)
+void CBitmap::Make2xSmaller()
 {
     DTRACE();
-    //void *d = HAlloc(m_Pitch*m_Size.y / 4,m_Heap);
+    //void* d = HAlloc(m_Pitch * m_Size.y / 4, m_Heap);
 
-	//byte * des=(byte *)d;
-    byte * des=(byte *)m_Data;
-	byte * sou=(byte *)m_Data;
+	//byte* des = (byte*)d;
+    byte* des = (byte*)m_Data;
+	byte* sou = (byte*)m_Data;
 
     //int add = m_BytePP;
-    //int addl = m_Pitch/2;
+    //int addl = m_Pitch / 2;
 
-    m_Size.x /=2;
-    m_Size.y /=2;
+    m_Size.x /= 2;
+    m_Size.y /= 2;
 
-    if(m_BytePP==1)
+    if(m_BytePP == 1)
     {
         int y = m_Size.y;
         do
@@ -287,19 +294,20 @@ void CBitmap::Make2xSmaller(void)
                 c += *(sou + m_Pitch);
                 c += *(sou + m_Pitch + 1);
                 sou += 2;
-                *des++ = (BYTE)(c >> 2);
+                *des++ = (byte)(c >> 2);
             }
-		    while (--x > 0);
+
+		    while(--x > 0);
             sou += m_Pitch;
         }
-        while (--y > 0);
 
-    } else
-    if(m_BytePP==2)
+        while(--y > 0);
+    }
+    else if(m_BytePP == 2)
     {
         ERROR_E;
-    } else
-    if(m_BytePP==3)
+    }
+    else if(m_BytePP == 3)
     {
         int y = m_Size.y;
         do
@@ -329,16 +337,19 @@ void CBitmap::Make2xSmaller(void)
                 sou += 6;
                 des += 3;
             }
-		    while (--x > 0);
+
+		    while(--x > 0);
             sou += m_Pitch;
         }
-        while (--y > 0);
-    } else
-    if(m_BytePP==4)
-    {
 
+        while(--y > 0);
+    }
+    else if(m_BytePP == 4)
+    {
         _asm
         {
+            pushad
+
 
             mov esi, sou
             mov edi, des
@@ -357,46 +368,46 @@ loopy:
 loopx:
             push eax
 
-            xor ebp,ebp
-            xor ecx,ecx
+            xor ebp, ebp
+            xor ecx, ecx
 
-            mov ebp,[esi]
-            mov ecx,ebp
-            and ebp,0x00FF00FF
-            and ecx,0xFF00FF00
+            mov ebp, [esi]
+            mov ecx, ebp
+            and ebp, 0x00FF00FF
+            and ecx, 0xFF00FF00
             
-            mov eax,[esi+4]
-            mov edx,eax
-            and eax,0x00FF00FF
-            and edx,0xFF00FF00
-            add ebp,eax
-            add ecx,edx
+            mov eax, [esi + 4]
+            mov edx, eax
+            and eax, 0x00FF00FF
+            and edx, 0xFF00FF00
+            add ebp, eax
+            add ecx, edx
 
-            mov eax,[esi+ebx]
-            adc ecx,0
+            mov eax, [esi + ebx]
+            adc ecx, 0
 
-            mov edx,eax
-            and eax,0x00FF00FF
-            and edx,0xFF00FF00
-            add ebp,eax
-            add ecx,edx
+            mov edx, eax
+            and eax, 0x00FF00FF
+            and edx, 0xFF00FF00
+            add ebp, eax
+            add ecx, edx
 
-            mov eax,[esi+ebx+4]
-            adc ecx,0
-            mov edx,eax
-            and eax,0x00FF00FF
-            and edx,0xFF00FF00
+            mov eax, [esi + ebx + 4]
+            adc ecx, 0
+            mov edx, eax
+            and eax, 0x00FF00FF
+            and edx, 0xFF00FF00
             add eax, ebp
             add edx, ecx
-            adc edx,0
+            adc edx, 0
 
-            ror eax,2
-            ror edx,2
-            and eax,0x00FF00FF
-            and edx,0xFF00FF00
-            or  eax,edx
+            ror eax, 2
+            ror edx, 2
+            and eax, 0x00FF00FF
+            and edx, 0xFF00FF00
+            or  eax, edx
 
-            mov [edi],eax
+            mov [edi], eax
 
             add esi, 8
             add edi, 4
@@ -413,28 +424,29 @@ loopx:
             dec eax
             jnz loopy
 
-        };
 
+            popad
+        };
     }
 
     m_Pitch /= 2;
-    m_Data = HReAlloc(m_Data, m_Pitch * m_Size.y ,m_Heap);
-    //HFree(m_Data,m_Heap);
+    m_Data = HReAlloc(m_Data, m_Pitch * m_Size.y, m_Heap);
+    //HFree(m_Data, m_Heap);
 
     //m_Data = d;
-
 }
 
 void CBitmap::Make2xSmaller(const Base::CPoint& lu, const Base::CPoint& size, CBitmap& des_bitmap) const
 {
-    DTRACE();
+DTRACE();
 
-	if(m_BytePP==2) ERROR_E;
+	if(m_BytePP == 2) ERROR_E;
 
-	int newx=size.x/2;
-	int newy=size.y/2;
+    int newx = size.x / 2;
+    int newy = size.y / 2;
 
-    if(des_bitmap.SizeX() != newx || des_bitmap.SizeY() != newy || des_bitmap.m_BytePP != m_BytePP) {
+    if(des_bitmap.SizeX() != newx || des_bitmap.SizeY() != newy || des_bitmap.m_BytePP != m_BytePP)
+    {
         if(m_BytePP == 1) des_bitmap.CreateGrayscale(newx, newy);
         else if(m_BytePP == 3) des_bitmap.CreateRGB(newx, newy);
         else if(m_BytePP == 4) des_bitmap.CreateRGBA(newx, newy);
@@ -466,11 +478,11 @@ void CBitmap::Make2xSmaller(const Base::CPoint& lu, const Base::CPoint& size, CB
             sou += m_Pitch * 2;
         }
     }
-    else if(m_BytePP==3)
+    else if(m_BytePP == 3)
     {
-        for(int y = 0; y < newy; y++, sou += m_Pitch + sounl, des += desnl)
+        for(int y = 0; y < newy; ++y, sou += m_Pitch + sounl, des += desnl)
         {
-            for(int x = 0; x < newx; x++, des += 3, sou += 3 + 3)
+            for(int x = 0; x < newx; ++x, des += 3, sou += 3 + 3)
             {
                 int b0 = *(sou + 0);
                 int b1 = *(sou + 1);
@@ -494,10 +506,12 @@ void CBitmap::Make2xSmaller(const Base::CPoint& lu, const Base::CPoint& size, CB
             }			
 	    }
     }
-    else if(m_BytePP==4)
+    else if(m_BytePP == 4)
     {
         _asm
         {
+            pushad
+
 
             mov esi, sou
             mov edi, des
@@ -513,45 +527,45 @@ loopy:
 loopx:
             push eax
 
-            xor ebp,ebp
-            xor ecx,ecx
+            xor ebp, ebp
+            xor ecx, ecx
 
-            mov ebp,[esi]
-            mov ecx,ebp
-            and ebp,0x00FF00FF
-            and ecx,0xFF00FF00
+            mov ebp, [esi]
+            mov ecx, ebp
+            and ebp, 0x00FF00FF
+            and ecx, 0xFF00FF00
             
-            mov eax,[esi+4]
-            mov edx,eax
-            and eax,0x00FF00FF
-            and edx,0xFF00FF00
-            add ebp,eax
-            add ecx,edx
+            mov eax, [esi + 4]
+            mov edx, eax
+            and eax, 0x00FF00FF
+            and edx, 0xFF00FF00
+            add ebp, eax
+            add ecx, edx
 
-            mov eax,[esi+ebx]
-            adc ecx,0
-            mov edx,eax
-            and eax,0x00FF00FF
-            and edx,0xFF00FF00
-            add ebp,eax
-            add ecx,edx
+            mov eax, [esi + ebx]
+            adc ecx, 0
+            mov edx, eax
+            and eax, 0x00FF00FF
+            and edx, 0xFF00FF00
+            add ebp, eax
+            add ecx, edx
 
-            mov eax,[esi+ebx+4]
-            adc ecx,0
-            mov edx,eax
-            and eax,0x00FF00FF
-            and edx,0xFF00FF00
+            mov eax, [esi + ebx + 4]
+            adc ecx, 0
+            mov edx, eax
+            and eax, 0x00FF00FF
+            and edx, 0xFF00FF00
             add eax, ebp
             add edx, ecx
-            adc edx,0
+            adc edx, 0
 
-            ror eax,2
-            ror edx,2
-            and eax,0x00FF00FF
-            and edx,0xFF00FF00
-            or  eax,edx
+            ror eax, 2
+            ror edx, 2
+            and eax, 0x00FF00FF
+            and edx, 0xFF00FF00
+            or  eax, edx
 
-            mov [edi],eax
+            mov [edi], eax
 
             add esi, 8
             add edi, 4
@@ -571,6 +585,8 @@ loopx:
             dec eax
             jnz loopy
 
+
+            popad
         };
 
     }
@@ -878,8 +894,8 @@ void CBitmap::Copy(const Base::CPoint & pdes,const Base::CPoint & size,const CBi
         dword alpha = bmsou.m_BytePP==3?0xFF000000:0;
 	    for(int y=0;y<size.y;y++,des+=m_Pitch,sou+=bmsou.m_Pitch)
         {
-            BYTE *des1 = des;
-            BYTE *sou1 = sou;
+            byte *des1 = des;
+            byte *sou1 = sou;
             for (int i = 0; i<(size.x-1); ++i, sou1 += bmsou.m_BytePP, des1 += m_BytePP)
             {
                 dword color = *((dword *)sou1) | alpha;
@@ -1074,8 +1090,8 @@ void CBitmap::FlipX(const Base::CPoint & pdes,const Base::CPoint & size, const C
 
 void CBitmap::FlipY(void)
 {
-    byte *l1 = (BYTE *)m_Data;
-    byte *l2 = (BYTE *)m_Data + m_Pitch * (m_Size.y-1);
+    byte *l1 = (byte *)m_Data;
+    byte *l2 = (byte *)m_Data + m_Pitch * (m_Size.y-1);
     
     while (l1<l2)
     {
@@ -1093,7 +1109,7 @@ void CBitmap::FlipY(void)
         }
         while (cnt > 0)
         {
-            BYTE temp = *p0;
+            byte temp = *p0;
             *p0 = *p1;
             *p1 = temp;
             ++p0;
@@ -1166,21 +1182,21 @@ void CBitmap::FlipY(const Base::CPoint & pdes,const Base::CPoint & size)
 				case 1: 
 					t=*(byte *)des;
 					*(byte *)des=*(byte *)sou; 
-					*(byte *)sou=BYTE(t);
+					*(byte *)sou=byte(t);
 					break;
 				case 2: 
 					t=*(word *)des;
 					*(word *)des=*(word *)sou; 
-					*(word *)sou=WORD(t);
+					*(word *)sou=word(t);
 					break;
 				case 3: 
 					t=*(word *)des;
 					*(word *)des=*(word *)sou; 
-					*(word *)sou=WORD(t);
+					*(word *)sou=word(t);
 
 					t=*(byte *)(des+2);
 					*(byte *)(des+2)=*(byte *)(sou+2); 
-					*(byte *)(sou+2)=BYTE(t);
+					*(byte *)(sou+2)=byte(t);
 					break;
 				case 4: 
 					t=*(dword *)des;
@@ -1739,7 +1755,7 @@ void CBitmap::WBM_Init()
     bmi.bV4Width = SizeX();
     bmi.bV4Height = SizeY();
     bmi.bV4Planes = 1;
-    bmi.bV4BitCount = (WORD)BitPP();
+    bmi.bV4BitCount = (word)BitPP();
 
     if(m_BytePP >= 3)
     {
@@ -1845,7 +1861,7 @@ void CBitmap::SaveInBMP(Base::CBuf & buf) const
 	bmInfoHeader.biWidth  = m_Size.x;
 	bmInfoHeader.biHeight = m_Size.y;
 	bmInfoHeader.biPlanes = 1;
-	bmInfoHeader.biBitCount=(WORD)m_BitPP;
+	bmInfoHeader.biBitCount=(word)m_BitPP;
 	bmInfoHeader.biCompression=0;
 	bmInfoHeader.biSizeImage=lPitch*m_Size.y;
 	buf.BufAdd(&bmInfoHeader, sizeof(BITMAPINFOHEADER));
@@ -1854,7 +1870,7 @@ void CBitmap::SaveInBMP(Base::CBuf & buf) const
 		buf.BufAdd(m_AddData[0],m_AddDataVal[0]*4);
 	}
 
-	BYTE * sou=(byte *)m_Data+(m_Size.y-1)*m_Pitch;
+	byte * sou=(byte *)m_Data+(m_Size.y-1)*m_Pitch;
 
 	//if((m_BytePP==3 || m_BytePP==4) && m_MColor[0]==0x0ff && m_MColor[1]==0x0ff00 && m_MColor[2]==0x0ff0000) SwapByte(CPoint(0,0),m_Size,0,2);
 
@@ -1865,11 +1881,11 @@ void CBitmap::SaveInBMP(Base::CBuf & buf) const
         {
 	        for(int y=0; y<m_Size.y; ++y,sou-=m_Pitch)
             {
-                BYTE *sb = (BYTE *)sou;
+                byte *sb = (byte *)sou;
                 buf.TestAdd(len);
-                BYTE *db = ((BYTE *)buf.Get()) + buf.Pointer();
+                byte *db = ((byte *)buf.Get()) + buf.Pointer();
                 buf.Pointer(buf.Pointer()+len);
-                BYTE *de = db + len;
+                byte *de = db + len;
 
                 for (;db < de; db += 3, sb += 3)
                 {
@@ -1884,11 +1900,11 @@ void CBitmap::SaveInBMP(Base::CBuf & buf) const
         {
 	        for(int y=0; y<m_Size.y; ++y,sou-=m_Pitch)
             {
-                BYTE *sb = (BYTE *)sou;
+                byte *sb = (byte *)sou;
                 buf.TestAdd(len);
-                BYTE *db = ((BYTE *)buf.Get()) + buf.Pointer();
+                byte *db = ((byte *)buf.Get()) + buf.Pointer();
                 buf.Pointer(buf.Pointer()+len);
-                BYTE *de = db + len;
+                byte *de = db + len;
 
                 for (;db < de; db += 4, sb += 4)
                 {
@@ -1923,9 +1939,9 @@ void CBitmap::SaveInBMP(const wchar* filename, int filenamelen) const
 }
 
 #pragma warning (disable : 4731)
-void CBitmap::SaveInDDSUncompressed(Base::CBuf & buf) const
+void CBitmap::SaveInDDSUncompressed(Base::CBuf& buf) const
 {
-    if (m_BytePP != 3 && m_BytePP != 4)
+    if(m_BytePP != 3 && m_BytePP != 4)
     {
         ERROR_S(L"Unsupported format to convert");
     }
@@ -1935,10 +1951,10 @@ void CBitmap::SaveInDDSUncompressed(Base::CBuf & buf) const
     buf.Clear();
     buf.Expand(sz + sizeof(DDSURFACEDESC2) + sizeof(dword));
 
-    dword *dds = (dword *)buf.Get();
+    dword *dds = (dword*)buf.Get();
     *dds = 0x20534444; // "DDS "
 
-    DDSURFACEDESC2 * ddsp = (DDSURFACEDESC2 *)(dds + 1);
+    DDSURFACEDESC2 * ddsp = (DDSURFACEDESC2*)(dds + 1);
     memset(ddsp, 0, sizeof(DDSURFACEDESC2));
     
     ddsp->dwSize = sizeof(DDSURFACEDESC2);
@@ -1948,7 +1964,7 @@ void CBitmap::SaveInDDSUncompressed(Base::CBuf & buf) const
 
     ddsp->dwLinearSize = sz;
     ddsp->ddpfPixelFormat.dwSize = sizeof(DDPIXELFORMAT);
-    ddsp->ddpfPixelFormat.dwFlags = DDPF_RGB | ((m_BytePP == 4)?DDPF_ALPHAPIXELS:0);
+    ddsp->ddpfPixelFormat.dwFlags = DDPF_RGB | ((m_BytePP == 4) ? DDPF_ALPHAPIXELS : 0);
     ddsp->ddpfPixelFormat.dwRGBBitCount = m_BitPP;
     ddsp->ddpfPixelFormat.dwRBitMask = 0x00FF0000;
     ddsp->ddpfPixelFormat.dwGBitMask = 0x0000FF00;
@@ -1960,8 +1976,8 @@ void CBitmap::SaveInDDSUncompressed(Base::CBuf & buf) const
     if(m_Size.x < 4)
     {
         int cnt = m_Size.x * m_Size.y;
-        BYTE *des = (BYTE *)(ddsp + 1);
-        BYTE *sou = (BYTE *)m_Data;
+        byte*des = (byte*)(ddsp + 1);
+        byte*sou = (byte*)m_Data;
         if(m_BytePP == 3)
         {
             while(cnt-- > 0)
@@ -1984,15 +2000,14 @@ void CBitmap::SaveInDDSUncompressed(Base::CBuf & buf) const
                 sou += 3;
                 des += 3;
             }
-
         }
-
-    } else
+    }
+    else
     {
 
-    //dword *des = (dword *)(ddsp + 1);
-    //dword *sou = (dword *)m_Data;
-    //for (int i=0; i<1000; ++i)
+    //dword* des = (dword*)(ddsp + 1);
+    //dword* sou = (dword*)m_Data;
+    //for(int i = 0; i < 1000; ++i)
     //{
     //    dword s = *sou;
     //    *des = (s & 0xFF00FF00) | ((s >> 16) & 0xFF) | ((s << 16) & 0xFF0000);
@@ -2000,11 +2015,15 @@ void CBitmap::SaveInDDSUncompressed(Base::CBuf & buf) const
     //    ++des;
     //}
 
+        //dword DDSURFACEDESC2_SIZE = sizeof(DDSURFACEDESC2);
         _asm
         {
+            pushad
+
+
             // dest
             mov     edi, ddsp
-            add     edi, TYPE DDSURFACEDESC2
+            add     edi, TYPE DDSURFACEDESC2 //DDSURFACEDESC2_SIZE
 
             // source
             mov     esi, this
@@ -2107,10 +2126,12 @@ loop2:
             pop     ebp
     end:
 
+            popad
         };
 
     }
-    //memcpy(des,sou,sz);
+
+    //memcpy(des, sou, sz);
 }
 #pragma warning (default : 4731)
 

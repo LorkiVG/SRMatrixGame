@@ -468,7 +468,8 @@ void SAutoFlyData::FindAutoFlyTarget(void)
 
         }
 
-        if(POW2(100) > D3DXVec3LengthSq(&(m_Cur-m_New))) g_MatrixMap->LeaveDialogMode();
+        D3DXVECTOR3 temp = m_Cur - m_New;
+        if(POW2(100) > D3DXVec3LengthSq(&temp)) g_MatrixMap->LeaveDialogMode();
         else return;
     }
 
@@ -509,7 +510,8 @@ seek_nothing:
         }
         else
         {
-            if(POW2(10) > D3DXVec3LengthSq(&(m_Cur-m_New)))
+            D3DXVECTOR3 temp = m_Cur - m_New;
+            if(POW2(10) > D3DXVec3LengthSq(&temp))
             {
                 RESETFLAG(cam->m_Flags, CAM_SELECTED_TARGET);
             }
@@ -573,9 +575,10 @@ check_again:
         float dist = 1E30f;
         for(int i = 0; i < m_WarPairsCnt; ++i)
         {
-            CMatrixMapStatic *ms = m_WarPairs[i].target->m_Object;
+            CMatrixMapStatic* ms = m_WarPairs[i].target->m_Object;
 
-            float d2 = D3DXVec3LengthSq(&(ms->GetGeoCenter()-m_Cur));
+            D3DXVECTOR3 temp = ms->GetGeoCenter() - m_Cur;
+            float d2 = D3DXVec3LengthSq(&temp);
 
             if(d2 < dist)
             {
@@ -600,11 +603,10 @@ check_again:
         ////m_NewFROM += m_NewTO;
 
         //float mm = 1;
-        //if (m_WarPairs[idx].target->m_Object->IsRobot()) mm = m_WarPairs[idx].target->m_Object->AsRobot()->GetHitPoint() / m_WarPairs[idx].target->m_Object->AsRobot()->GetMaxHitPoint();
-        //else
-        //if (m_WarPairs[idx].target->m_Object->IsCannon()) mm = m_WarPairs[idx].target->m_Object->AsCannon()->GetHitPoint() / m_WarPairs[idx].target->m_Object->AsCannon()->GetMaxHitPoint();
+        //if(m_WarPairs[idx].target->m_Object->IsRobot()) mm = m_WarPairs[idx].target->m_Object->AsRobot()->GetHitPoint() / m_WarPairs[idx].target->m_Object->AsRobot()->GetMaxHitPoint();
+        //else if(m_WarPairs[idx].target->m_Object->IsCannon()) mm = m_WarPairs[idx].target->m_Object->AsCannon()->GetHitPoint() / m_WarPairs[idx].target->m_Object->AsCannon()->GetMaxHitPoint();
 
-        //m_NewPriority = Float2Int((1-mm) * 10000 + 100);
+        //m_NewPriority = Float2Int((1 - mm) * 10000 + 100);
     }
 }
 
@@ -692,10 +694,10 @@ void CMatrixCamera::BeforeDraw()
     D3DXMatrixInverse(&m_MatViewInversed, nullptr, &m_MatView);
 
     float lz = g_MatrixMap->GetZ(m_MatViewInversed._41, m_MatViewInversed._42) + 10.0f;
-    if(m_MatViewInversed._43 < lz)
+    if (m_MatViewInversed._43 < lz)
     {
         m_MatViewInversed._43 = lz;
-        D3DXMatrixInverse(&m_MatView,nullptr,&m_MatViewInversed);
+        D3DXMatrixInverse(&m_MatView, nullptr, &m_MatViewInversed);
     }
 
     // frustum update
@@ -732,28 +734,32 @@ void CMatrixCamera::BeforeDraw()
     m_FrustumCenter.y = m_MatViewInversed._42;
     m_FrustumCenter.z = m_MatViewInversed._43;
 
-    D3DXVec3Normalize(&m_FrustPlaneB.norm, &D3DXVECTOR3(GetFrustumLB().y * GetFrustumRB().z - GetFrustumLB().z * GetFrustumRB().y, GetFrustumLB().z * GetFrustumRB().x - GetFrustumLB().x * GetFrustumRB().z, GetFrustumLB().x * GetFrustumRB().y - GetFrustumLB().y * GetFrustumRB().x));
+    D3DXVECTOR3 temp = { GetFrustumLB().y * GetFrustumRB().z - GetFrustumLB().z * GetFrustumRB().y, GetFrustumLB().z * GetFrustumRB().x - GetFrustumLB().x * GetFrustumRB().z, GetFrustumLB().x * GetFrustumRB().y - GetFrustumLB().y * GetFrustumRB().x };
+    D3DXVec3Normalize(&m_FrustPlaneB.norm, &temp);
     m_FrustPlaneB.dist = -D3DXVec3Dot(&m_FrustPlaneB.norm, &m_FrustumCenter);
     m_FrustPlaneB.UpdateSignBits();
 
-    D3DXVec3Normalize(&m_FrustPlaneT.norm, &D3DXVECTOR3(GetFrustumLT().z * GetFrustumRT().y - GetFrustumLT().y * GetFrustumRT().z, GetFrustumLT().x * GetFrustumRT().z - GetFrustumLT().z * GetFrustumRT().x, GetFrustumLT().y * GetFrustumRT().x - GetFrustumLT().x * GetFrustumRT().y));
+    temp = { GetFrustumLT().z * GetFrustumRT().y - GetFrustumLT().y * GetFrustumRT().z, GetFrustumLT().x * GetFrustumRT().z - GetFrustumLT().z * GetFrustumRT().x, GetFrustumLT().y * GetFrustumRT().x - GetFrustumLT().x * GetFrustumRT().y }; 
+    D3DXVec3Normalize(&m_FrustPlaneT.norm, &temp);
     m_FrustPlaneT.dist = -D3DXVec3Dot(&m_FrustPlaneT.norm, &m_FrustumCenter);
     m_FrustPlaneT.UpdateSignBits();
 
-    D3DXVec3Normalize(&m_FrustPlaneL.norm, &D3DXVECTOR3(GetFrustumLB().z * GetFrustumLT().y - GetFrustumLB().y * GetFrustumLT().z, GetFrustumLB().x * GetFrustumLT().z - GetFrustumLB().z * GetFrustumLT().x, GetFrustumLB().y * GetFrustumLT().x - GetFrustumLB().x * GetFrustumLT().y));
+    temp = { GetFrustumLB().z * GetFrustumLT().y - GetFrustumLB().y * GetFrustumLT().z, GetFrustumLB().x * GetFrustumLT().z - GetFrustumLB().z * GetFrustumLT().x, GetFrustumLB().y * GetFrustumLT().x - GetFrustumLB().x * GetFrustumLT().y };
+    D3DXVec3Normalize(&m_FrustPlaneL.norm, &temp);
     m_FrustPlaneL.dist = -D3DXVec3Dot(&m_FrustPlaneL.norm, &m_FrustumCenter);
     m_FrustPlaneL.UpdateSignBits();
 
-    D3DXVec3Normalize(&m_FrustPlaneR.norm, &D3DXVECTOR3(GetFrustumRT().z * GetFrustumRB().y - GetFrustumRT().y * GetFrustumRB().z, GetFrustumRT().x * GetFrustumRB().z - GetFrustumRT().z * GetFrustumRB().x, GetFrustumRT().y * GetFrustumRB().x - GetFrustumRT().x * GetFrustumRB().y));
+    temp = { GetFrustumRT().z * GetFrustumRB().y - GetFrustumRT().y * GetFrustumRB().z, GetFrustumRT().x * GetFrustumRB().z - GetFrustumRT().z * GetFrustumRB().x, GetFrustumRT().y * GetFrustumRB().x - GetFrustumRT().x * GetFrustumRB().y };
+    D3DXVec3Normalize(&m_FrustPlaneR.norm, &temp);
     m_FrustPlaneR.dist = -D3DXVec3Dot(&m_FrustPlaneR.norm, &m_FrustumCenter);
     m_FrustPlaneR.UpdateSignBits();
 
     //D3DXVECTOR3 dir(m_LinkPoint - m_FrustumCenter);
 
-    //g_MatrixMap->m_DI.T(L"...1",CWStr(m_AngleZ));
-    //g_MatrixMap->m_DI.T(L"...2",CWStr(az));
-    //g_MatrixMap->m_DI.T(L"dist",CWStr(m_Dist));
-    //g_MatrixMap->m_DI.T(L"land z",CWStr(m_LandRelativeZ));
+    //g_MatrixMap->m_DI.T(L"...1", CWStr(m_AngleZ));
+    //g_MatrixMap->m_DI.T(L"...2", CWStr(az));
+    //g_MatrixMap->m_DI.T(L"dist", CWStr(m_Dist));
+    //g_MatrixMap->m_DI.T(L"land z", CWStr(m_LandRelativeZ));
 }
 
 float CMatrixCamera::GetFrustPlaneDist(EFrustumPlane plane, const D3DXVECTOR3& pos, const D3DXVECTOR3& dir)

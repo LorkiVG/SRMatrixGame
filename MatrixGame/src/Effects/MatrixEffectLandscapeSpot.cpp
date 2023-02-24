@@ -8,32 +8,22 @@
 #include "../MatrixMap.hpp"
 #include <math.h>
 
-static SSpotProperties    m_SpotProperties[SPOT_TYPES_CNT];
-
-
-// spot takts
-void SpotTactConstant(CMatrixEffectLandscapeSpot *spot, float tact);
-void SpotTactAlways(CMatrixEffectLandscapeSpot *spot, float tact);
-void SpotTactPlasmaHit(CMatrixEffectLandscapeSpot *spot, float tact);
-void SpotTactMoveTo(CMatrixEffectLandscapeSpot *spot, float tact);
-void SpotTactPointlight(CMatrixEffectLandscapeSpot *spot, float tact);
-void SpotTactVoronka(CMatrixEffectLandscapeSpot *spot, float tact);
+static SSpotProperties m_SpotProperties[SPOT_TYPES_CNT];
 
 
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-CMatrixEffectLandscapeSpot *CMatrixEffectLandscapeSpot::m_First;
-CMatrixEffectLandscapeSpot *CMatrixEffectLandscapeSpot::m_Last;
+CMatrixEffectLandscapeSpot* CMatrixEffectLandscapeSpot::m_First;
+CMatrixEffectLandscapeSpot* CMatrixEffectLandscapeSpot::m_Last;
 
 
 #define TIME_TO_OFF (0.1f)
 #define TIME_TO_ON (0.03f)
-void SpotTactConstant(CMatrixEffectLandscapeSpot *spot, float)
+void CMatrixEffectLandscapeSpot::SpotTactConstant(CMatrixEffectLandscapeSpot *spot, float)
 {
-    DTRACE();
-    if (spot->m_LifeTime > spot->m_Props->ttl)
+    if(spot->m_LifeTime > spot->m_Props->ttl)
     {
 
 #ifdef _DEBUG
@@ -61,10 +51,9 @@ void SpotTactConstant(CMatrixEffectLandscapeSpot *spot, float)
     }
 }
 
-void SpotTactVoronka(CMatrixEffectLandscapeSpot *spot, float)
+void CMatrixEffectLandscapeSpot::SpotTactVoronka(CMatrixEffectLandscapeSpot *spot, float)
 {
-    DTRACE();
-    if (spot->m_LifeTime > spot->m_Props->ttl)
+    if(spot->m_LifeTime > spot->m_Props->ttl)
     {
 #ifdef _DEBUG
         g_MatrixMap->SubEffect(DEBUG_CALL_INFO, spot);
@@ -76,33 +65,33 @@ void SpotTactVoronka(CMatrixEffectLandscapeSpot *spot, float)
 
     float k = (float(spot->m_Props->ttl - spot->m_LifeTime) / float(spot->m_Props->ttl));
 
-    if (k < TIME_TO_OFF)
+    if(k < TIME_TO_OFF)
     {
         byte c = byte (k * (1.0 / TIME_TO_OFF) * 255);
         spot->m_Color = (spot->m_Color & 0x00FFFFFF) + (c << 24);
-
-    } else
+    }
+    else
     {
-        if (k > (1.0f-TIME_TO_ON))
+        if(k > (1.0f-TIME_TO_ON))
         {
             byte c = byte ((1.0-k) * (1.0/TIME_TO_ON) * 255);
             spot->m_Color = (spot->m_Color & 0x00FFFFFF) + (c << 24);
-        } else 
-            spot->m_Color = 0xFFFFFFFF;
+        }
+        else spot->m_Color = 0xFFFFFFFF;
     }
 }
 #undef TIME_TO_ON
 #undef TIME_TO_OFF
 
-void SpotTactAlways(CMatrixEffectLandscapeSpot *, float)
+void CMatrixEffectLandscapeSpot::SpotTactAlways(CMatrixEffectLandscapeSpot*, float)
 {
     DTRACE();
 }
 
-void SpotTactMoveTo(CMatrixEffectLandscapeSpot *spot, float)
+void CMatrixEffectLandscapeSpot::SpotTactMoveTo(CMatrixEffectLandscapeSpot* spot, float)
 {
     DTRACE();
-    if (spot->m_LifeTime > spot->m_Props->ttl)
+    if(spot->m_LifeTime > spot->m_Props->ttl)
     {
 #ifdef _DEBUG
         g_MatrixMap->SubEffect(DEBUG_CALL_INFO, spot);
@@ -122,7 +111,7 @@ void SpotTactMoveTo(CMatrixEffectLandscapeSpot *spot, float)
 
 }
 
-void SpotTactPointlight(CMatrixEffectLandscapeSpot *spot, float)
+void CMatrixEffectLandscapeSpot::SpotTactPointlight(CMatrixEffectLandscapeSpot *spot, float)
 {
     DTRACE();
     if (spot->m_LifeTime > spot->m_Props->ttl)
@@ -143,8 +132,7 @@ void SpotTactPointlight(CMatrixEffectLandscapeSpot *spot, float)
 
 }
 
-
-void SpotTactPlasmaHit(CMatrixEffectLandscapeSpot *spot, float)
+void CMatrixEffectLandscapeSpot::SpotTactPlasmaHit(CMatrixEffectLandscapeSpot *spot, float)
 {
     DTRACE();
     if (spot->m_LifeTime > spot->m_Props->ttl)
@@ -199,7 +187,7 @@ bool CMatrixEffectLandscapeSpot::PrepareDX(void)
     UNLOCK_VB(m_VB);
 
     LOCK_IB(m_IB,&buf);
-	memcpy(buf, m_IndsPre, (m_CntTris+2)*sizeof(WORD));
+	memcpy(buf, m_IndsPre, (m_CntTris+2)*sizeof(word));
     UNLOCK_IB(m_IB);
 
     return true;
@@ -213,9 +201,10 @@ void CMatrixEffectLandscapeSpot::BuildLand(const D3DXVECTOR2 & pos, float angle,
     typedef struct
     {
         D3DXVECTOR3 p;
-        float       tu,tv;
+        float       tu, tv;
         int         index;
         dword       outside;
+
     } STempVertex;
 
 
@@ -311,11 +300,11 @@ void CMatrixEffectLandscapeSpot::BuildLand(const D3DXVECTOR2 & pos, float angle,
     const int da_size_y = (mr.bottom - mr.top + 1);
     const int da_size = da_size_y * da_size_x;
 
-    BYTE* buff = (BYTE*)_alloca((sizeof(STempVertex) + sizeof(SLandscapeSpotVertex) + sizeof(WORD) * 3) * da_size);
+    byte* buff = (byte*)_alloca((sizeof(STempVertex) + sizeof(SLandscapeSpotVertex) + sizeof(word) * 3) * da_size);
 
 #define TEMP_VERTS() ((STempVertex*)buff)
 #define VERTS() ((SLandscapeSpotVertex*)(buff + (sizeof(STempVertex)) * da_size))
-#define IDXS() ((WORD*)(buff + (sizeof(STempVertex) + sizeof(SLandscapeSpotVertex)) * da_size))
+#define IDXS() ((word*)(buff + (sizeof(STempVertex) + sizeof(SLandscapeSpotVertex)) * da_size))
 #define ADDVERT(v)  if(v->index < 0)                       \
                     {                                       \
                         v->index = cidx++;                  \
@@ -375,7 +364,7 @@ void CMatrixEffectLandscapeSpot::BuildLand(const D3DXVECTOR2 & pos, float angle,
     tv = TEMP_VERTS();
 
     SLandscapeSpotVertex * verts = VERTS();
-    WORD *idxs = IDXS();
+    word* idxs = IDXS();
 
     int cidx = 0;
     for (y = 0; y < (da_size_y - 1); ++y)
@@ -400,8 +389,8 @@ void CMatrixEffectLandscapeSpot::BuildLand(const D3DXVECTOR2 & pos, float angle,
 
             if(strip_in_progress)
             {
-                *idxs++ = (WORD)tv2->index;
-                *idxs++ = (WORD)tv3->index;
+                *idxs++ = (word)tv2->index;
+                *idxs++ = (word)tv3->index;
                 idxscnt += 2;
 
             }
@@ -425,18 +414,15 @@ void CMatrixEffectLandscapeSpot::BuildLand(const D3DXVECTOR2 & pos, float angle,
         strip_in_progress = false;
         ++tv;
     }
-    
-    if(m_CntVerts == 0)
-    {
-        return;
-    }
+
+    if(m_CntVerts == 0) return;
     m_CntTris = idxscnt - 2;
 
-    m_VertsPre = (BYTE *)HAlloc(m_CntVerts*sizeof(SLandscapeSpotVertex), m_Heap);
-	memcpy(m_VertsPre, VERTS(), m_CntVerts*sizeof(SLandscapeSpotVertex));
+    m_VertsPre = (byte*)HAlloc(m_CntVerts * sizeof(SLandscapeSpotVertex), m_Heap);
+    memcpy(m_VertsPre, VERTS(), m_CntVerts * sizeof(SLandscapeSpotVertex));
 
-    m_IndsPre = (BYTE *)HAlloc(idxscnt*sizeof(WORD), m_Heap);
-	memcpy(m_IndsPre, IDXS(), idxscnt*sizeof(WORD));
+    m_IndsPre = (byte*)HAlloc(idxscnt * sizeof(word), m_Heap);
+    memcpy(m_IndsPre, IDXS(), idxscnt * sizeof(word));
 
 #undef ADDVERT
 #undef TEMP_VERTS
@@ -446,22 +432,14 @@ void CMatrixEffectLandscapeSpot::BuildLand(const D3DXVECTOR2 & pos, float angle,
 
 }
 
-
-
-
-CMatrixEffectLandscapeSpot::CMatrixEffectLandscapeSpot(const D3DXVECTOR2& pos, float angle, float scale, ESpotType type) :
-CMatrixEffect(), m_LifeTime(0), m_VertsPre(nullptr), m_IndsPre(nullptr), m_VB(nullptr), m_IB(nullptr)
+CMatrixEffectLandscapeSpot::CMatrixEffectLandscapeSpot(const D3DXVECTOR2& pos, float angle, float scale, ESpotType type) : CMatrixEffect()
 {
-    DTRACE();
     m_EffectType = EFFECT_LANDSCAPE_SPOT;
 
     ELIST_ADD(EFFECT_LANDSCAPE_SPOT);
 
     //m_Pos = D3DXVECTOR3(pos.x, pos.y, g_MatrixMap->GetZ(pos.x, pos.y) + SPOT_ALTITUDE);
     //m_Scale = scale;
-
-    m_DX = 0;
-    m_DY = 0;
 
     m_Props = &m_SpotProperties[type];
     m_Color = m_Props->color;
@@ -486,12 +464,10 @@ CMatrixEffect(), m_LifeTime(0), m_VertsPre(nullptr), m_IndsPre(nullptr), m_VB(nu
 
 CMatrixEffectLandscapeSpot::~CMatrixEffectLandscapeSpot()
 {
-    DTRACE();
     DCS_INDESTRUCTOR();
 
-    if (m_IndsPre) HFree(m_IndsPre, m_Heap);
-    if (m_VertsPre) HFree(m_VertsPre, m_Heap);
-
+    if(m_IndsPre) HFree(m_IndsPre, m_Heap);
+    if(m_VertsPre) HFree(m_VertsPre, m_Heap);
 
     //if (m_Color == 0x80FFFFFF)
     //{
@@ -512,23 +488,18 @@ CMatrixEffectLandscapeSpot::~CMatrixEffectLandscapeSpot()
     LIST_DEL(this, m_First, m_Last, m_Prev, m_Next);
     m_Texture->RefDecUnload();
 
-
-
-
     ELIST_DEL(EFFECT_LANDSCAPE_SPOT);
 }
 
 void CMatrixEffectLandscapeSpot::Release(void)
 {
-    DTRACE();
     SetDIP();
     HDelete(CMatrixEffectLandscapeSpot, this, m_Heap);
 }
 
 void CMatrixEffectLandscapeSpot::Tact(float step)
 {
-    DTRACE();
-    if (m_CntVerts == 0)
+    if(m_CntVerts == 0)
     {
 #ifdef _DEBUG
         g_MatrixMap->SubEffect(DEBUG_CALL_INFO, this);
@@ -544,9 +515,7 @@ void CMatrixEffectLandscapeSpot::Tact(float step)
 
 void CMatrixEffectLandscapeSpot::DrawActual()
 {
-    DTRACE();
     if(!IS_VB(m_VB) || !IS_IB(m_IB)) return;
-
 
     D3DXMATRIX m = g_MatrixMap->GetIdentityMatrix();
     m._41 = m_DX;
@@ -563,9 +532,7 @@ void CMatrixEffectLandscapeSpot::DrawActual()
 
 void CMatrixEffectLandscapeSpot::DrawAll(void)
 {
-    DTRACE();
-
-    if (!m_First) return;
+    if(!m_First) return;
 
     ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ZWRITEENABLE,	FALSE));
 
@@ -601,13 +568,14 @@ void CMatrixEffectLandscapeSpot::DrawAll(void)
         el->DrawActual();
         el = el->m_Next;
     }
+
     ASSERT_DX(g_D3DD->SetSamplerState(0, D3DSAMP_ADDRESSU, D3DTADDRESS_WRAP));
     ASSERT_DX(g_D3DD->SetSamplerState(0, D3DSAMP_ADDRESSV, D3DTADDRESS_WRAP));
-    ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE ));
-    ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE ));
+    ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE));
+    ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ALPHATESTENABLE, FALSE));
     ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ZWRITEENABLE, TRUE));
-    //g_D3DD->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW );
-    g_D3DD->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA  );
+    //g_D3DD->SetRenderState(D3DRS_CULLMODE, D3DCULL_CCW);
+    g_D3DD->SetRenderState(D3DRS_DESTBLEND, D3DBLEND_INVSRCALPHA);
 }
 
 int CMatrixEffectLandscapeSpot::Priority(void)
@@ -616,8 +584,6 @@ int CMatrixEffectLandscapeSpot::Priority(void)
     if(m_Props->func == SpotTactConstant) return 100;
     if(m_Props->func == SpotTactPlasmaHit) return 0;
     if(m_Props->func == SpotTactVoronka) return 500;
-    
+
     return 0;
 };
-
-

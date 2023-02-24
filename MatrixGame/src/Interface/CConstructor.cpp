@@ -33,7 +33,7 @@ CConstructor::CConstructor()
 	m_Build            = nullptr;
 	m_Base             = nullptr;
 	
-	m_Robot            = HNew(g_MatrixHeap) CMatrixRobotAI;
+	m_Robot            = HNew(Base::g_MatrixHeap) CMatrixRobotAI;
 	m_Robot->m_PosX    = 0;
 	m_Robot->m_PosY    = 0;
 	m_Robot->m_Side    = 0; 
@@ -44,16 +44,16 @@ CConstructor::CConstructor()
 	m_Robot->m_ChassisForward     = D3DXVECTOR3(1, 0, 0);
     m_Robot->m_CurrState   = ROBOT_EMBRYO;
 
-    m_NewBorn              = HNew(g_MatrixHeap) SNewBorn;
+    m_NewBorn              = HNew(Base::g_MatrixHeap) SNewBorn;
 }
 
 CConstructor::~CConstructor()
 {
-    if(m_NewBorn) HDelete(SNewBorn, m_NewBorn, g_MatrixHeap);
+    if(m_NewBorn) HDelete(SNewBorn, m_NewBorn, Base::g_MatrixHeap);
     if(m_Robot)
     {
 		ASSERT(g_MatrixHeap);
-		HDelete(CMatrixRobotAI, m_Robot, g_MatrixHeap);
+		HDelete(CMatrixRobotAI, m_Robot, Base::g_MatrixHeap);
 		m_Robot = nullptr;
 	}
 }
@@ -182,7 +182,7 @@ void CConstructor::AddRobotToBuildingQueue(
 	if(m_nModuleCnt)
     {
         //m_Base->m_BusyFlag.SetBusy(m_Build);
-        m_Build = HNew(g_MatrixHeap) CMatrixRobotAI;
+        m_Build = HNew(Base::g_MatrixHeap) CMatrixRobotAI;
 
         if(crazy_bot) m_Build->MarkCrazy();
 
@@ -369,7 +369,7 @@ void CConstructor::Render(void)
     
     if(FLAG(g_Flags,GFLAG_STENCILAVAILABLE)) //Не убирать фигурные скобки, либо удалить точки с запятой после ASSERT_DX
     {
-	    ASSERT_DX(g_D3DD->Clear(0, nullptr, D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL, D3DCOLOR_XRGB(255, 0, 0), 1.0f, 0));
+	    ASSERT_DX(g_D3DD->Clear(0, nullptr, D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, D3DCOLOR_XRGB(255, 0, 0), 1.0f, 0));
     }
     else
     {
@@ -379,11 +379,11 @@ void CConstructor::Render(void)
     float h = m_Robot->GetChassisHeight();
 
 	D3DXMatrixIdentity(&matWorld);
-    D3DXMatrixLookAtLH(&matView,
-        &D3DXVECTOR3(80, -30, h + 5),
-        &D3DXVECTOR3(0.0f, 0.0f, h),
-        &D3DXVECTOR3(0.0f, 0.0f, 1.0f)
-    );
+
+    D3DXVECTOR3 vec1 = { 80.0f, -30.0f, h + 5.0f };
+    D3DXVECTOR3 vec2 = { 0.0f, 0.0f, h };
+    D3DXVECTOR3 vec3 = { 0.0f, 0.0f, 1.0f };
+    D3DXMatrixLookAtLH(&matView, &vec1, &vec2, &vec3);
 	D3DXMatrixPerspectiveFovLH(&matProj, D3DX_PI / 4, float(m_ViewWidthX)/float(m_ViewHeightY) /* float(g_ScreenX) / float(g_ScreenX) */ /* 1.0f */, 1.0f, 300.0f);
 	ASSERT_DX(g_D3DD->SetTransform(D3DTS_WORLD, &matWorld));
 	ASSERT_DX(g_D3DD->SetTransform(D3DTS_VIEW, &matView));
@@ -535,7 +535,7 @@ void CConstructor::ReplaceRobotModule(
         //Если чертежей роботов ещё не существует, создаём новый
         if(!ld_from_history)
         {
-            old_cfg = HNew(g_MatrixHeap) SRobotConfig;
+            old_cfg = HNew(Base::g_MatrixHeap) SRobotConfig;
             memcpy(old_cfg, &player_side->m_ConstructPanel->m_Configs[cfg_num], sizeof(SRobotConfig));
 
             CInterface::CopyElements(g_IFaceList->m_Head[0], g_IFaceList->m_HeadPilon);
@@ -601,7 +601,7 @@ void CConstructor::ReplaceRobotModule(
             }
 
             ReplaceRobotModule(MRT_HEAD, old_cfg->m_Head.m_nKind, 0);
-            HDelete(SRobotConfig, old_cfg, g_MatrixHeap);
+            HDelete(SRobotConfig, old_cfg, Base::g_MatrixHeap);
             old_cfg = nullptr;
         }
 
@@ -1469,7 +1469,7 @@ CMatrixRobotAI* SRobotTemplate::CreateRobotByTemplate(
     bool map_prepare_in_process
 )
 {
-    CMatrixRobotAI* robot = HNew(g_MatrixHeap) CMatrixRobotAI;
+    CMatrixRobotAI* robot = HNew(Base::g_MatrixHeap) CMatrixRobotAI;
     CMatrixSideUnit* side = g_MatrixMap->GetSideById(side_id);
     
     if(!side || !robot) return nullptr;
@@ -1600,7 +1600,7 @@ void SRobotTemplate::LoadAIRobotType(
     int cnt = ((CBlockPar*)bp)->ParCount();
     if(!cnt) return;
 
-    CWStr str(g_MatrixHeap), str2(g_MatrixHeap);
+    CWStr str(Base::g_MatrixHeap), str2(Base::g_MatrixHeap);
     for(int i = 0; i < cnt; ++i)
     {
         SRobotTemplate bot;
@@ -1718,7 +1718,7 @@ bool SRobotTemplate::CreateRobotTemplateFromPar(const CWStr& par_name, const CWS
 
     if(par_name.GetCountPar(L",") < MIN_PAR_CNT) return false;
 
-    CWStr str(g_MatrixHeap);
+    CWStr str(Base::g_MatrixHeap);
 
     // Initialization ////////////////////////////////////////////////////////////////////////////////////
 

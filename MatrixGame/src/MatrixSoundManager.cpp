@@ -195,7 +195,7 @@ DTRACE();
         if(added_sound == S_NONE)
         {
             g_Config.m_RobotHullsConsts[i].hull_sound_num = (ESound)m_Sounds.size();
-            m_Sounds.emplace_back(SSoundItem::SSoundItem(g_Config.m_RobotHullsConsts[i].hull_sound_name));
+            m_Sounds.emplace_back(SSoundItem(g_Config.m_RobotHullsConsts[i].hull_sound_name));
         }
         else g_Config.m_RobotHullsConsts[i].hull_sound_num = added_sound;
     }
@@ -206,7 +206,7 @@ DTRACE();
         if(added_sound == S_NONE)
         {
             g_Config.m_RobotChassisConsts[i].arcade_enter_sound_num = (ESound)m_Sounds.size();
-            m_Sounds.emplace_back(SSoundItem::SSoundItem(g_Config.m_RobotChassisConsts[i].arcade_enter_sound_name));
+            m_Sounds.emplace_back(SSoundItem(g_Config.m_RobotChassisConsts[i].arcade_enter_sound_name));
         }
         else g_Config.m_RobotChassisConsts[i].arcade_enter_sound_num = added_sound;
     }
@@ -220,7 +220,7 @@ DTRACE();
             if(added_sound == S_NONE)
             {
                 g_Config.m_WeaponsConsts[i].shot_sound_num = (ESound)m_Sounds.size();
-                m_Sounds.emplace_back(SSoundItem::SSoundItem(g_Config.m_WeaponsConsts[i].shot_sound_name));
+                m_Sounds.emplace_back(SSoundItem(g_Config.m_WeaponsConsts[i].shot_sound_name));
             }
             else g_Config.m_WeaponsConsts[i].shot_sound_num = added_sound;
         }
@@ -231,7 +231,7 @@ DTRACE();
             if(added_sound == S_NONE)
             {
                 g_Config.m_WeaponsConsts[i].hit_sound_num = (ESound)m_Sounds.size();
-                m_Sounds.emplace_back(SSoundItem::SSoundItem(g_Config.m_WeaponsConsts[i].hit_sound_name));
+                m_Sounds.emplace_back(SSoundItem(g_Config.m_WeaponsConsts[i].hit_sound_name));
             }
             else g_Config.m_WeaponsConsts[i].hit_sound_num = added_sound;
         }
@@ -242,7 +242,7 @@ DTRACE();
             if(added_sound == S_NONE)
             {
                 g_Config.m_WeaponsConsts[i].map_objects_ignition.burning_sound_num = (ESound)m_Sounds.size();
-                m_Sounds.emplace_back(SSoundItem::SSoundItem(g_Config.m_WeaponsConsts[i].map_objects_ignition.burning_sound_name));
+                m_Sounds.emplace_back(SSoundItem(g_Config.m_WeaponsConsts[i].map_objects_ignition.burning_sound_name));
             }
             else g_Config.m_WeaponsConsts[i].map_objects_ignition.burning_sound_num = added_sound;
         }
@@ -293,7 +293,7 @@ DTRACE();
     return true;
 }
 
-void CSound::Tact(void)
+void CSound::Tact()
 {
 DTRACE();
 

@@ -12,8 +12,8 @@
 class CMatrixCursor : public CMain
 {
     dword        m_CursorFlags = 0;
-    CPoint       m_Pos = { 0.0f, 0.0f };
-    CPoint       m_HotSpot = { 0.0f, 0.0f };
+    CPoint       m_Pos = { 0, 0 };
+    CPoint       m_HotSpot = { 0, 0 };
     const wchar* m_CurCursor = nullptr;
     CTextureManaged* m_CursorTexture = nullptr;
     int          m_CursorSize = 0;

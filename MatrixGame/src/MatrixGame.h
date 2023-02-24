@@ -4,23 +4,25 @@
 // Refer to the LICENSE file included
 
 #pragma once
-
 #include "resource.h"
 #include <shlobj.h>
-//#include "windows.h"
 
 class CMatrixMapLogic;
 class CIFaceList;
 class CRenderPipeline;
-class Base::CBlockPar;
-class Base::CHeap;
-class Base::CPoint;
+namespace Base {
+	class CBlockPar;
+	class CHeap;
+	class CPoint;
+}
 class CLoadProgress;
 class CHistory;
 struct SMenuItemText;
 
-extern Base::CHeap*     g_MatrixHeap;
-extern Base::CBlockPar* g_MatrixData;
+namespace Base {
+	extern CHeap* g_MatrixHeap;
+	extern CBlockPar* g_MatrixData;
+}
 extern CMatrixMapLogic* g_MatrixMap;
 extern CIFaceList*      g_IFaceList;
 extern CRenderPipeline* g_Render;
@@ -35,4 +37,4 @@ struct SRobotsSettings;
 
 void MatrixGameInit(HINSTANCE hInstance, HWND wnd, wchar* map = nullptr, SRobotsSettings* set = nullptr, wchar* lang = nullptr, wchar* txt_start = nullptr, wchar* txt_win = nullptr, wchar* txt_loss = nullptr, wchar* planet = nullptr);
 void MatrixGameDeinit(void);
-LPCSTR PathToOutputFiles(LPSTR dest);
+LPCSTR PathToOutputFiles(LPCSTR dest);

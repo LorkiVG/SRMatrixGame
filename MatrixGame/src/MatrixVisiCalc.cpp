@@ -455,84 +455,80 @@ void CMatrixMap::CalcVis(void)
 
 
 // runtime
-
-#define NPOS    4
+#define NPOS 4
 
 struct CMatrixMap::SCalcVisRuntime
 {
-    D3DXVECTOR2       pos[4];
-    PCMatrixMapGroup *mapGroup;
-    int i, j;
+    D3DXVECTOR2       pos[4] = { { 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f }, { 0.0f, 0.0f } };
+    PCMatrixMapGroup* mapGroup = nullptr;
+    int i = 0, j = 0;
 };
 
-void CMatrixMap::CheckCandidate(SCalcVisRuntime &visRuntime, CMatrixMapGroup *mapGroup)
+void CMatrixMap::CheckCandidate(SCalcVisRuntime& visRuntime, CMatrixMapGroup* mapGroup)
 {
-    if (mapGroup->IsPointIn(visRuntime.pos[0])) goto visible;
-    if (mapGroup->IsPointIn(visRuntime.pos[1])) goto visible;
-    if (mapGroup->IsPointIn(visRuntime.pos[2])) goto visible;
+    int i0 = NPOS - 1;
+    int i1 = 0;
+
+    if(mapGroup->IsPointIn(visRuntime.pos[0])) goto visible;
+    if(mapGroup->IsPointIn(visRuntime.pos[1])) goto visible;
+    if(mapGroup->IsPointIn(visRuntime.pos[2])) goto visible;
 #if NPOS == 4
-    if (mapGroup->IsPointIn(visRuntime.pos[3])) goto visible;
+    if(mapGroup->IsPointIn(visRuntime.pos[3])) goto visible;
 #endif
 
-    int i0 = NPOS-1;
-    int i1 = 0;
-    while (i1<NPOS)
+    while(i1 < NPOS)
     {
-        if (PointLineCatch(visRuntime.pos[i0],visRuntime.pos[i1],mapGroup->GetPos0()))
+        if(PointLineCatch(visRuntime.pos[i0], visRuntime.pos[i1], mapGroup->GetPos0()))
         {
             goto checknext;
         }
-        if (PointLineCatch(visRuntime.pos[i0],visRuntime.pos[i1],mapGroup->GetPos1()))
+        if(PointLineCatch(visRuntime.pos[i0], visRuntime.pos[i1], mapGroup->GetPos1()))
         {
             goto checknext;
         }
-        if (PointLineCatch(visRuntime.pos[i0],visRuntime.pos[i1],D3DXVECTOR2(mapGroup->GetPos0().x, mapGroup->GetPos1().y)))
+        if(PointLineCatch(visRuntime.pos[i0], visRuntime.pos[i1], D3DXVECTOR2(mapGroup->GetPos0().x, mapGroup->GetPos1().y)))
         {
             goto checknext;
         }
-        if (PointLineCatch(visRuntime.pos[i0],visRuntime.pos[i1],D3DXVECTOR2(mapGroup->GetPos1().x, mapGroup->GetPos0().y)))
+        if(PointLineCatch(visRuntime.pos[i0], visRuntime.pos[i1], D3DXVECTOR2(mapGroup->GetPos1().x, mapGroup->GetPos0().y)))
         {
             goto checknext;
         }
         goto invisible;
 checknext:
         i0 = i1++;
-
     }
 
     // last check : frustum
-    if (mapGroup->IsInFrustum())
+    if(mapGroup->IsInFrustum())
     {
 visible:
         //cmg->SetVisible(true);
         (*visRuntime.mapGroup) = mapGroup;
         ++m_VisibleGroupsCount;
         ++visRuntime.mapGroup;
-    } else
+    }
+    else
     {
 invisible:
         //cmg->SetVisible(false);
         // so, map group is invisible.
         // if it is an edge of whole map, it's water can be visible
-        if ((visRuntime.i == (m_GroupSize.x-1)) || (visRuntime.j == (m_GroupSize.y-1)))
+        if((visRuntime.i == (m_GroupSize.x - 1)) || (visRuntime.j == (m_GroupSize.y - 1)))
         {
             D3DXVECTOR3 mins(mapGroup->GetPos0().x, mapGroup->GetPos0().y, WATER_LEVEL);
             D3DXVECTOR3 maxs(mins.x + float(MAP_GROUP_SIZE * GLOBAL_SCALE), mins.y + float(MAP_GROUP_SIZE * GLOBAL_SCALE), WATER_LEVEL);
-            if (m_Camera.IsInFrustum(mins,maxs))
+            if(m_Camera.IsInFrustum(mins, maxs))
             {
                 m_VisWater->AnyStruct<D3DXVECTOR2>(mapGroup->GetPos0());
             }
         }
-
     }
-
 }
 
 // visibility
 void CMatrixMap::CalcMapGroupVisibility(void)
 {
-    DTRACE();
-
     SCalcVisRuntime visRuntime;
 
     D3DXVECTOR3 topForward(m_Camera.GetFrustumLT() + m_Camera.GetFrustumRT());
@@ -577,15 +573,16 @@ void CMatrixMap::CalcMapGroupVisibility(void)
             k = (m_minz - m_Camera.GetFrustumCenter().z) / m_Camera.GetFrustumRT().z;
             if(k > g_MaxViewDistance) k = g_MaxViewDistance;
         }
+
         visRuntime.pos[1].x = m_Camera.GetFrustumCenter().x + m_Camera.GetFrustumRT().x * k;
         visRuntime.pos[1].y = m_Camera.GetFrustumCenter().y + m_Camera.GetFrustumRT().y * k;
 
         D3DXVECTOR2 ex;
-        D3DXVec2Normalize(&ex, &(visRuntime.pos[1]-visRuntime.pos[0]));
+        D3DXVECTOR2 temp = visRuntime.pos[1] - visRuntime.pos[0];
+        D3DXVec2Normalize(&ex, &temp);
         ex *= GLOBAL_SCALE * MAP_GROUP_SIZE;
         visRuntime.pos[0] -= ex;
         visRuntime.pos[1] += ex;
-
 
         k = (m_minz - m_Camera.GetFrustumCenter().z) / m_Camera.GetFrustumRB().z;
         visRuntime.pos[2].x = m_Camera.GetFrustumCenter().x + m_Camera.GetFrustumRB().x * k;

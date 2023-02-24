@@ -12,47 +12,45 @@
 
 namespace Base {
 
-#define FI \
-m_MaxLen=16;\
-m_Len=0;\
-m_Str=nullptr;\
-m_Str=(char *)HAlloc(m_MaxLen+1,m_Heap);\
-m_Str[0]=0
+#define FI									 \
+m_MaxLen = 16;								 \
+m_Len = 0;									 \
+m_Str = nullptr;							 \
+m_Str = (char*)HAlloc(m_MaxLen + 1, m_Heap); \
+m_Str[0] = 0
 
-
-CStr::CStr(const CWStr & s, CHeap * heap) : CMain()
+CStr::CStr(const CWStr& s, CHeap* heap) : CMain()
 {
-	m_Heap=heap;
+	m_Heap = heap;
 
 	FI;
 	Set(s);
 }
 
-CStr::CStr(const wchar * s, CHeap * heap) : CMain()
+CStr::CStr(const wchar* s, CHeap* heap) : CMain()
 {
-	m_Heap=heap;
+	m_Heap = heap;
 
 	FI;
 	Set(s);
 }
-
 
 CStr::CStr(int zn, CHeap* heap) : CMain()
 {
-	m_Heap=heap;
+	m_Heap = heap;
 
 	FI;
-	
+
 	Set(zn);
 }
 
-CStr::CStr(double zn, int zpz, CHeap * heap) : CMain()
+CStr::CStr(double zn, int zpz, CHeap* heap) : CMain()
 {
-	m_Heap=heap;
+	m_Heap = heap;
 
 	FI;
 
-	Set(zn,zpz);
+	Set(zn, zpz);
 }
 
 /*
@@ -64,7 +62,7 @@ CStr::CStr(void* zn, CHeap* heap) : CMain()
 	Set(zn);
 }
 
-CStr::CStr(BYTE zn, CHeap* heap) : CMain()
+CStr::CStr(byte zn, CHeap* heap) : CMain()
 {
 	m_Heap = heap;
 
@@ -89,338 +87,420 @@ void CStr::Clear()
 
 void CStr::SetLen(int len)
 {
-	if(len<1)
+	if (len < 1)
 	{
 		Clear();
 		return;
 	}
 	Tream(len);
-	m_Len=len;
-	m_Str[m_Len]=0;
+	m_Len = len;
+	m_Str[m_Len] = 0;
 }
 
-void CStr::Set(const CStr & cstr)
+void CStr::Set(const CStr& cstr)
 {
 	Tream(cstr.m_Len);
-	m_Len=cstr.m_Len;
-	memcpy(m_Str,cstr.m_Str,m_Len);
-	m_Str[m_Len]=0;
+	m_Len = cstr.m_Len;
+	memcpy(m_Str, cstr.m_Str, m_Len);
+	m_Str[m_Len] = 0;
 }
 
-void CStr::Set(const CWStr & cstr)
+void CStr::Set(const CWStr& cstr)
 {
 	Tream(cstr.GetLen());
-	m_Len=cstr.GetLen();
-	if(m_Len>0) {
-		if(!WideCharToMultiByte(CP_ACP,WC_COMPOSITECHECK|WC_DEFAULTCHAR,
-								cstr.Get(),
-								cstr.GetLen(),
-								m_Str,
-								m_MaxLen," ",nullptr)) ERROR_E;
+	m_Len = cstr.GetLen();
+	if(m_Len > 0)
+	{
+		if(!WideCharToMultiByte(CP_ACP, WC_COMPOSITECHECK | WC_DEFAULTCHAR,
+			cstr.Get(),
+			cstr.GetLen(),
+			m_Str,
+			m_MaxLen, " ", nullptr)) ERROR_E;
 	}
-	m_Str[m_Len]=0;
+	m_Str[m_Len] = 0;
 }
 
-void CStr::Set(const wchar * wstr)
+void CStr::Set(const wchar* wstr)
 {
-	int len=WStrLen(wstr);
+	int len = WStrLen(wstr);
 	Tream(len);
-	m_Len=len;
-	if(len>0) {
-		if(!WideCharToMultiByte(CP_ACP,WC_COMPOSITECHECK|WC_DEFAULTCHAR,
-								wstr,
-								len,
-								m_Str,
-								m_MaxLen," ",nullptr)) ERROR_E;
+	m_Len = len;
+	if(len > 0)
+	{
+		if(!WideCharToMultiByte(CP_ACP, WC_COMPOSITECHECK | WC_DEFAULTCHAR,
+			wstr,
+			len,
+			m_Str,
+			m_MaxLen, " ", nullptr)) ERROR_E;
 	}
-	m_Str[m_Len]=0;
+	m_Str[m_Len] = 0;
 }
 
-void CStr::Set(const char * str)
+void CStr::Set(const char* str)
 {
-	m_Len=strlen(str);
+	m_Len = strlen(str);
 	Tream(m_Len);
-	memcpy(m_Str,str,m_Len);
-	m_Str[m_Len]=0;
+	memcpy(m_Str, str, m_Len);
+	m_Str[m_Len] = 0;
 }
 
-void CStr::Set(const char * str,int lstr)
+void CStr::Set(const char* str, int lstr)
 {
 	Tream(lstr);
-	m_Len=lstr;
-	memcpy(m_Str,str,m_Len);
-	m_Str[m_Len]=0;
+	m_Len = lstr;
+	memcpy(m_Str, str, m_Len);
+	m_Str[m_Len] = 0;
 }
 
 void CStr::Set(char sim)
 {
 	Tream(1);
-	m_Len=1;
-	m_Str[0]=sim;
-	m_Str[1]=0;
+	m_Len = 1;
+	m_Str[0] = sim;
+	m_Str[1] = 0;
 }
 
-void CStr::Set(char sim,int count)
+void CStr::Set(char sim, int count)
 {
 	Tream(count);
-	m_Len=count;
-	for(int i=0;i<count;i++) m_Str[i]=sim;
-	m_Str[m_Len]=0;
+	m_Len = count;
+	for(int i = 0; i < count; ++i) m_Str[i] = sim;
+	m_Str[m_Len] = 0;
 }
 
 void CStr::Set(int zn)
 {
 	Tream(32u);
-	m_Len=32;
+	m_Len = 32;
 
-	int fm=0;
-	if(zn<0) { fm=1; zn=-zn; }
+	int fm = 0;
+	if(zn < 0)
+	{
+		fm = 1;
+		zn = -zn;
+	}
 
-	while(zn>0) {
-		m_Str[m_Len]=char(zn-int(zn/10)*10)+char('0');
+	while(zn > 0)
+	{
+		m_Str[m_Len] = char(zn - int(zn / 10) * 10) + char('0');
 		m_Len++;
-		zn=zn/10;
+		zn = zn / 10;
 	}
-	if(fm) { m_Str[m_Len]='-'; m_Len++; }
-	if(m_Len==32 || (m_Len==33 && fm)) {
-		m_Str[m_Len]=char('0');
+	if(fm)
+	{
+		m_Str[m_Len] = '-';
+		++m_Len;
+	}
+	if(m_Len == 32 || (m_Len == 33 && fm))
+	{
+		m_Str[m_Len] = char('0');
 		m_Len++;
 	}
-	for(int i=0;i<int(m_Len-32);i++) m_Str[i]=m_Str[m_Len-1-i];
-	m_Len-=32;
-	m_Str[m_Len]=0;
+
+	for(int i = 0; i<int(m_Len - 32); ++i) m_Str[i] = m_Str[m_Len - 1 - i];
+	m_Len -= 32;
+	m_Str[m_Len] = 0;
 }
 
-void CStr::Set(double zn,int zpz)
+void CStr::Set(double zn, int zpz)
 {
 	CStr tstr(m_Heap);
-	int dec,sign,le;
-	int count=0;
-	char * st=_fcvt(zn,zpz,&dec,&sign);
-	if(sign==0) Clear();
+	int dec, sign, le;
+	int count = 0;
+	char* st = _fcvt(zn, zpz, &dec, &sign);
+
+	if(sign == 0) Clear();
 	else Set((char)'-');
-	le=strlen(st);
-	if(dec<0) {
+
+	le = strlen(st);
+	if(dec < 0)
+	{
 		Add('0');
-		if(le>0) {
+		if(le > 0)
+		{
 			Add('.');
-			Add('0',-dec);
-			for(int i=le-1;i>=0;i--) if(st[i]=='0') count++; else break;
-			if(le>count) {
-				for(int yu=0;yu<le-count;yu++) Add(char(st[yu]));
+			Add('0', -dec);
+			for(int i = le - 1; i >= 0; --i)
+			{
+				if(st[i] == '0') ++count;
+				else break;
+			}
+
+			if(le > count)
+			{
+				for(int yu = 0; yu < le - count; ++yu) Add(char(st[yu]));
 			}
 		}
-	} else {
-		if(dec>0) {
-			for(int yu=0;yu<dec;yu++) Add(char(st[yu]));
-		} else { Add('0'); }
+	}
+	else
+	{
+		if(dec > 0)
+		{
+			for(int yu = 0; yu < dec; ++yu) Add(char(st[yu]));
+		}
+		else Add('0');
 
-		for(int i=le-1;i>=dec;i--) if(st[i]=='0') count++; else break;
-		if(dec<le-count) {
+		for(int i = le - 1; i >= dec; --i)
+		{
+			if(st[i] == '0') ++count;
+			else break;
+		}
+
+		if(dec < le - count)
+		{
 			Add('.');
-			for(int yu=0;yu<le-count-dec;yu++) Add(char(st[dec+yu]));
+			for(int yu = 0; yu < le - count - dec; ++yu) Add(char(st[dec + yu]));
 		}
 	}
 }
 
-char * Str_CH="0123456789ABCDEF";
-void CStr::SetHex(void * zn)
+const char Str_CH[] = "0123456789ABCDEF";
+void CStr::SetHex(void* zn)
 {
-	dword dw=dword(zn);
-	m_Len=8;
+	dword dw = dword(zn);
+	m_Len = 8;
 	Tream(m_Len);
-	m_Str[m_Len]=0;
-	for(int i=0;i<8;i++) {
-		m_Str[7-i]=Str_CH[(dw>>(i*4))&0x0f];
+	m_Str[m_Len] = 0;
+	for(int i = 0; i < 8; ++i)
+	{
+		m_Str[7 - i] = Str_CH[(dw >> (i * 4)) & 0x0f];
 	}
 }
 
-void CStr::SetHex(BYTE zn)
+void CStr::SetHex(byte zn)
 {
-	dword dw=(dword)zn;
-	m_Len=2;
+	dword dw = (dword)zn;
+	m_Len = 2;
 	Tream(m_Len);
-	m_Str[m_Len]=0;
-	for(int i=0;i<2;i++) {
-		m_Str[1-i]=Str_CH[(dw>>(i*4))&0x0f];
+	m_Str[m_Len] = 0;
+
+	for(int i = 0; i < 2; ++i)
+	{
+		m_Str[1 - i] = Str_CH[(dw >> (i * 4)) & 0x0f];
 	}
 }
 
-void CStr::Add(const CStr & cstr)
+void CStr::Add(const CStr& cstr)
 {
-	if(cstr.m_Len<1) return;
-	Tream(m_Len+cstr.m_Len);
-	
-	memcpy(m_Str+m_Len,cstr.m_Str,cstr.m_Len);
+	if(cstr.m_Len < 1) return;
+	Tream(m_Len + cstr.m_Len);
 
-	m_Len+=cstr.m_Len;
-	m_Str[m_Len]=0;
+	memcpy(m_Str + m_Len, cstr.m_Str, cstr.m_Len);
+
+	m_Len += cstr.m_Len;
+	m_Str[m_Len] = 0;
 }
 
-void CStr::Add(const char * str)
+void CStr::Add(const char* str)
 {
-	int lstr=strlen(str);
-	if(lstr<1) return;
+	int lstr = strlen(str);
+	if(lstr < 1) return;
 
-	Tream(m_Len+lstr);
-	
-	memcpy(m_Str+m_Len,str,lstr);
+	Tream(m_Len + lstr);
 
-	m_Len+=lstr;
-	m_Str[m_Len]=0;
+	memcpy(m_Str + m_Len, str, lstr);
+
+	m_Len += lstr;
+	m_Str[m_Len] = 0;
 }
 
-void CStr::Add(const char * str,int lstr)
+void CStr::Add(const char* str, int lstr)
 {
-	if(lstr<1) return;
+	if(lstr < 1) return;
 
-	Tream(m_Len+lstr);
-	
-	memcpy(m_Str+m_Len,str,lstr);
+	Tream(m_Len + lstr);
 
-	m_Len+=lstr;
-	m_Str[m_Len]=0;
+	memcpy(m_Str + m_Len, str, lstr);
+
+	m_Len += lstr;
+	m_Str[m_Len] = 0;
 }
 
 void CStr::Add(char sim)
 {
-	Tream(m_Len+1);
-	
-	m_Str[m_Len]=sim;
+	Tream(m_Len + 1);
 
-	m_Len+=1;
-	m_Str[m_Len]=0;
+	m_Str[m_Len] = sim;
+
+	m_Len += 1;
+	m_Str[m_Len] = 0;
 }
 
-void CStr::Add(char sim,int count)
+void CStr::Add(char sim, int count)
 {
-	Tream(m_Len+count);
-	
-	for(int i=0;i<count;i++) m_Str[m_Len+i]=sim;
+	Tream(m_Len + count);
 
-	m_Len+=count;
-	m_Str[m_Len]=0;
+	for(int i = 0; i < count; ++i) m_Str[m_Len + i] = sim;
+
+	m_Len += count;
+	m_Str[m_Len] = 0;
 }
 
 int CStr::GetInt() const
 {
-	int zn=0;
+	int zn = 0;
 	char ch;
-    int i;
-	for(i=0;i<m_Len;++i)
-    {
-		ch=m_Str[i] - '0';
-		if(ch<=10) zn=zn*10+ch;
+	int i;
+
+	for(i = 0; i < m_Len; ++i)
+	{
+		ch = m_Str[i] - '0';
+		if(ch <= 10) zn = zn * 10 + ch;
 	}
-	for(i=0;i<m_Len;i++) if(m_Str[i]=='-') { zn=-zn; break; }
+
+	for(i = 0; i < m_Len; ++i)
+	{
+		if(m_Str[i] == '-')
+		{
+			zn = -zn;
+			break;
+		}
+	}
+
 	return zn;
 }
 
 double CStr::GetDouble() const
 {
 	int i;
-	double zn=0.0;
+	double zn = 0.0;
 
 	char ch;
-	for(i=0;i<m_Len;i++) {
-		ch=m_Str[i];
-		if(ch>='0' && ch<='9') zn=zn*10.0+(double)(ch-'0');
-		else if(ch=='.') break;
+	for(i = 0; i < m_Len; ++i)
+	{
+		ch = m_Str[i];
+		if(ch >= '0' && ch <= '9') zn = zn * 10.0 + (double)(ch - '0');
+		else if(ch == '.') break;
 	}
-	i++;
-	double tra=10.0;
-	for(i;i<m_Len;i++) {
-		ch=m_Str[i];
-		if(ch>='0' && ch<='9') {
-			zn=zn+((double)(ch-'0'))/tra;
-			tra*=10.0;
+
+	++i;
+	double tra = 10.0;
+	for(i; i < m_Len; ++i)
+	{
+		ch = m_Str[i];
+		if(ch >= '0' && ch <= '9')
+		{
+			zn = zn + ((double)(ch - '0')) / tra;
+			tra *= 10.0;
 		}
 	}
-	for(i=0;i<m_Len;i++) if(m_Str[i]=='-') { zn=-zn; break; }
+	for(i = 0; i < m_Len; ++i)
+	{
+		if(m_Str[i] == '-')
+		{
+			zn = -zn;
+			break;
+		}
+	}
 
 	return zn;
 }
 
 int CStr::GetHex() const
 {
-	int zn=0;
-    int i;
+	int zn = 0;
+	int i;
 
 	char ch;
-	for(i=0;i<m_Len;i++)
-    {
-		ch=m_Str[i];
+	for(i = 0; i < m_Len; ++i)
+	{
+		ch = m_Str[i];
 
-        ch -= '0';
-        if (ch > 9) ch = (ch&(~32)) - ('A'-'0' + 10);
-        zn = zn*16 + ch;
-
+		ch -= '0';
+		if (ch > 9) ch = (ch & (~32)) - ('A' - '0' + 10);
+		zn = zn * 16 + ch;
 	}
-	for(i=0;i<m_Len;i++) if(m_Str[i]=='-') { zn=-zn; break; }
+
+	for(i = 0; i < m_Len; ++i)
+	{
+		if(m_Str[i] == '-')
+		{
+			zn = -zn;
+			break;
+		}
+	}
 
 	return zn;
 }
 
 dword CStr::GetHexUnsigned() const
 {
-	dword zn=0;
-    int i;
+	dword zn = 0;
+	int i;
 
 	char ch;
-	for(i=0;i<m_Len;i++)
-    {
-		ch=m_Str[i];
+	for(i = 0; i < m_Len; ++i)
+	{
+		ch = m_Str[i];
 
-        ch -= '0';
-        if (ch > 9) ch = (ch&(~32)) - ('A'-'0' + 10);
-        zn = (zn<<4) + ch;
-
+		ch -= '0';
+		if(ch > 9) ch = (ch & (~32)) - ('A' - '0' + 10);
+		zn = (zn << 4) + ch;
 	}
+
 	return zn;
 }
 
 bool CStr::IsOnlyInt() const
 {
-    int i;
-	if(m_Len<1) return 0;
-	for(i=0;i<m_Len;i++) if(m_Str[i]<'0' || m_Str[i]>'9' && m_Str[i]!='-') return 0;
+	int i;
+	if(m_Len < 1) return 0;
+	for(i = 0; i < m_Len; ++i) if ((m_Str[i] < '0' || m_Str[i]>'9') && m_Str[i] != '-') return 0;
 	return 1;
 }
 
-CStr & CStr::Trim()
+CStr& CStr::Trim()
 {
-    int i,u;
-	if(m_Len<1) return *this;
+	int i, u;
+	if(m_Len < 1) return *this;
 
-	for(i=0;i<m_Len;i++) {
-		if(m_Str[i]!=' ' && m_Str[i]!=0x9 && m_Str[i]!=0x0d && m_Str[i]!=0x0a) break;
+	for(i = 0; i < m_Len; ++i)
+	{
+		if(m_Str[i] != ' ' && m_Str[i] != 0x9 && m_Str[i] != 0x0d && m_Str[i] != 0x0a) break;
 	}
-	if(i==m_Len) { Clear(); return *this; }
-	for(u=m_Len-1;u>=0;u--) {
-		if(m_Str[u]!=' ' && m_Str[u]!=0x9 && m_Str[u]!=0x0d && m_Str[u]!=0x0a) break;
-	}
-	m_Len=u-i+1;
-	if(m_Len<1) { Clear(); return *this; }
-	if(i==0) {
-		m_Str[m_Len]=0;
+
+	if(i == m_Len)
+	{
+		Clear();
 		return *this;
 	}
-	for(u=0;u<m_Len;u++) m_Str[u]=m_Str[u+i];
-	m_Str[u]=0;
+
+	for(u = m_Len - 1; u >= 0; --u)
+	{
+		if(m_Str[u] != ' ' && m_Str[u] != 0x9 && m_Str[u] != 0x0d && m_Str[u] != 0x0a) break;
+	}
+
+	m_Len = u - i + 1;
+	if(m_Len < 1)
+	{
+		Clear();
+		return *this;
+	}
+
+	if(i == 0)
+	{
+		m_Str[m_Len] = 0;
+		return *this;
+	}
+
+	for(u = 0; u < m_Len; ++u) m_Str[u] = m_Str[u + i];
+	m_Str[u] = 0;
 
 	return *this;
 }
 
-CStr & CStr::TrimFull()
+CStr& CStr::TrimFull()
 {
-    int i,u;
+	int i, u;
 	Trim();
-	if(m_Len<4) return *this;
-	for(i=2;i<m_Len-1;i++) {
-		if((m_Str[i]==' ' || m_Str[i]==0x9) && (m_Str[i-1]==' ' || m_Str[i-1]==0x9))  {
-			for(u=i;u<m_Len;u++) m_Str[u]=m_Str[u+1];
-			m_Len--;
-			i--;
+	if(m_Len < 4) return *this;
+	for(i = 2; i < m_Len - 1; ++i)
+	{
+		if ((m_Str[i] == ' ' || m_Str[i] == 0x9) && (m_Str[i - 1] == ' ' || m_Str[i - 1] == 0x9))
+		{
+			for (u = i; u < m_Len; u++) m_Str[u] = m_Str[u + 1];
+			--m_Len;
+			--i;
 		}
 	}
 	return *this;

@@ -172,7 +172,8 @@ DTRACE();
     }
     else m_Core->m_GeoCenter = (vmin + vmax) * 0.5f;
 
-    m_Core->m_Radius = D3DXVec3Length(&(vmax-vmin)) * 0.5f;
+    D3DXVECTOR3 temp = vmax - vmin;
+    m_Core->m_Radius = D3DXVec3Length(&temp) * 0.5f;
 
     dword tc = g_MatrixMap->GetColor(m_Core->m_GeoCenter.x, m_Core->m_GeoCenter.y);
     if(!IsFlyer()) m_Core->m_TerainColor = LIC(tc, g_MatrixMap->m_Terrain2ObjectTargetColor, g_MatrixMap->m_Terrain2ObjectInfluence);
@@ -371,6 +372,7 @@ bool CMatrixMapStatic::RenderToTexture(
 )
 {
 DTRACE();
+
 #define RENDSZ 512
 
     for(int i = 0; i < n; rt[i++].tex = nullptr);
@@ -392,7 +394,7 @@ DTRACE();
         if(D3D_OK != g_D3DD->CreateDepthStencilSurface(RENDSZ, RENDSZ, d.Format, d.MultiSampleType, d.MultiSampleQuality, TRUE, &newZ, nullptr))
         {
             newTarget->Release();
-            return nullptr;
+            return false;
         }
 
         g_D3DD->SetDepthStencilSurface(newZ);
@@ -541,14 +543,13 @@ DTRACE();
     //D3DXVECTOR3 fc(80, -30, height + 5);
 
     D3DXVECTOR3 right;
-    D3DXVec3Cross(&right, &fc, &D3DXVECTOR3(0, 0, 1));
+    D3DXVECTOR3 temp1 = { 0.0f, 0.0f, 1.0f };
+    D3DXVec3Cross(&right, &fc, &temp1);
     D3DXVec3Normalize(&right, &right);
 
-    D3DXMatrixLookAtLH(&matView,
-        &fc,
-        &D3DXVECTOR3(-right.x * 3, -right.y * 3, height),
-        &D3DXVECTOR3(0, 0, 1.0f));
-
+    temp1 = { -right.x * 3.0f, -right.y * 3.0f, height };
+    D3DXVECTOR3 temp2 = { 0.0f, 0.0f, 1.0f };
+    D3DXMatrixLookAtLH(&matView, &fc, &temp1, &temp2);
     
     D3DXMatrixPerspectiveFovLH(&matProj, fov, 1.0f, 1.0f, 500.0f);
     matView = m_Core->m_IMatrix * matView;
@@ -641,7 +642,7 @@ DTRACE();
             sharpen_run(*bm1,*bm0, 16);
 
             {
-                CBitmap *t = bm1;
+                CBitmap* t = bm1;
                 bm1 = bm0;
                 bm0 = t;
             }
@@ -721,7 +722,6 @@ void CMatrixMapStatic::SortBegin(void)
     objects_rite = g_MaxObjectsPerScreen >> 1;
 }
 
-
 void CMatrixMapStatic::SortEndRecalcTerainColor()
 {
 DTRACE();
@@ -733,7 +733,8 @@ void CMatrixMapStatic::CalcDistances(void)
     for(int i = objects_left; i < objects_rite; ++i)
     {
         // calc m_CamDistSq
-        objects[i]->m_CamDistSq = D3DXVec3LengthSq(&(g_MatrixMap->m_Camera.GetFrustumCenter() - objects[i]->m_Core->m_GeoCenter));
+        D3DXVECTOR3 temp = g_MatrixMap->m_Camera.GetFrustumCenter() - objects[i]->m_Core->m_GeoCenter;
+        objects[i]->m_CamDistSq = D3DXVec3LengthSq(&temp);
     }
 }
 
@@ -744,7 +745,8 @@ DTRACE();
     for(int i = objects_left; i < objects_rite; ++i)
     {
         // calc m_CamDistSq
-        objects[i]->m_CamDistSq = D3DXVec3LengthSq(&(g_MatrixMap->m_Camera.GetFrustumCenter() - objects[i]->m_Core->m_GeoCenter));
+        D3DXVECTOR3 temp = g_MatrixMap->m_Camera.GetFrustumCenter() - objects[i]->m_Core->m_GeoCenter;
+        objects[i]->m_CamDistSq = D3DXVec3LengthSq(&temp);
         objects[i]->Tact(step);
     }
 }
@@ -833,49 +835,53 @@ void CMatrixMapStatic::Sort(const D3DXMATRIX& sort)
     {
         idx = ((idx1-idx0) >> 1) + idx0;
         
-        if (m_Z < objects[idx]->m_Z)
+        if(m_Z < objects[idx]->m_Z)
         {
             //left
             if (idx == idx0) break;
             idx1 = idx;
-        } else
+        }
+        else
         {
             //rite
             ++idx;
-            if (idx == idx1) break;
+            if(idx == idx1) break;
             idx0 = idx;
         }
     }
 
-    if (noleft && norite)
+    if(noleft && norite)
     {
-        if (idx == objects_rite) return;    // far object
+        if(idx == objects_rite) return;    // far object
         --objects_rite;
         norite = false;
         goto insert;
     }
 
-    if (!norite && (idx == objects_rite))
+    if(!norite && (idx == objects_rite))
     {
         ++objects_rite;
         objects[idx] = this;
-    } else  if (!noleft && (idx == objects_left))
+    }
+    else if(!noleft && (idx == objects_left))
     {
         --objects_left;
         objects[idx-1] = this;
-    } else
+    }
+    else
     {
 insert:
         int lc = (idx-objects_left);
         int rc = (objects_rite-idx);
         bool expand_left = norite || ((lc <= rc) && !noleft);
 
-        if (expand_left)
+        if(expand_left)
         {
             memcpy(&objects[objects_left-1], &objects[objects_left], sizeof(PCMatrixMapStatic) * lc);
             --objects_left;
             objects[idx-1] = this;
-        } else
+        }
+        else
         {
             memcopy_back_dword(&objects[idx+1], &objects[idx], rc);
             ++objects_rite;
@@ -884,10 +890,9 @@ insert:
     }
 
     WillDraw();
-
 }
 
-CMatrixMapStatic * CMatrixMapStatic::GetVisObj(int i)
+CMatrixMapStatic* CMatrixMapStatic::GetVisObj(int i)
 {
     return objects[objects_left + i];
 }
@@ -897,7 +902,7 @@ int CMatrixMapStatic::GetVisObjCnt(void)
     return objects_rite - objects_left;
 }
 
-void CMatrixMapStatic::RemoveFromSorted(CMatrixMapStatic *ms)
+void CMatrixMapStatic::RemoveFromSorted(CMatrixMapStatic* ms)
 {
     for (int i=objects_left; i<objects_rite;++i)
     {

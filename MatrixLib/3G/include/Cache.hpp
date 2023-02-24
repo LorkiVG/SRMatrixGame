@@ -7,76 +7,81 @@
 
 class CCache;
 
-enum CacheClass { cc_Unknown = 0, cc_Texture, cc_TextureManaged, cc_VO };
+enum CacheClass {
+	cc_Unknown = 0,
+	cc_Texture,
+	cc_TextureManaged,
+	cc_VO
+};
 
 class CCacheData : public CMain {
-	public:
-		CCacheData* m_Prev;
-		CCacheData* m_Next;
-		CCache*     m_Cache;
+public:
+	CCacheData* m_Prev = nullptr;
+	CCacheData* m_Next = nullptr;
+	CCache*     m_Cache = nullptr;
 #ifdef _DEBUG
-		CCacheData* d_Prev;
-		CCacheData* d_Next;
-		const char* d_file;
-		int         d_line;
+	CCacheData* d_Prev = nullptr;
+	CCacheData* d_Next = nullptr;
+	const char* d_file = nullptr;
+	int         d_line = 0;
 #endif
 
-		CacheClass m_Type;
-		CWStr m_Name;
+	CacheClass m_Type = cc_Unknown;
+	CWStr m_Name = (CWStr)L"";
 
-		int m_Ref;			// Кол-во ссылок на эти данные. (Для временных данных)
+	int m_Ref = 0;			// Кол-во ссылок на эти данные. (Для временных данных)
 
-        static bool   m_dip;    // cache del in progress
+    static bool m_dip;    // cache del in progress
 
-	public:
-        static void StaticInit(void);
+public:
+    static void StaticInit();
 
-		CCacheData(void);
-        virtual ~CCacheData() {};
+	CCacheData() = default;
+    virtual ~CCacheData() {};
 
-		void RefInc(void)				{ ++m_Ref; }
-		void RefDec(void)				{ --m_Ref; ASSERT(m_Ref >= 0); }
-		int  Ref(void)					{ return m_Ref; }
-        bool RefDecUnload(void)	    	{ --m_Ref; if(m_Ref <= 0) { Unload(); return true; } return false; }
+	void RefInc()		  { ++m_Ref; }
+	void RefDec()		  { --m_Ref; ASSERT(m_Ref >= 0); }
+	int  Ref()			  { return m_Ref; }
+    bool RefDecUnload()	  { --m_Ref; if(m_Ref <= 0) { Unload(); return true; } return false; }
 
-		void Prepare(void);
+	void Prepare();
 
-		void LoadFromFile(CBuf& buf, const wchar* exts = nullptr);
+	void LoadFromFile(CBuf& buf, const wchar* exts = nullptr);
 
-		virtual bool IsLoaded(void) = 0;
-		virtual void Unload(void) = 0;
-		virtual void Load(void) = 0;
+	virtual bool IsLoaded() = 0;
+	virtual void Unload() = 0;
+	virtual void Load() = 0;
 };
 
 class CCache : public CMain {
-	public:
-		CCacheData* m_First;
-		CCacheData* m_Last;
+public:
+	CCacheData* m_First = nullptr;
+	CCacheData* m_Last = nullptr;
 
-	public:
-		CCache(void);
-		~CCache();
+public:
+	CCache();
+	~CCache();
 
 #ifdef _DEBUG
-        static void Dump(void);
+    static void Dump();
 #endif
 
-		void Add(CCacheData* cd);
-		void Delete(CCacheData* cd);
-		void Up(CCacheData* cd);
+	void Add(CCacheData* cd);
+	void Delete(CCacheData* cd);
+	void Up(CCacheData* cd);
 
-		void PreLoad(void);
+	void PreLoad();
 
-		CCacheData* Find(CacheClass cc, const wchar* name);
-		CCacheData* Get(CacheClass cc, const wchar* name);
+	CCacheData* Find(CacheClass cc, const wchar* name);
+	CCacheData* Get(CacheClass cc, const wchar* name);
 #ifdef _DEBUG
-		static CCacheData* Create(CacheClass cc, const char* file, int line);
+	static CCacheData* Create(CacheClass cc, const char* file, int line);
 #else
-		static CCacheData* Create(CacheClass cc);
+	static CCacheData* Create(CacheClass cc);
 #endif
-		static void Destroy(CCacheData * cd);
+	static void Destroy(CCacheData* cd);
 
-        void Clear(void);
+    void Clear();
 };
 
 #ifdef _DEBUG
@@ -95,8 +100,8 @@ extern CBlockPar* g_CacheData; // confusing name, but best of possible, imo
 extern CHeap* g_CacheHeap;
 extern const wchar* CacheExtsTex;
 
-void CacheInit(void);
-void CacheDeinit(void);
+void CacheInit();
+void CacheDeinit();
 
 //bool CacheFileGet(CWStr& outname, const wchar* mname, const wchar* exts = nullptr, bool withpar = false);
 void CacheReplaceFileExt(CWStr& outname, const wchar* mname, const wchar* ext = nullptr);

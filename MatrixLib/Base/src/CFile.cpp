@@ -644,7 +644,7 @@ void CFile::FindFiles(const CWStr& folderfrom, const wchar* files, ENUM_FILES ef
         CStr fn(folderfrom, folderfrom.GetHeap());
         if(fn.GetLen() > 0 && !(*(fn.Get() + fn.GetLen() - 1) == '\\' || (*(fn.Get() + fn.GetLen() - 1) == '/')))
         {
-            fn.Add(L"\\");
+            fn.Add("\\");
         }
         CStr fnf(fn, folderfrom.GetHeap());
 

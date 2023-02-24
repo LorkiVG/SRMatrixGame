@@ -84,7 +84,7 @@ class CMatrixHint : public CMain
     CPoint*           m_CopyPos;
     int               m_CopyPosCnt;
 
-    CMatrixHint(CTextureManaged* tex, int w, int h, const CWStr& si, const CWStr& so) :m_Texture(tex), m_Width(w), m_Height(h), m_CopyPos(nullptr), m_CopyPosCnt(0), m_SoundIn(si, g_MatrixHeap), m_SoundOut(so, g_MatrixHeap),
+    CMatrixHint(CTextureManaged* tex, int w, int h, const CWStr& si, const CWStr& so) :m_Texture(tex), m_Width(w), m_Height(h), m_CopyPos(nullptr), m_CopyPosCnt(0), m_SoundIn(si, Base::g_MatrixHeap), m_SoundOut(so, Base::g_MatrixHeap),
         m_Flags(0)
     {
         SetVisible(false);
@@ -96,7 +96,7 @@ class CMatrixHint : public CMain
 
     ~CMatrixHint()
     {
-        if(m_CopyPos) HFree(m_CopyPos, g_MatrixHeap);
+        if(m_CopyPos) HFree(m_CopyPos, Base::g_MatrixHeap);
 
         LIST_DEL(this, m_First, m_Last, m_Prev, m_Next);
         g_Cache->Destroy(m_Texture);
@@ -124,7 +124,7 @@ public:
     void Release(void)
     {
         SetVisible(false);
-        HDelete(CMatrixHint, this, g_MatrixHeap);
+        HDelete(CMatrixHint, this, Base::g_MatrixHeap);
     }
 
     void SoundIn(void) const

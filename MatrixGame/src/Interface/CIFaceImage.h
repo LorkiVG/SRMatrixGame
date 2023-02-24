@@ -11,17 +11,18 @@
 
 class CIFaceImage : public CMain {
 public:
-	CTextureManaged*    m_Image;
-    CWStr               m_strName;
-	float               m_xTexPos;
-	float               m_yTexPos;
-	float               m_TexWidth;
-	float               m_TexHeight;
-    float               m_Width;
-    float               m_Height;
-    IFaceElementType    m_Type;
-    CIFaceImage*        m_PrevImage, *m_NextImage;
-	
-    CIFaceImage();
-	~CIFaceImage();
+	CTextureManaged*  m_Image = nullptr;
+    CWStr             m_strName = (CWStr)L"";
+	float             m_xTexPos = 0.0f;
+	float             m_yTexPos = 0.0f;
+	float             m_TexWidth = 0.0f;
+	float             m_TexHeight = 0.0f;
+    float             m_Width = 0.0f;
+    float             m_Height = 0.0f;
+    IFaceElementType  m_Type = IFACE_IMAGE;
+	CIFaceImage*	  m_PrevImage = nullptr;
+	CIFaceImage*	  m_NextImage = nullptr;
+
+    CIFaceImage() = default;
+	~CIFaceImage() = default;
 };

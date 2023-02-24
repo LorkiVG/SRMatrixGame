@@ -144,7 +144,7 @@ public:
     void DisplaceTo(const D3DXVECTOR2& d) { m_Rot._41 = d.x; m_Rot._42 = d.y; }
     void SetScale(float scale) { m_Scale = scale; }
     float GetScale(void) const { return m_Scale; }
-    void SetAlpha(BYTE a) { m_Color = (m_Color & 0x00FFFFFF) | (a << 24); }
+    void SetAlpha(byte a) { m_Color = (m_Color & 0x00FFFFFF) | (a << 24); }
     void SetColor(dword c) { m_Color = c; }
 
     //static CTextureManaged* GetIntenseTex(void) { return m_SingleTex; }
@@ -164,7 +164,8 @@ class CSpriteLine : public CMain
     dword m_Color = 0;
     CTextureManaged* m_Tex = nullptr;
 
-    D3DXVECTOR3 m_Pos0 = { 0.0f, 0.0f, 0.0f }, m_Pos1 = { 0.0f, 0.0f, 0.0f };
+    D3DXVECTOR3 m_Pos0 = { 0.0f, 0.0f, 0.0f };
+    D3DXVECTOR3 m_Pos1 = { 0.0f, 0.0f, 0.0f };
 
 #ifdef _DEBUG
 public:
@@ -175,11 +176,11 @@ public:
 
 public:
     CSpriteLine() = default; //ќбъ€вление нужно, т.к. в некоторых местах вызываетс€ именно дефолтный конструктор
-    
-    #ifdef _DEBUG
-        CSpriteLine(TRACE_PARAM_DEF const D3DXVECTOR3& pos0, const D3DXVECTOR3& pos1, float width, dword color, CTextureManaged* tex) : m_file(_file), m_line(_line), release_called(false) {}
-    #endif
-        CSpriteLine(TRACE_PARAM_DEF const D3DXVECTOR3& pos0, const D3DXVECTOR3& pos1, float width, dword color, CTextureManaged* tex) : CMain(), m_Pos0(pos0), m_Pos1(pos1), m_Width(width), m_Color(color), m_Tex(tex) {}
+    CSpriteLine(TRACE_PARAM_DEF const D3DXVECTOR3& pos0, const D3DXVECTOR3& pos1, float width, dword color, CTextureManaged* tex) :
+#ifdef _DEBUG
+        m_file(_file), m_line(_line), release_called(false)
+#endif
+        CMain(), m_Pos0(pos0), m_Pos1(pos1), m_Width(width), m_Color(color), m_Tex(tex) {}
     ~CSpriteLine() = default;
 
     static void StaticInit() { m_First = nullptr; }
@@ -204,8 +205,8 @@ public:
     void SetAlpha(byte a) { m_Color = (m_Color & 0x00FFFFFF) | (a << 24); }
     void SetColor(dword c) { m_Color = c; }
 
-    const D3DXVECTOR3 & GetPos0() {return m_Pos0;}
-    const D3DXVECTOR3 & GetPos1() {return m_Pos1;}
+    const D3DXVECTOR3& GetPos0() { return m_Pos0; }
+    const D3DXVECTOR3& GetPos1() { return m_Pos1; }
 };
 
 #endif

@@ -33,7 +33,7 @@ void writedump(const char *txt)
 
 
 #ifdef ENABLE_HISTORY
-BYTE  CDebugTracer::m_history[HISTORY_SIZE*sizeof(SDebugCallInfo)];
+byte  CDebugTracer::m_history[HISTORY_SIZE*sizeof(SDebugCallInfo)];
 int             CDebugTracer::m_hist_start;
 int             CDebugTracer::m_hist_end;
 #endif

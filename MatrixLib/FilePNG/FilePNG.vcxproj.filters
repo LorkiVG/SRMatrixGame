@@ -1,75 +1,75 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\src\FilePNG.cpp">
+    <ClCompile Include="H:\My DLLs\MatrixGame\MatrixLib\FilePNG\src\FilePNG.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\png.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\png.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngerror.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngerror.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngget.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngget.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngmem.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngmem.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngpread.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngpread.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngread.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngread.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngrio.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngrio.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngrtran.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngrtran.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngrutil.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngrutil.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngset.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngset.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngtrans.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngtrans.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngvcrd.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngvcrd.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngwio.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngwio.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngwrite.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngwrite.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngwtran.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngwtran.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
-    <ClCompile Include="E:\!---KR---!\!PROGRAMS\MatrixGame\ThirdParty\LibPNG\src\pngwutil.c">
+    <ClCompile Include="H:\My DLLs\MatrixGame\ThirdParty\LibPNG\src\pngwutil.c">
       <Filter>LibPNG</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\include\FilePNG.hpp">
+    <ClInclude Include="H:\My DLLs\MatrixGame\MatrixLib\FilePNG\include\FilePNG.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\CMakeLists.txt" />
+    <CustomBuild Include="H:\My DLLs\MatrixGame\MatrixLib\FilePNG\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{B3CF259A-A598-306F-B6BC-87101911C952}</UniqueIdentifier>
+      <UniqueIdentifier>{C9870D56-155B-347E-8EAB-E7E8355E23F1}</UniqueIdentifier>
     </Filter>
     <Filter Include="LibPNG">
-      <UniqueIdentifier>{DAEA9AB3-B98C-3B50-A84B-A3F13E242863}</UniqueIdentifier>
+      <UniqueIdentifier>{976F5D7D-E442-303D-9D1C-6EAF910DC259}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{362BEE83-6A05-3870-B826-79902B12D5EE}</UniqueIdentifier>
+      <UniqueIdentifier>{37C61354-4281-3DC1-A384-C6AF8831C686}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

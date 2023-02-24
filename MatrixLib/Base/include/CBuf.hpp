@@ -101,31 +101,31 @@ public:
 	void ByteLoop(byte zn, int cnt) { if(cnt <= 0) return; TestAdd(cnt); memset(m_Buf + m_Pointer, zn, cnt); m_Pointer += cnt; }
 	void WordLoop(word zn, int cnt) { if(cnt <= 0) return; TestAdd(cnt * 2); for (int i = 0; i < cnt; ++i, m_Pointer += 2) *(word*)(m_Buf + m_Pointer) = zn; }
 
-	int StrLen(void);
-	CStr Str(void) { int len = StrLen(); char* abuf = (char*)(m_Buf + m_Pointer); m_Pointer += len + 1; if(m_Pointer > m_Len) m_Pointer = m_Len; if(len > 0) return CStr(abuf, len, m_Heap); else return CStr(m_Heap); }
+	int StrLen();
+	CStr Str() { int len = StrLen(); char* abuf = (char*)(m_Buf + m_Pointer); m_Pointer += len + 1; if(m_Pointer > m_Len) m_Pointer = m_Len; if(len > 0) return CStr(abuf, len, m_Heap); else return CStr(m_Heap); }
 	void Str(const CStr& str) { int len = str.Len(); if(len > 0) BufAdd(str.Get(), len + 1); else Byte(0); }
 	void Str(const char* str, int strlen) { if(strlen > 0) BufAdd(str, strlen); Byte(0); }
 	void Str(const char* str) { int len = (int)strlen(str); if(len > 0) BufAdd(str, len + 1); else Byte(0); }
 	void StrNZ(const CStr& str) { int len = str.Len(); if(len > 0) BufAdd(str.Get(), len); }
-	void StrNZ(const char* str, int len) { if(strlen > 0) BufAdd(str, len); }
+	void StrNZ(const char* str, int len) { if(len > 0) BufAdd(str, len); }
 	void StrNZ(const char* str) { int len = (int)strlen(str); if(len > 0) BufAdd(str, len); }
 
-	int WStrLen(void);
-	CWStr WStr(void)					        { int len=WStrLen(); wchar * abuf=(wchar *)(m_Buf+m_Pointer); m_Pointer+=((len+1)<<1); if(m_Pointer>m_Len) m_Pointer=m_Len; if(len>0) return CWStr(abuf,len,m_Heap); else return CWStr(m_Heap); }
-	void WStr(const CWStr & str)				{ int len=str.GetLen(); if(len>0) BufAdd(str.Get(),(len+1)<<1); else Word(0); }
-	void WStr(const wchar * str, int strlen)	{ if(strlen>0) BufAdd(str,strlen<<1); Word(0); }
-    void WStr(const wchar * str)				{ int len=Base::WStrLen(str); if(len>0) BufAdd(str,(len+1)<<1); else Word(0); }
-	void WStrNZ(const CWStr & str)			    { int len=str.GetLen(); if(len>0) BufAdd(str.Get(),len<<1); }
-	void WStrNZ(const wchar * str,int strlen)   { if(strlen>0) BufAdd(str,strlen<<1); }
-	void WStrNZ(const wchar * str)			    { int len=Base::WStrLen(str); if(len>0) BufAdd(str,len<<1); }
+	int WStrLen();
+	CWStr WStr()					            { int len=WStrLen(); wchar * abuf=(wchar *)(m_Buf+m_Pointer); m_Pointer+=((len+1)<<1); if(m_Pointer>m_Len) m_Pointer=m_Len; if(len>0) return CWStr(abuf,len,m_Heap); else return CWStr(m_Heap); }
+	void WStr(const CWStr& str)				    { int len=str.GetLen(); if(len>0) BufAdd(str.Get(),(len+1)<<1); else Word(0); }
+	void WStr(const wchar* str, int strlen)   	{ if(strlen>0) BufAdd(str,strlen<<1); Word(0); }
+    void WStr(const wchar* str)				    { int len=Base::WStrLen(str); if(len>0) BufAdd(str,(len+1)<<1); else Word(0); }
+	void WStrNZ(const CWStr& str)			    { int len=str.GetLen(); if(len>0) BufAdd(str.Get(),len<<1); }
+	void WStrNZ(const wchar* str,int strlen)    { if(strlen>0) BufAdd(str,strlen<<1); }
+	void WStrNZ(const wchar* str)			    { int len=Base::WStrLen(str); if(len>0) BufAdd(str,len<<1); }
 
-	int StrTextLen(void);
-	CStr StrText(void)					{ char ch; int len=StrTextLen(); char * abuf=(char *)(m_Buf+m_Pointer); m_Pointer+=len; if(m_Pointer<m_Len) { ch=*(char *)(m_Buf+m_Pointer); if(ch==0 || ch==0x0d || ch==0x0a) m_Pointer++; if(m_Pointer<m_Len) { ch=*(char *)(m_Buf+m_Pointer); if(ch==0 || ch==0x0d || ch==0x0a) m_Pointer++; } } if(len>0) return CStr(abuf,len, m_Heap); else return CStr(m_Heap); }
-	void StrText(CStr & str)			{ int len=str.Len(); if(len>0) BufAdd(str.Get(),len); Word(0x0a0d); }
+	int StrTextLen();
+	CStr StrText()					{ char ch; int len=StrTextLen(); char * abuf=(char *)(m_Buf+m_Pointer); m_Pointer+=len; if(m_Pointer<m_Len) { ch=*(char *)(m_Buf+m_Pointer); if(ch==0 || ch==0x0d || ch==0x0a) m_Pointer++; if(m_Pointer<m_Len) { ch=*(char *)(m_Buf+m_Pointer); if(ch==0 || ch==0x0d || ch==0x0a) m_Pointer++; } } if(len>0) return CStr(abuf,len, m_Heap); else return CStr(m_Heap); }
+	void StrText(CStr& str)			{ int len=str.Len(); if(len>0) BufAdd(str.Get(),len); Word(0x0a0d); }
 
-	int WStrTextLen(void);
-	CWStr WStrText(void)				{ wchar ch; int len=WStrTextLen(); wchar * abuf=(wchar *)(m_Buf+m_Pointer); m_Pointer+=len<<1; if(m_Pointer+1<m_Len) { ch=*(wchar *)(m_Buf+m_Pointer); if(ch==0 || ch==0x0d || ch==0x0a) m_Pointer+=2; if(m_Pointer+1<m_Len) { ch=*(wchar *)(m_Buf+m_Pointer); if(ch==0 || ch==0x0d || ch==0x0a) m_Pointer+=2; } } if(len>0) return CWStr(abuf,len,m_Heap); else return CWStr(m_Heap); }
-	void WStrText(CWStr & str)			{ int len=str.GetLen(); if(len>0) BufAdd(str.Get(),len<<1); Dword(0x000a000d); }
+	int WStrTextLen();
+	CWStr WStrText()				{ wchar ch; int len=WStrTextLen(); wchar * abuf=(wchar *)(m_Buf+m_Pointer); m_Pointer+=len<<1; if(m_Pointer+1<m_Len) { ch=*(wchar *)(m_Buf+m_Pointer); if(ch==0 || ch==0x0d || ch==0x0a) m_Pointer+=2; if(m_Pointer+1<m_Len) { ch=*(wchar *)(m_Buf+m_Pointer); if(ch==0 || ch==0x0d || ch==0x0a) m_Pointer+=2; } } if(len>0) return CWStr(abuf,len,m_Heap); else return CWStr(m_Heap); }
+	void WStrText(CWStr& str)       { int len=str.GetLen(); if(len>0) BufAdd(str.Get(),len<<1); Dword(0x000a000d); }
 
 	void LoadFromFile(const wchar * filename,int len);
 	void LoadFromFile(const wchar * filename)					{ LoadFromFile(filename,Base::WStrLen(filename)); }

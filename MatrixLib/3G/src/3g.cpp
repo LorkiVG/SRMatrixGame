@@ -19,7 +19,7 @@ ATOM g_WndA = 0;
 HWND g_Wnd = 0;
 bool g_WndExtern = false;
 dword g_WndOldProg = 0;
-CWStr* g_WndClassName;
+CWStr* g_WndClassName = nullptr;
 int g_ScreenX = 0, g_ScreenY = 0;
 D3DPRESENT_PARAMETERS g_D3Dpp; 
 //CReminder *g_Reminder;
@@ -73,36 +73,37 @@ D3DResource *D3DResource::m_Last;
 
 void D3DResource::StaticInit(void)
 {
-    m_IB_cnt=0;
-    m_VB_cnt=0;
-    m_TEX_cnt=0;
-    m_UID_current=0;
+    m_IB_cnt = 0;
+    m_VB_cnt = 0;
+    m_TEX_cnt = 0;
+    m_UID_current = 0;
     m_First = nullptr;
     m_Last = nullptr;
 }
 void D3DResource::Dump(D3DResType t)
 {
-    char    buf[65536];
+    char buf[65536];
     strcpy(buf, "D3D Dump\n");
-    D3DResource *el = m_First;
-    while (el)
+    D3DResource* el = m_First;
+    while(el)
     {
-        if (t == el->m_Type)
+        if(t == el->m_Type)
         {
             int l = strlen(buf);
-            if (l < 65000)
+            if(l < 65000)
             {
                 sprintf(buf + l, "%u : %s - %i\n",el->m_UID, el->m_File, el->m_Line);
             }
 
         }
+
         el = el->m_Next;
     }
 
     SFT(buf);
     //MessageBox(g_Wnd, buf, "D3D Dump", MB_ICONINFORMATION);
 
-    CBuf    b(g_CacheHeap);
+    CBuf b(g_CacheHeap);
     b.Len(strlen(buf));
     memcpy(b.Get(), &buf, strlen(buf));
     b.SaveInFile(L"debug_dump.txt");
@@ -111,47 +112,49 @@ void D3DResource::Dump(D3DResType t)
 
 CWStr CExceptionD3D::Info()
 {
-	return CException::Info()+L"Text: {"+CWStr((wchar *)DXGetErrorStringW(m_Error))+L"} "+CWStr((wchar *)DXGetErrorDescriptionW(m_Error));
+    return CException::Info() + L"Text: {" + CWStr((wchar*)DXGetErrorStringW(m_Error)) + L"} " + CWStr((wchar*)DXGetErrorDescriptionW(m_Error));
 }
 
-void L3GInitAsEXE(HINSTANCE hinst, CBlockPar & bpcfg, wchar * sysname, wchar * captionname)
+void L3GInitAsEXE(HINSTANCE hinst, CBlockPar& bpcfg, const wchar_t* sysname, const wchar_t* captionname)
 {
     RECT tr;
 
 	L3GDeinit();
 
-    g_DrawFPS=0;
-    g_DrawFPSMax_Period=(1000.0/50000.0);
-    g_DrawFPSCur=0;
-    g_DrawFPSTime=0;
-    g_TactTime=0;
+    g_DrawFPS = 0;
+    g_DrawFPSMax_Period = (1000.0 / 50000.0);
+    g_DrawFPSCur = 0;
+    g_DrawFPSTime = 0;
+    g_TactTime = 0;
 
-	g_HInst=hinst;
-	g_Wnd=nullptr;
-    g_WndExtern=false;
-
+    g_HInst = hinst;
+    g_Wnd = nullptr;
+    g_WndExtern = false;
 
 	int cntpar = bpcfg.Par(L"FullScreen").GetCountPar(L",");
-		
-	CWStr str(bpcfg.Par(L"Resolution"), g_CacheHeap);
-	if(str.GetCountPar(L",")<2) ERROR_E;
-	g_ScreenX=str.GetIntPar(0,L","); if(g_ScreenX<=0) g_ScreenX=1;
-	g_ScreenY=str.GetIntPar(1,L","); if(g_ScreenY<=0) g_ScreenY=1;
 
-    if (cntpar < 1) SETFLAG(g_Flags, GFLAG_FULLSCREEN);
-	else INITFLAG(g_Flags, GFLAG_FULLSCREEN, bpcfg.Par(L"FullScreen").GetIntPar(0,L",")==1);
+    CWStr str(bpcfg.Par(L"Resolution"), g_CacheHeap);
+    if(str.GetCountPar(L",") < 2) ERROR_E;
+    g_ScreenX = str.GetIntPar(0, L",");
+    if(g_ScreenX <= 0) g_ScreenX = 1;
+    g_ScreenY = str.GetIntPar(1, L",");
+    if(g_ScreenY <= 0) g_ScreenY = 1;
+
+    if(cntpar < 1) SETFLAG(g_Flags, GFLAG_FULLSCREEN);
+	else INITFLAG(g_Flags, GFLAG_FULLSCREEN, bpcfg.Par(L"FullScreen").GetIntPar(0, L",") == 1);
   
     int bpp;
-    if (cntpar < 2) bpp = 32;
-    else {
-        bpp = bpcfg.Par(L"FullScreen").GetIntPar(1,L",");
-        if (bpp != 16 && bpp != 32) bpp = 32;
+    if(cntpar < 2) bpp = 32;
+    else
+    {
+        bpp = bpcfg.Par(L"FullScreen").GetIntPar(1, L",");
+        if(bpp != 16 && bpp != 32) bpp = 32;
     }
 
     int refresh;
 
-    if (cntpar < 3) refresh = 0;
-    else refresh = bpcfg.Par(L"FullScreen").GetIntPar(2,L",");
+    if(cntpar < 3) refresh = 0;
+    else refresh = bpcfg.Par(L"FullScreen").GetIntPar(2, L",");
 
     g_WndClassName = HNew(g_CacheHeap) CWStr(sysname, g_CacheHeap);
     *g_WndClassName += L"_wc";
@@ -166,48 +169,51 @@ void L3GInitAsEXE(HINSTANCE hinst, CBlockPar & bpcfg, wchar * sysname, wchar * c
 	wcex.hInstance		= g_HInst;
 	wcex.hIcon			= nullptr;
 	wcex.hCursor		= LoadCursor(nullptr, IDC_ARROW);
-	wcex.hbrBackground	= 0;//(HBRUSH)(COLOR_WINDOW+1);
+	wcex.hbrBackground	= 0;//(HBRUSH)(COLOR_WINDOW + 1);
 	wcex.lpszMenuName	= nullptr;
 	wcex.lpszClassName	= classname.Get();
 	wcex.hIconSm		= nullptr;
-	if(!(g_WndA=RegisterClassEx(&wcex))) ERROR_E;
+    if(!(g_WndA = RegisterClassEx(&wcex))) ERROR_E;
 
-	tr.left=0; tr.top=0;
-	tr.right=g_ScreenX; tr.bottom=g_ScreenY;
-	if(!FLAG(g_Flags, GFLAG_FULLSCREEN)) {
-		AdjustWindowRectEx(&tr,WS_OVERLAPPED|WS_BORDER|WS_CAPTION|WS_SYSMENU,false,0);
-		g_Wnd = CreateWindow(classname.Get(), CStr(CWStr(captionname)).Get(), WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_BORDER, 
-							0, 0, tr.right-tr.left, tr.bottom-tr.top, nullptr, nullptr, g_HInst, nullptr);
-	} else {
-		g_Wnd = CreateWindow(classname.Get(), CStr(CWStr(captionname)).Get(), WS_POPUP, 
-							0, 0, tr.right-tr.left, tr.bottom-tr.top, nullptr, nullptr, g_HInst, nullptr);
-	}
-	if (!g_Wnd) ERROR_E;
+    tr.left = 0;
+    tr.top = 0;
+    tr.right = g_ScreenX;
+    tr.bottom = g_ScreenY;
 
-	GetClientRect(g_Wnd,&tr);
-	if((g_ScreenX!=(tr.right-tr.left)) || (g_ScreenY!=(tr.bottom-tr.top))) ERROR_S(L"Resolution error");
-    
+    if(!FLAG(g_Flags, GFLAG_FULLSCREEN))
+    {
+        AdjustWindowRectEx(&tr, WS_OVERLAPPED | WS_BORDER | WS_CAPTION | WS_SYSMENU, false, 0);
+        g_Wnd = CreateWindow(classname.Get(), CStr(CWStr(captionname)).Get(), WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER,
+            0, 0, tr.right - tr.left, tr.bottom - tr.top, nullptr, nullptr, g_HInst, nullptr);
+    }
+    else
+    {
+        g_Wnd = CreateWindow(classname.Get(), CStr(CWStr(captionname)).Get(), WS_POPUP,
+            0, 0, tr.right - tr.left, tr.bottom - tr.top, nullptr, nullptr, g_HInst, nullptr);
+    }
+    if(!g_Wnd) ERROR_E;
 
-    SetWindowLong(g_Wnd,GWL_WNDPROC,dword((WNDPROC)L3G_WndProc));
+    GetClientRect(g_Wnd, &tr);
+    if((g_ScreenX != (tr.right - tr.left)) || (g_ScreenY != (tr.bottom - tr.top))) ERROR_S(L"Resolution error");
 
+    SetWindowLong(g_Wnd, GWL_WNDPROC, dword((WNDPROC)L3G_WndProc));
 
-	IDirect3DSurface9 * surf;
-	g_D3DD->GetRenderTarget(0,&surf);
-	if (!(surf==nullptr)) g_D3DD->ColorFill(surf, nullptr, 0);
-	surf->Release();
+    IDirect3DSurface9* surf;
+    g_D3DD->GetRenderTarget(0, &surf);
+    if(!(surf == nullptr)) g_D3DD->ColorFill(surf, nullptr, 0);
+    surf->Release();
 
-	dword interval = D3DPRESENT_INTERVAL_IMMEDIATE;
+    dword interval = D3DPRESENT_INTERVAL_IMMEDIATE;
 
-	ZeroMemory( &g_D3Dpp, sizeof(g_D3Dpp) );
-	D3DDISPLAYMODE d3ddm;
+    ZeroMemory(&g_D3Dpp, sizeof(g_D3Dpp));
+    D3DDISPLAYMODE d3ddm;
 
 	if(!FLAG(g_Flags, GFLAG_FULLSCREEN))
     {
-
-	    ASSERT_DX(g_D3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT,&d3ddm));
+	    ASSERT_DX(g_D3D->GetAdapterDisplayMode(D3DADAPTER_DEFAULT, &d3ddm));
         if(d3ddm.Format == D3DFMT_X8R8G8B8)
         {
-            d3ddm.Format=D3DFMT_A8R8G8B8;
+            d3ddm.Format = D3DFMT_A8R8G8B8;
             bpp = 32;
         }
         else
@@ -227,11 +233,13 @@ void L3GInitAsEXE(HINSTANCE hinst, CBlockPar & bpcfg, wchar * sysname, wchar * c
 				
         g_D3Dpp.BackBufferWidth  = g_ScreenX;
         g_D3Dpp.BackBufferHeight = g_ScreenY;
-	} else {
+	}
+    else
+    {
 		g_D3Dpp.Windowed = FALSE;
 		//g_D3Dpp.SwapEffect = D3DSWAPEFFECT_DISCARD;
 		g_D3Dpp.SwapEffect = D3DSWAPEFFECT_FLIP;
-        g_D3Dpp.BackBufferFormat = (bpp==16)?D3DFMT_R5G6B5:D3DFMT_A8R8G8B8;
+        g_D3Dpp.BackBufferFormat = (bpp == 16) ? D3DFMT_R5G6B5 : D3DFMT_A8R8G8B8;
 		g_D3Dpp.EnableAutoDepthStencil = TRUE;
 		g_D3Dpp.AutoDepthStencilFormat = D3DFMT_D24S8;
 		g_D3Dpp.PresentationInterval = interval; // vsync off
@@ -247,8 +255,8 @@ void L3GInitAsEXE(HINSTANCE hinst, CBlockPar & bpcfg, wchar * sysname, wchar * c
     g_D3Dpp.hDeviceWindow = g_Wnd;
 
     // Set default settings
-    UINT AdapterToUse=D3DADAPTER_DEFAULT;
-    D3DDEVTYPE DeviceType=D3DDEVTYPE_HAL;
+    UINT AdapterToUse = D3DADAPTER_DEFAULT;
+    D3DDEVTYPE DeviceType = D3DDEVTYPE_HAL;
 	
 
     SETFLAG(g_Flags, GFLAG_STENCILAVAILABLE);
@@ -274,40 +282,40 @@ void L3GInitAsEXE(HINSTANCE hinst, CBlockPar & bpcfg, wchar * sysname, wchar * c
 #endif
 }
 
-void L3GInitAsDLL(HINSTANCE hinst, CBlockPar & bpcfg, wchar * sysname, wchar * captionname, HWND hwnd, long FDirect3D, long FD3DDevice)
+void L3GInitAsDLL(HINSTANCE hinst, CBlockPar& bpcfg, const wchar_t* sysname, const wchar_t* captionname, HWND hwnd, long FDirect3D, long FD3DDevice)
 {
     //RECT tr;
 
-	L3GDeinit();
+    L3GDeinit();
 
-    g_DrawFPS=0;
-    g_DrawFPSMax_Period=(1000.0/50000.0);
-    g_DrawFPSCur=0;
-    g_DrawFPSTime=0;
-    g_TactTime=0;
+    g_DrawFPS = 0;
+    g_DrawFPSMax_Period = (1000.0 / 50000.0);
+    g_DrawFPSCur = 0;
+    g_DrawFPSTime = 0;
+    g_TactTime = 0;
 
-	g_HInst=hinst;
-	g_Wnd=hwnd;
-    g_WndExtern=true;
+    g_HInst = hinst;
+    g_Wnd = hwnd;
+    g_WndExtern = true;
 
-	g_D3D=(IDirect3D9*)FDirect3D;
-	g_D3DD=(IDirect3DDevice9*)FD3DDevice;
-	
-    g_WndOldProg=GetWindowLong(g_Wnd,GWL_WNDPROC);
+    g_D3D = (IDirect3D9*)FDirect3D;
+    g_D3DD = (IDirect3DDevice9*)FD3DDevice;
+
+    g_WndOldProg = GetWindowLong(g_Wnd, GWL_WNDPROC);
     if(g_WndOldProg == 0) ERROR_E;
-    if(SetWindowLong(g_Wnd,GWL_WNDPROC,dword((WNDPROC)L3G_WndProc))==0) ERROR_E;
+    if(SetWindowLong(g_Wnd, GWL_WNDPROC, dword((WNDPROC)L3G_WndProc)) == 0) ERROR_E;
 
-	/*IDirect3DSurface9 * surf;
-	g_D3DD->GetRenderTarget(0,&surf);
-	if (!(surf==nullptr)) g_D3DD->ColorFill(surf, nullptr, 0);
-	surf->Release();*/
+    /*IDirect3DSurface9 * surf;
+    g_D3DD->GetRenderTarget(0,&surf);
+    if (!(surf==nullptr)) g_D3DD->ColorFill(surf, nullptr, 0);
+    surf->Release();*/
 
-	ASSERT_DX(g_D3DD->GetDeviceCaps(&g_D3DDCaps));
+    ASSERT_DX(g_D3DD->GetDeviceCaps(&g_D3DDCaps));
 
-    INITFLAG(g_Flags, GFLAG_GAMMA, g_D3DDCaps.Caps2&D3DCAPS2_CANCALIBRATEGAMMA);
+    INITFLAG(g_Flags, GFLAG_GAMMA, g_D3DDCaps.Caps2 & D3DCAPS2_CANCALIBRATEGAMMA);
 
     if(FLAG(g_Flags, GFLAG_GAMMA)) g_D3DD->GetGammaRamp(0, &g_StoreRamp0);
-    
+
     g_AvailableTexMem = g_D3DD->GetAvailableTextureMem() / (1024 * 1024);
 
 #ifdef DO_SMART_COLOROPS

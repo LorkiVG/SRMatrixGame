@@ -19,5 +19,5 @@ public:
     bool OnMouseRBDown();
 
     CIFaceStatic();
-	~CIFaceStatic();
+	~CIFaceStatic() = default;
 };

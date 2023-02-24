@@ -38,8 +38,8 @@ void CMatrixDebugInfo::Draw()
             r.top = y;
             r.bottom = y + DI_KEY_H;
 
-            BYTE a = 255;
-            if(m_Items[i].ttl < 1000) a = (BYTE)Float2Int(float(m_Items[i].ttl) * 0.255f);
+            byte a = 255;
+            if(m_Items[i].ttl < 1000) a = (byte)Float2Int(float(m_Items[i].ttl) * 0.255f);
 
             dword color = (a << 24) | 0xFFFFFF;
 

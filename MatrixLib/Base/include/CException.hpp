@@ -30,9 +30,9 @@ class CWStr;
 //lint -e1712
 class BASE_API CException
 {
-	const char* m_File;
-	int m_Line;
-    char call_trace[65536];
+	const char* m_File = nullptr;
+	int         m_Line = 0;
+	char        call_trace[65536] = { 0 };
 
 public:
 	CException(const char* file, int line) : m_File(file), m_Line(line) { CreateCallTrace(); }

@@ -206,7 +206,7 @@ public:
         ModuleClear();
         if(m_ShadowProj)
         {
-            HDelete(CVOShadowProj, m_ShadowProj, g_MatrixHeap);
+            HDelete(CVOShadowProj, m_ShadowProj, Base::g_MatrixHeap);
             m_ShadowProj = nullptr;
         }
     }

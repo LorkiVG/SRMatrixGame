@@ -42,7 +42,7 @@ void CMatrixMapGroup::MarkAllBuffersNoNeed(void)
 #pragma warning (disable : 4355)
 CMatrixMapGroup::CMatrixMapGroup(void) : CMain(), m_RemindCore(FreeResources, (dword)this)
 {
-    memset(((BYTE*)this) + sizeof(m_RemindCore) + sizeof(CMain), 0, sizeof(CMatrixMapGroup)-sizeof(m_RemindCore)-sizeof(CMain));
+    memset(((byte*)this) + sizeof(m_RemindCore) + sizeof(CMain), 0, sizeof(CMatrixMapGroup)-sizeof(m_RemindCore)-sizeof(CMain));
 
     if(m_BigVB_bottom == nullptr) m_BigVB_bottom = CBigVB<SMatrixMapVertexBottom>::NewBigVB(g_MatrixHeap);
 
@@ -227,7 +227,7 @@ bool CMatrixMapGroup::IsInFrustum() const
     //return g_MatrixMap->IsInFrustum((mins+maxs) * 0.5f);
 }
 
-void CMatrixMapGroup::BuildBottom(int x, int y, BYTE *rawbottom)
+void CMatrixMapGroup::BuildBottom(int x, int y, byte *rawbottom)
 {
 DTRACE();
 
@@ -426,7 +426,7 @@ void CMatrixMapGroup::BuildWater(int x, int y)
                 else
                     if (wz > up_level) zz = 0;
                     else
-                        zz = BYTE(255 - int(((wz-down_level)/(up_level-down_level) * 255.0f)));
+                        zz = byte(255 - int(((wz-down_level)/(up_level-down_level) * 255.0f)));
 
                 *(shade + (j * lr.Pitch) + (i * pxsz) + (pxsz-1)) = zz;
                 //shade[i+j*alphasize] = (int(zz) << shift);
@@ -664,20 +664,22 @@ void CMatrixMapGroup::DrawBBox(void)
 #endif
 //////// objects
 
-CMatrixMapStatic * CMatrixMapGroup::FindObjectAny(dword mask, const D3DXVECTOR2 &pos, float maxdist, float scale_radius, int &i)
+CMatrixMapStatic* CMatrixMapGroup::FindObjectAny(dword mask, const D3DXVECTOR2& pos, float maxdist, float scale_radius, int& i)
 {
-    DTRACE();
-    //float dmax = maxdist*maxdist;
-//    float mindist = maxdist * 2;
-    CMatrixMapStatic **ms = m_Objects + i;
-    int cnt = m_ObjectsContained - i;
-    for (;cnt-- > 0;++ms)
-    {
-        if (!(*ms)->FitToMask(mask)) continue;
+DTRACE();
 
-        float dist = D3DXVec2Length(&(*(D3DXVECTOR2 *)&(*ms)->GetGeoCenter() - pos)) - (*ms)->GetRadius()*scale_radius;
-        //if (dist< 0) dist = 0;
-        if (dist < maxdist)
+    //float dmax = maxdist*maxdist;
+    //float mindist = maxdist * 2;
+    CMatrixMapStatic** ms = m_Objects + i;
+    int cnt = m_ObjectsContained - i;
+    for(; cnt-- > 0; ++ms)
+    {
+        if(!(*ms)->FitToMask(mask)) continue;
+
+        D3DXVECTOR2 temp = *(D3DXVECTOR2*)&(*ms)->GetGeoCenter() - pos;
+        float dist = D3DXVec2Length(&temp) - (*ms)->GetRadius()*scale_radius;
+        //if(dist< 0) dist = 0;
+        if(dist < maxdist)
         {
             i = ms - m_Objects + 1;
             return *ms;
@@ -686,20 +688,22 @@ CMatrixMapStatic * CMatrixMapGroup::FindObjectAny(dword mask, const D3DXVECTOR2 
     return nullptr;
 }
 
-CMatrixMapStatic * CMatrixMapGroup::FindObjectAny(dword mask, const D3DXVECTOR3 &pos, float maxdist, float scale_radius, int &i)
+CMatrixMapStatic* CMatrixMapGroup::FindObjectAny(dword mask, const D3DXVECTOR3& pos, float maxdist, float scale_radius, int& i)
 {
-    DTRACE();
-    //float dmax = maxdist*maxdist;
-//    float mindist = maxdist * 2;
-    CMatrixMapStatic **ms = m_Objects + i;
-    int cnt = m_ObjectsContained - i;
-    for (;cnt-- > 0;++ms)
-    {
-        if (!(*ms)->FitToMask(mask)) continue;
+DTRACE();
 
-        float dist = D3DXVec3Length(&((*ms)->GetGeoCenter() - pos)) - (*ms)->GetRadius()*scale_radius;
-        //if (dist< 0) dist = 0;
-        if (dist < maxdist)
+    //float dmax = maxdist*maxdist;
+    //float mindist = maxdist * 2;
+    CMatrixMapStatic** ms = m_Objects + i;
+    int cnt = m_ObjectsContained - i;
+    for(; cnt-- > 0; ++ms)
+    {
+        if(!(*ms)->FitToMask(mask)) continue;
+
+        D3DXVECTOR3 temp = (*ms)->GetGeoCenter() - pos;
+        float dist = D3DXVec3Length(&temp) - (*ms)->GetRadius()*scale_radius;
+        //if(dist< 0) dist = 0;
+        if(dist < maxdist)
         {
             i = ms - m_Objects + 1;
             return *ms;
@@ -731,27 +735,28 @@ void CMatrixMapGroup::SortObjects(const D3DXMATRIX &sort)
 
 void CMatrixMapGroup::PauseTact(int step)
 {
-    m_CamDistSq = D3DXVec3LengthSq(&(g_MatrixMap->m_Camera.GetFrustumCenter() - D3DXVECTOR3(0.5f *(p0.x+p1.x), 0.5f *(p0.y+p1.y), 0.5f *(m_minz + m_maxz))));
+    D3DXVECTOR3 temp = g_MatrixMap->m_Camera.GetFrustumCenter() - D3DXVECTOR3(0.5f * (p0.x + p1.x), 0.5f * (p0.y + p1.y), 0.5f * (m_minz + m_maxz));
+    m_CamDistSq = D3DXVec3LengthSq(&temp);
 }
 
 void CMatrixMapGroup::GraphicTact(int step)
 {
     // inshore waves...
+    D3DXVECTOR3 temp = g_MatrixMap->m_Camera.GetFrustumCenter() - D3DXVECTOR3(0.5f * (p0.x + p1.x), 0.5f * (p0.y + p1.y), 0.5f * (m_minz + m_maxz));
+    m_CamDistSq = D3DXVec3LengthSq(&temp);
 
-    m_CamDistSq = D3DXVec3LengthSq(&(g_MatrixMap->m_Camera.GetFrustumCenter() - D3DXVECTOR3(0.5f *(p0.x+p1.x), 0.5f *(p0.y+p1.y), 0.5f *(m_minz + m_maxz))));
-
-    if (!HasWater()) return;
-    if (m_PreInshorewavesCnt == 0) return;
+    if(!HasWater()) return;
+    if(m_PreInshorewavesCnt == 0) return;
 
     float time = INSHORE_SPEED * float(step);
-    if (time > 0.5f) time = 0.5f;
+    if(time > 0.5f) time = 0.5f;
     int i = 0;
-    while (i<m_InshorewavesCnt)
+    while(i < m_InshorewavesCnt)
     {
         m_Inshorewaves[i].t += time * m_Inshorewaves[i].speed;
-        m_Inshorewaves[i].scale = 13 + KSCALE(m_Inshorewaves[i].t,0,0.7f) * 7;
+        m_Inshorewaves[i].scale = 13 + KSCALE(m_Inshorewaves[i].t, 0, 0.7f) * 7;
 
-        if (m_Inshorewaves[i].t > 1.0f)
+        if(m_Inshorewaves[i].t > 1.0f)
         {
             m_PreInshorewaves[m_Inshorewaves[i].m_Index].used = false;
             m_Inshorewaves[i].Release();
@@ -762,10 +767,10 @@ void CMatrixMapGroup::GraphicTact(int step)
         ++i;
     }
 
-    if (m_InshorewavesCnt >= INSHOREWAVES_CNT) return;
+    if(m_InshorewavesCnt >= INSHOREWAVES_CNT) return;
 
     int idx = IRND(m_PreInshorewavesCnt);
-    if (!m_PreInshorewaves[idx].used)
+    if(!m_PreInshorewaves[idx].used)
     {
         SInshorewave::Create(idx, m_PreInshorewaves[idx].pos, m_PreInshorewaves[idx].dir ,m_Inshorewaves[m_InshorewavesCnt]);
         m_PreInshorewaves[idx].used = true;
@@ -984,7 +989,7 @@ bool CMatrixMapGroup::Pick(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &_dir, floa
 
     }
 
-    BYTE *vflags = (BYTE *)_alloca(m_VertsTraceCnt);
+    byte *vflags = (byte *)_alloca(m_VertsTraceCnt);
 
     D3DXVECTOR3 * cv;
     
@@ -1010,8 +1015,8 @@ bool CMatrixMapGroup::Pick(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &_dir, floa
                 float coord[2] = {cv->y + cv->x * k[0] - coordc[0], cv->z + cv->x * k[1] - coordc[1]};
                 dword t0 = *((dword *)&coord[0]);
                 dword t1 = *((dword *)&coord[1]);
-                BYTE r0 = (BYTE((t0 >> 31) + 1) & BYTE(((t0&0x7FFFFFF)==0)?0:-1)); 
-                BYTE r1 = (BYTE(((t1 >> 31) + 1)<<2) & BYTE(((t1&0x7FFFFFF)==0)?0:-1));
+                byte r0 = (byte((t0 >> 31) + 1) & byte(((t0&0x7FFFFFF)==0)?0:-1)); 
+                byte r1 = (byte(((t1 >> 31) + 1)<<2) & byte(((t1&0x7FFFFFF)==0)?0:-1));
 
                 *(vflags+i) = r0 | r1;
             }
@@ -1036,8 +1041,8 @@ bool CMatrixMapGroup::Pick(const D3DXVECTOR3 &pos, const D3DXVECTOR3 &_dir, floa
                 float coord[2] = {cv->x + cv->y * k[0] - coordc[0], cv->z + cv->y * k[1] - coordc[1]};
                 dword t0 = *((dword *)&coord[0]);
                 dword t1 = *((dword *)&coord[1]);
-                BYTE r0 = (BYTE((t0 >> 31) + 1) & BYTE(((t0&0x7FFFFFF)==0)?0:-1)); 
-                BYTE r1 = (BYTE(((t1 >> 31) + 1)<<2) & BYTE(((t1&0x7FFFFFF)==0)?0:-1));
+                byte r0 = (byte((t0 >> 31) + 1) & byte(((t0&0x7FFFFFF)==0)?0:-1)); 
+                byte r1 = (byte(((t1 >> 31) + 1)<<2) & byte(((t1&0x7FFFFFF)==0)?0:-1));
 
                 *(vflags+i) = r0 | r1;
             }
@@ -1059,8 +1064,8 @@ calcxy:
                 float coord[2] = {cv->x + cv->z * k[0] - coordc[0], cv->y + cv->z * k[1] - coordc[1]};
                 dword t0 = *((dword *)&coord[0]);
                 dword t1 = *((dword *)&coord[1]);
-                BYTE r0 = (BYTE((t0 >> 31) + 1) & BYTE(((t0&0x7FFFFFF)==0)?0:-1)); 
-                BYTE r1 = (BYTE(((t1 >> 31) + 1)<<2) & BYTE(((t1&0x7FFFFFF)==0)?0:-1));
+                byte r0 = (byte((t0 >> 31) + 1) & byte(((t0&0x7FFFFFF)==0)?0:-1)); 
+                byte r1 = (byte(((t1 >> 31) + 1)<<2) & byte(((t1&0x7FFFFFF)==0)?0:-1));
 
                 *(vflags+i) = r0 | r1;
             }

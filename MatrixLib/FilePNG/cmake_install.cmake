@@ -1,4 +1,4 @@
-# Install script for directory: E:/!---KR---!/!PROGRAMS/MatrixGame/MatrixLib/FilePNG
+# Install script for directory: H:/My DLLs/MatrixGame/MatrixLib/FilePNG
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

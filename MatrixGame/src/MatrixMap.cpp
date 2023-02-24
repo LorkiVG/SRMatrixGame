@@ -35,8 +35,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-CMatrixMap::CMatrixMap() : CMain(), m_Console(), m_Camera(), m_AllObjects(g_MatrixHeap, 1024), m_RoadNetwork(g_MatrixHeap),
-m_WaterName(g_MatrixHeap), m_DialogModeHints(g_MatrixHeap)
+CMatrixMap::CMatrixMap() : CMain(), m_Console(), m_Camera(), m_AllObjects(Base::g_MatrixHeap, 1024), m_RoadNetwork(Base::g_MatrixHeap), m_DialogModeHints(Base::g_MatrixHeap)
 {
     //m_LightMain = { 250.0f, -50.0f, -250.0f };
     D3DXVec3Normalize(&m_LightMain, &m_LightMain);
@@ -52,14 +51,14 @@ m_WaterName(g_MatrixHeap), m_DialogModeHints(g_MatrixHeap)
     CBlockPar* repl = g_MatrixData->BlockGetNE(PAR_REPLACE);
     if(repl)
     {
-        CWStr t1(repl->ParGetNE(PAR_REPLACE_DIFFICULTY), g_MatrixHeap);
+        CWStr t1(repl->ParGetNE(PAR_REPLACE_DIFFICULTY), Base::g_MatrixHeap);
 
         if(!t1.IsEmpty())
         {
             CBlockPar* dif = g_MatrixData->BlockGet(BLOCK_PATH_MAIN_CONFIG)->BlockGetNE(PAR_SOURCE_DIFFICULTY);
             if(dif)
             {
-                CWStr t2(g_MatrixHeap);
+                CWStr t2(Base::g_MatrixHeap);
                 t2 = dif->ParGetNE(t1);
                 if(!t2.IsEmpty())
                 {
@@ -102,7 +101,7 @@ void CMatrixMap::Clear()
         {
             m_EffectSpawners[i].~CEffectSpawner();
         }
-        HFree(m_EffectSpawners, g_MatrixHeap);
+        HFree(m_EffectSpawners, Base::g_MatrixHeap);
     }
     m_EffectSpawnersCnt = 0;
     m_EffectSpawners = nullptr;
@@ -129,14 +128,14 @@ void CMatrixMap::Clear()
 
     if (m_DeviceState != nullptr)
     {
-        HDelete(CDeviceState, m_DeviceState, g_MatrixHeap);
+        HDelete(CDeviceState, m_DeviceState, Base::g_MatrixHeap);
         m_DeviceState = nullptr;
     }
 }
 
 void CMatrixMap::IdsClear()
 {
-    DTRACE();
+DTRACE();
 
 	if(m_Ids)
     {
@@ -145,7 +144,7 @@ void CMatrixMap::IdsClear()
             m_Ids[i].~CWStr();
 		}
 
-        HFree(m_Ids, g_MatrixHeap);
+        HFree(m_Ids, Base::g_MatrixHeap);
         m_Ids = nullptr;
 	}
 
@@ -159,7 +158,7 @@ void CMatrixMap::RobotPreload(void)
     g_LoadProgress->InitCurLP(ROBOT_HULLS_COUNT + ROBOT_CHASSIS_COUNT + ROBOT_HEADS_COUNT + ROBOT_WEAPONS_COUNT);
     int curlp = 0;
 
-    CWStr tstr(g_MatrixHeap), tstr2(g_MatrixHeap), part(g_MatrixHeap);
+    CWStr tstr(Base::g_MatrixHeap), tstr2(Base::g_MatrixHeap), part(Base::g_MatrixHeap);
 
     for(int i = 1; i <= ROBOT_HULLS_COUNT; ++i)
     {
@@ -203,9 +202,9 @@ void CMatrixMap::RobotPreload(void)
 
 void CMatrixMap::ModuleClear(void)
 {
-    if(m_Module != nullptr) { HFree(m_Module, g_MatrixHeap); m_Module = nullptr; }
-    if(m_Point != nullptr) { HFree(m_Point, g_MatrixHeap); m_Point = nullptr; }
-    if(m_Move != nullptr) { HFree(m_Move, g_MatrixHeap); m_Move = nullptr; }
+    if(m_Module != nullptr) { HFree(m_Module, Base::g_MatrixHeap); m_Module = nullptr; }
+    if(m_Point != nullptr) { HFree(m_Point, Base::g_MatrixHeap); m_Point = nullptr; }
+    if(m_Move != nullptr) { HFree(m_Move, Base::g_MatrixHeap); m_Move = nullptr; }
 }
 
 void CMatrixMap::UnitInit(int sx, int sy)
@@ -218,11 +217,11 @@ void CMatrixMap::UnitInit(int sx, int sy)
     m_SizeMove.y = sy * MOVE_CNT;
     int cnt = sx * sy;
 
-    m_Module = (SMatrixMapUnit*)HAllocClear(sizeof(SMatrixMapUnit) * cnt, g_MatrixHeap);
+    m_Module = (SMatrixMapUnit*)HAllocClear(sizeof(SMatrixMapUnit) * cnt, Base::g_MatrixHeap);
 
-    m_Point = (SMatrixMapPoint*)HAllocClear(sizeof(SMatrixMapPoint) * (sx + 1) * (sy + 1), g_MatrixHeap);
+    m_Point = (SMatrixMapPoint*)HAllocClear(sizeof(SMatrixMapPoint) * (sx + 1) * (sy + 1), Base::g_MatrixHeap);
 
-    m_Move = (SMatrixMapMove*)HAllocClear(sizeof(SMatrixMapMove) * m_SizeMove.x * m_SizeMove.y, g_MatrixHeap);
+    m_Move = (SMatrixMapMove*)HAllocClear(sizeof(SMatrixMapMove) * m_SizeMove.x * m_SizeMove.y, Base::g_MatrixHeap);
 
     /*
 	SMatrixMapUnit* un = m_Module;
@@ -522,7 +521,6 @@ void CMatrixMap::GetNormal(D3DXVECTOR3* out, float wx, float wy, bool check_wate
         goto water;
     }
 
-
     float kx = scaledx - float(x);
     float ky = scaledy - float(y);
 
@@ -536,7 +534,8 @@ void CMatrixMap::GetNormal(D3DXVECTOR3* out, float wx, float wy, bool check_wate
     D3DXVECTOR3 v1 = LERPVECTOR(kx, mp0->n, mp1->n);
     D3DXVECTOR3 v2 = LERPVECTOR(kx, mp2->n, mp3->n);
 
-    D3DXVec3Normalize(out, &(LERPVECTOR(ky, v1, v2)));
+    D3DXVECTOR3 temp = LERPVECTOR(ky, v1, v2);
+    D3DXVec3Normalize(out, &temp);
 }
 
 bool CMatrixMap::UnitPick(const D3DXVECTOR3& orig, const D3DXVECTOR3& dir, const CRect& ar, int* ox, int* oy, float* ot)
@@ -629,11 +628,15 @@ bool CMatrixMap::PointPick(const D3DXVECTOR3& orig, const D3DXVECTOR3& dir, cons
 bool CMatrixMap::UnitPickGrid(const D3DXVECTOR3& orig, const D3DXVECTOR3& dir, int* ox, int* oy)
 {
     D3DXPLANE pl;
-    D3DXPlaneFromPoints(&pl, &D3DXVECTOR3(0, 0, 0), &D3DXVECTOR3(1.0f, 0, 0), &D3DXVECTOR3(0, 1.0f, 0));
+    D3DXVECTOR3 temp1 = { 0.0f, 0.0f, 0.0f };
+    D3DXVECTOR3 temp2 = { 1.0f, 0.0f, 0.0f };
+    D3DXVECTOR3 temp3 = { 0.0f, 1.0f, 0.0f };
+    D3DXPlaneFromPoints(&pl, &temp1, &temp2, &temp3);
     //D3DXPlaneNormalize(&pl, &pl);
 
     D3DXVECTOR3 v;
-    if(D3DXPlaneIntersectLine(&v, &pl, &orig, &(orig + dir * 1000000.0f)) == nullptr) return false;
+    temp1 = orig + dir * 1000000.0f;
+    if(D3DXPlaneIntersectLine(&v, &pl, &orig, &temp1) == nullptr) return false;
 
     if(ox != nullptr) *ox = TruncFloat(v.x / GLOBAL_SCALE);
     if(oy != nullptr) *oy = TruncFloat(v.y / GLOBAL_SCALE);
@@ -644,11 +647,15 @@ bool CMatrixMap::UnitPickGrid(const D3DXVECTOR3& orig, const D3DXVECTOR3& dir, i
 bool CMatrixMap::UnitPickWorld(const D3DXVECTOR3& orig, const D3DXVECTOR3& dir, float* ox, float* oy)
 {
     D3DXPLANE pl;
-    D3DXPlaneFromPoints(&pl, &D3DXVECTOR3(0, 0, 0), &D3DXVECTOR3(1.0f, 0, 0), &D3DXVECTOR3(0, 1.0f, 0));
+    D3DXVECTOR3 temp1 = { 0.0f, 0.0f, 0.0f };
+    D3DXVECTOR3 temp2 = { 1.0f, 0.0f, 0.0f };
+    D3DXVECTOR3 temp3 = { 0.0f, 1.0f, 0.0f };
+    D3DXPlaneFromPoints(&pl, &temp1, &temp2, &temp3);
     //D3DXPlaneNormalize(&pl, &pl);
 
     D3DXVECTOR3 v;
-    if(D3DXPlaneIntersectLine(&v, &pl, &orig, &(orig + dir * 1000000.0f)) == nullptr) return false;
+    temp1 = orig + dir * 1000000.0f;
+    if(D3DXPlaneIntersectLine(&v, &pl, &orig, &temp1) == nullptr) return false;
 
     if(ox != nullptr) *ox = v.x;
     if(oy != nullptr) *oy = v.y;
@@ -712,27 +719,27 @@ void CMatrixMap::StaticDelete(CMatrixMapStatic* ms)
 
 	if(ms->GetObjectType() == OBJECT_TYPE_MAPOBJECT)
     {
-        HDelete(CMatrixMapObject, (CMatrixMapObject*)ms, g_MatrixHeap);
+        HDelete(CMatrixMapObject, (CMatrixMapObject*)ms, Base::g_MatrixHeap);
         //delete (CMatrixMapObject*)ms;
     }
     else if(ms->IsRobot())
     {
-        HDelete(CMatrixRobotAI, (CMatrixRobotAI*)ms, g_MatrixHeap);
+        HDelete(CMatrixRobotAI, (CMatrixRobotAI*)ms, Base::g_MatrixHeap);
         //delete (CMatrixRobotAI*)ms;
     }
     else if(ms->IsCannon())
     {
-        HDelete(CMatrixCannon, (CMatrixCannon*)ms, g_MatrixHeap);
+        HDelete(CMatrixCannon, (CMatrixCannon*)ms, Base::g_MatrixHeap);
         //delete (CMatrixCannon*)ms;
     }
     else if(ms->IsFlyer())
     {
-        HDelete(CMatrixFlyer, (CMatrixFlyer*)ms, g_MatrixHeap);
+        HDelete(CMatrixFlyer, (CMatrixFlyer*)ms, Base::g_MatrixHeap);
         //delete (CMatrixFlyer*)ms;
     }
     else if(ms->IsBuilding())
     {
-        HDelete(CMatrixBuilding, (CMatrixBuilding*)ms, g_MatrixHeap);
+        HDelete(CMatrixBuilding, (CMatrixBuilding*)ms, Base::g_MatrixHeap);
         //delete (CMatrixBuilding*)ms;
 	}
     else ERROR_E;
@@ -778,7 +785,7 @@ void CMatrixMap::StaticDelete(CMatrixMapStatic* ms)
 
 void CMatrixMap::MacrotextureClear()
 {
-	if(m_Macrotexture) m_Macrotexture=nullptr;
+	if(m_Macrotexture) m_Macrotexture = nullptr;
 }
 
 void CMatrixMap::MacrotextureInit(const CWStr& path)
@@ -805,7 +812,7 @@ void CMatrixMap::ClearSide()
             m_Side[i].CMatrixSideUnit::~CMatrixSideUnit();
         }
 
-        HFree(m_Side, g_MatrixHeap);
+        HFree(m_Side, Base::g_MatrixHeap);
         m_Side = nullptr;
     }
 
@@ -840,8 +847,8 @@ void CMatrixMap::LoadSide(CBlockPar& bp)
     ASSERT(cnt == TOTAL_SIDES); // there are 4 sides + one neutral. please updated data.txt
 
 	m_SidesCount = cnt - 1;
-    m_Side = (CMatrixSideUnit*)HAllocClear(m_SidesCount * sizeof(CMatrixSideUnit), g_MatrixHeap);
-    for(int i = 0; i < m_SidesCount; ++i) m_Side[i].CMatrixSideUnit::CMatrixSideUnit();
+    m_Side = (CMatrixSideUnit*)HAllocClear(m_SidesCount * sizeof(CMatrixSideUnit), Base::g_MatrixHeap);
+    for(int i = 0; i < m_SidesCount; ++i) new(m_Side + i) CMatrixSideUnit();
 
     int idx = 0;
     for(int i = 0; i < cnt; ++i)
@@ -883,13 +890,13 @@ DTRACE();
 
     if(m_Water) 
     {
-        HDelete(CMatrixWater, m_Water, g_MatrixHeap);
+        HDelete(CMatrixWater, m_Water, Base::g_MatrixHeap);
         m_Water = nullptr;
     }
 
     if(m_VisWater)
     {
-        HDelete(CBuf, m_VisWater, g_MatrixHeap);
+        HDelete(CBuf, m_VisWater, Base::g_MatrixHeap);
         m_VisWater = nullptr;
     }
 
@@ -900,10 +907,10 @@ void CMatrixMap::WaterInit()
 {
 DTRACE();
 
-    if(!m_Water) m_Water = HNew(g_MatrixHeap) CMatrixWater;
+    if(!m_Water) m_Water = HNew(Base::g_MatrixHeap) CMatrixWater;
     else m_Water->Clear();
 
-    if(!m_VisWater) m_VisWater = HNew(g_MatrixHeap) CBuf(g_MatrixHeap);
+    if(!m_VisWater) m_VisWater = HNew(Base::g_MatrixHeap) CBuf(Base::g_MatrixHeap);
     else m_VisWater->Clear();
 
     m_Water->Init();
@@ -1099,7 +1106,7 @@ DTRACE();
 //
 //        CDText::T("v", CStr(t));
 //
-//        ((CMatrixMapObject*)m_TraceStopObj)->m_BurnTexVis = (BYTE)(t&255);
+//        ((CMatrixMapObject*)m_TraceStopObj)->m_BurnTexVis = (byte)(t&255);
 //    }
 //#endif
 
@@ -1211,7 +1218,7 @@ DTRACE();
         RESETFLAG(m_Flags, MMFLAG_NEEDRECALCTER);
     }
 
-    if(FLAG(g_Config.m_DIFlags, DI_VISOBJ)) m_DI.T(L"Visible objects", CWStr(CMatrixMapStatic::GetVisObjCnt(), g_MatrixHeap));
+    if(FLAG(g_Config.m_DIFlags, DI_VISOBJ)) m_DI.T(L"Visible objects", CWStr(CMatrixMapStatic::GetVisObjCnt(), Base::g_MatrixHeap));
 
     CMatrixMapStatic::SortEndBeforeDraw();
 
@@ -1982,7 +1989,7 @@ void CMatrixMap::DrawSky(void)
         //ASSERT_DX(g_D3DD->Clear( 1, &r, D3DCLEAR_TARGET, g_MatrixMap->m_SkyColor, 1.0f, 0 ));
     }
 
-    ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ZWRITEENABLE,	TRUE));
+    ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ZWRITEENABLE, TRUE));
     ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ZENABLE,	TRUE));
     g_D3DD->SetRenderState(D3DRS_ALPHABLENDENABLE, FALSE);
 
@@ -1990,7 +1997,7 @@ void CMatrixMap::DrawSky(void)
 
 void CMatrixMap::Draw(void)
 {
-    DTRACE();
+DTRACE();
 
     float fBias = -1.0f;
 
@@ -2206,7 +2213,7 @@ void CMatrixMap::Draw(void)
     //        float k = (float(m_ShadeTimeCurrent-3000) * INVERT(2000.0f));
     //        if (k < 0) k = 0;
     //        if (k > 1) k = 1;
-    //        BYTE a = BYTE(k*255.0);
+    //        byte a = byte(k*255.0);
     //        ASSERT_DX(g_D3DD->SetRenderState(D3DRS_TEXTUREFACTOR, (a << 24)));
 
     //        D3DXVECTOR4 v[4] = 
@@ -2228,9 +2235,8 @@ void CMatrixMap::Draw(void)
 
     //}
     
-    if (IsPaused())
+    if(IsPaused())
     {
-
         ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ALPHABLENDENABLE,	TRUE ));
         ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ZENABLE,				D3DZB_FALSE ));
 	    ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ZWRITEENABLE,		FALSE));
@@ -2250,8 +2256,6 @@ void CMatrixMap::Draw(void)
 	    ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ZENABLE,				D3DZB_TRUE));
 	    ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ZWRITEENABLE,		TRUE));
         ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ALPHABLENDENABLE,	FALSE ));
-
-
     }
 
 #if (defined _DEBUG) &&  !(defined _RELDEBUG)
@@ -2262,9 +2266,9 @@ void CMatrixMap::Draw(void)
     m_DI.Draw();        // debug info
     
 
-    if (m_DialogModeName)
+    if(m_DialogModeName)
     {
-        if (wcscmp(m_DialogModeName, TEMPLATE_DIALOG_MENU) == 0)
+        if(wcscmp(m_DialogModeName, TEMPLATE_DIALOG_MENU) == 0)
         {
             m_DialogModeHints.Buff<CMatrixHint *>()[0]->DrawNow();
         }
@@ -2276,7 +2280,7 @@ void CMatrixMap::Draw(void)
 
     //_________________________________________________________________________________________________
 
-    if (FLAG(m_Flags, MMFLAG_TRANSITION))
+    if(FLAG(m_Flags, MMFLAG_TRANSITION))
     {
         m_Transition.Render();
     }
@@ -2498,7 +2502,8 @@ bool CMatrixMap::FindObjects(
                     ms2 = ((CMatrixFlyer*)ms)->GetCarryingRobot();
                     if(ms2 != nullptr)
                     {
-                        float dist = D3DXVec2Length(&(*(D3DXVECTOR2*)&ms2->GetGeoCenter() - pos)) - ms2->GetRadius() * oscale;
+                        D3DXVECTOR2 temp = *(D3DXVECTOR2*)&ms2->GetGeoCenter() - pos;
+                        float dist = D3DXVec2Length(&temp) - ms2->GetRadius() * oscale;
                         if(dist >= radius) ms2 = nullptr;
                     }
                 }
@@ -2538,14 +2543,19 @@ skip:;
                 }
                 else if(ms->GetObjectType() == OBJECT_TYPE_FLYER)
                 {
+                    D3DXVECTOR2 temp;
+
                     msa[mscnt] = ((CMatrixFlyer*)ms)->GetCarryingRobot();
                     if(msa[mscnt] != nullptr)
                     {
-                        float dist = D3DXVec2Length(&(*(D3DXVECTOR2*)&msa[mscnt]->GetGeoCenter() - pos)) - msa[mscnt]->GetRadius() * oscale;
+                        temp = *(D3DXVECTOR2*)&msa[mscnt]->GetGeoCenter() - pos;
+                        float dist = D3DXVec2Length(&temp) - msa[mscnt]->GetRadius() * oscale;
                         if(dist < radius) ++mscnt;
                     }
                     if(!(mask & TRACE_FLYER)) continue;
-                    float dist = D3DXVec2Length(&(*(D3DXVECTOR2*)&ms->GetGeoCenter() - pos)) - ms->GetRadius() * oscale;
+
+                    temp = *(D3DXVECTOR2*)&ms->GetGeoCenter() - pos;
+                    float dist = D3DXVec2Length(&temp) - ms->GetRadius() * oscale;
 
                     if(dist >= radius) continue;
                 }
@@ -2661,7 +2671,8 @@ bool CMatrixMap::FindObjects(
                     ms2 = ((CMatrixFlyer*)ms)->GetCarryingRobot();
                     if(ms2 != nullptr)
                     {
-                        float dist = D3DXVec3Length(&(ms2->GetGeoCenter() - pos)) - ms2->GetRadius() * oscale;
+                        D3DXVECTOR3 temp = ms2->GetGeoCenter() - pos;
+                        float dist = D3DXVec3Length(&temp) - ms2->GetRadius() * oscale;
                         if(dist >= radius) ms2 = nullptr;
                     }
                 }
@@ -2704,13 +2715,15 @@ skip:;
                     msa[mscnt] = ((CMatrixFlyer*)ms)->GetCarryingRobot();
                     if(msa[mscnt] != nullptr)
                     {
-                        float dist = D3DXVec3Length(&(msa[mscnt]->GetGeoCenter() - pos)) - msa[mscnt]->GetRadius() * oscale;
+                        D3DXVECTOR3 temp = msa[mscnt]->GetGeoCenter() - pos;
+                        float dist = D3DXVec3Length(&temp) - msa[mscnt]->GetRadius() * oscale;
                         if(dist < radius) ++mscnt;
                     }
 
                     if(!(mask & TRACE_FLYER)) continue;
 
-                    float dist = D3DXVec3Length(&(ms->GetGeoCenter() - pos)) - ms->GetRadius() * oscale;
+                    D3DXVECTOR3 temp = ms->GetGeoCenter() - pos;
+                    float dist = D3DXVec3Length(&temp) - ms->GetRadius() * oscale;
                     if(dist >= radius) continue;
                 }
 
@@ -2819,14 +2832,14 @@ void CMatrixMap::RemoveEffectSpawnerByTime(void)
 void CMatrixMap::AddEffectSpawner(float x, float y, float z, int ttl, const CWStr& par)
 {
     SpawnEffectSmoke smoke;
-    SpawnEffectFire  fire;
-    SpawnEffectSound  sound;
-    SpawnEffectLightening  lightening;
+    SpawnEffectFire fire;
+    SpawnEffectSound sound;
+    SpawnEffectLightening lightening;
 
     SpawnEffectProps* props = &smoke;
 
     int parcnt = par.GetCountPar(L",");
-    if (parcnt < 3) return;
+    if(parcnt < 3) return;
     parcnt -= 3;
 
     int minper = par.GetIntPar(1, L",");
@@ -2834,7 +2847,7 @@ void CMatrixMap::AddEffectSpawner(float x, float y, float z, int ttl, const CWSt
 
     int idx = 3;
 
-    m_EffectSpawners = (CEffectSpawner*)HAllocEx(m_EffectSpawners, sizeof(CEffectSpawner) * (m_EffectSpawnersCnt + 1), g_MatrixHeap);
+    m_EffectSpawners = (CEffectSpawner*)HAllocEx(m_EffectSpawners, sizeof(CEffectSpawner) * (m_EffectSpawnersCnt + 1), Base::g_MatrixHeap);
 
     EEffectSpawnerType type = (EEffectSpawnerType)par.GetIntPar(0, L",");
 
@@ -2842,113 +2855,111 @@ void CMatrixMap::AddEffectSpawner(float x, float y, float z, int ttl, const CWSt
 
     switch(type)
     {
-    case EST_SMOKE:
+        case EST_SMOKE:
         {
-        smoke.m_Type = EFFECT_SMOKE;
+            smoke.m_Type = EFFECT_SMOKE;
 
-        smoke.m_ttl = par.GetFloatPar(idx++, L",");
-        smoke.m_puffttl = par.GetFloatPar(idx++, L",");
-        smoke.m_spawntime = par.GetFloatPar(idx++, L",");
-        smoke.m_IsBright = par.GetTrueFalsePar(idx++, L",");
-        smoke.m_speed = par.GetDoublePar(idx++, L",");
-        smoke.m_color = par.GetStrPar(idx++, L",").GetHexUnsigned();
+            smoke.m_ttl = par.GetFloatPar(idx++, L",");
+            smoke.m_puffttl = par.GetFloatPar(idx++, L",");
+            smoke.m_spawntime = par.GetFloatPar(idx++, L",");
+            smoke.m_IsBright = par.GetTrueFalsePar(idx++, L",");
+            smoke.m_speed = par.GetDoublePar(idx++, L",");
+            smoke.m_color = par.GetStrPar(idx++, L",").GetHexUnsigned();
 
-        break;
+            break;
         }
-    case EST_FIRE:
+        case EST_FIRE:
         {
-        props = &fire;
+            props = &fire;
 
-        fire.m_Type = EFFECT_FIRE;
+            fire.m_Type = EFFECT_FIRE;
 
-        fire.m_ttl = par.GetFloatPar(idx++, L",");
-        fire.m_puffttl = par.GetFloatPar(idx++, L",");
-        fire.m_spawntime = par.GetFloatPar(idx++, L",");
-        fire.m_IsBright = par.GetTrueFalsePar(idx++, L",");
-        fire.m_speed = par.GetFloatPar(idx++, L",");
-        fire.m_dispfactor = par.GetFloatPar(idx++, L",");
+            fire.m_ttl = par.GetFloatPar(idx++, L",");
+            fire.m_puffttl = par.GetFloatPar(idx++, L",");
+            fire.m_spawntime = par.GetFloatPar(idx++, L",");
+            fire.m_IsBright = par.GetTrueFalsePar(idx++, L",");
+            fire.m_speed = par.GetFloatPar(idx++, L",");
+            fire.m_dispfactor = par.GetFloatPar(idx++, L",");
 
-        break;
+            break;
         }
-    case EST_SOUND:
+        case EST_SOUND:
         {
-        props = &sound;
+            props = &sound;
 
-        sound.m_Type = EFFECT_UNDEFINED;
+            sound.m_Type = EFFECT_UNDEFINED;
 
-        sound.m_vol0 = par.GetFloatPar(idx++, L",");
-        sound.m_vol1 = par.GetFloatPar(idx++, L",");
-        sound.m_pan0 = par.GetFloatPar(idx++, L",");
-        sound.m_pan1 = par.GetFloatPar(idx++, L",");
-        sound.m_attn = par.GetFloatPar(idx++, L",");
-        //sound.m_looped = par.GetTrueFalsePar(idx++, L",");
+            sound.m_vol0 = par.GetFloatPar(idx++, L",");
+            sound.m_vol1 = par.GetFloatPar(idx++, L",");
+            sound.m_pan0 = par.GetFloatPar(idx++, L",");
+            sound.m_pan1 = par.GetFloatPar(idx++, L",");
+            sound.m_attn = par.GetFloatPar(idx++, L",");
+            //sound.m_looped = par.GetTrueFalsePar(idx++, L",");
 
-        CWStr nam(par.GetStrPar(idx++, L","), g_CacheHeap);
-        if(nam.GetLen() > (sizeof(sound.m_name) / sizeof(sound.m_name[0])))
-        {
-            ERROR_S(L"Effect spawner: sound name too long!");
-        }
-
-        memcpy(sound.m_name, nam.Get(), (nam.GetLen() + 1) * sizeof(wchar));
-
-
-        break;
-        }
-    case EST_LIGHTENING:
-        {
-        props = &lightening;
-        lightening.m_Type = EFFECT_LIGHTENING;
-
-        lightening.m_Tag = HNew(g_MatrixHeap) CWStr(g_MatrixHeap);
-
-        *lightening.m_Tag = par.GetStrPar(idx++, L",");
-
-
-        lightening.m_ttl = (float)par.GetDoublePar(idx++, L",");
-        lightening.m_Color = par.GetStrPar(idx++, L",").GetHexUnsigned();
-        lightening.m_Width = -(float)par.GetDoublePar(idx++, L","); // set negative width. it means that m_Tag used instead of m_Pair;
-        lightening.m_Dispers = (float)par.GetDoublePar(idx++, L",");
-
-        // seek tag
-        int bla = m_EffectSpawnersCnt - 1;
-        while(bla >= 0)
-        {
-            if(m_EffectSpawners[bla].Props()->m_Type == EFFECT_LIGHTENING)
+            CWStr nam(par.GetStrPar(idx++, L","), g_CacheHeap);
+            if(nam.GetLen() > (sizeof(sound.m_name) / sizeof(sound.m_name[0])))
             {
-                SpawnEffectLightening* l = (SpawnEffectLightening*)m_EffectSpawners[bla].Props();
-                if(l->m_Width < 0)
-                {
-                    if(*l->m_Tag == *lightening.m_Tag)
-                    {
-                        NEG_FLOAT(l->m_Width);
-                        NEG_FLOAT(lightening.m_Width);
-
-                        HDelete(CWStr, l->m_Tag, g_MatrixHeap);
-                        HDelete(CWStr, lightening.m_Tag, g_MatrixHeap);
-                        lightening.m_Pair = l;
-
-                        lightening.m_Dispers = -1; // me - non host
-
-                        light_need_action = true;
-                    }
-
-                }
+                ERROR_S(L"Effect spawner: sound name too long!");
             }
-            --bla;
+
+            memcpy(sound.m_name, nam.Get(), (nam.GetLen() + 1) * sizeof(wchar));
+
+            break;
+        }
+        case EST_LIGHTENING:
+        {
+            props = &lightening;
+            lightening.m_Type = EFFECT_LIGHTENING;
+
+            lightening.m_Tag = HNew(Base::g_MatrixHeap) CWStr(Base::g_MatrixHeap);
+
+            *lightening.m_Tag = par.GetStrPar(idx++, L",");
+
+            lightening.m_ttl = (float)par.GetDoublePar(idx++, L",");
+            lightening.m_Color = par.GetStrPar(idx++, L",").GetHexUnsigned();
+            lightening.m_Width = -(float)par.GetDoublePar(idx++, L","); // set negative width. it means that m_Tag used instead of m_Pair;
+            lightening.m_Dispers = (float)par.GetDoublePar(idx++, L",");
+
+            // seek tag
+            int bla = m_EffectSpawnersCnt - 1;
+            while(bla >= 0)
+            {
+                if(m_EffectSpawners[bla].Props()->m_Type == EFFECT_LIGHTENING)
+                {
+                    SpawnEffectLightening* l = (SpawnEffectLightening*)m_EffectSpawners[bla].Props();
+                    if(l->m_Width < 0)
+                    {
+                        if(*l->m_Tag == *lightening.m_Tag)
+                        {
+                            NEG_FLOAT(l->m_Width);
+                            NEG_FLOAT(lightening.m_Width);
+
+                            HDelete(CWStr, l->m_Tag, Base::g_MatrixHeap);
+                            HDelete(CWStr, lightening.m_Tag, Base::g_MatrixHeap);
+                            lightening.m_Pair = l;
+
+                            lightening.m_Dispers = -1; // me - non host
+
+                            light_need_action = true;
+                        }
+
+                    }
+                }
+                --bla;
+            }
+
+            break;
         }
 
-        break;
+        default: ERROR_E;
     }
-    default:
-        ERROR_E;
-    };
 
     props->m_Pos.x = x;
     props->m_Pos.y = y;
     props->m_Pos.z = z;
 
-
-    m_EffectSpawners[m_EffectSpawnersCnt].CEffectSpawner::CEffectSpawner(minper, maxper, ttl, props);
+    //Создаются объекты эффектов (выделение памяти по данному указателю происходит в начале функции)
+    new(&m_EffectSpawners[m_EffectSpawnersCnt]) CEffectSpawner(minper, maxper, ttl, props);
 
     if(light_need_action)
     {
@@ -3068,30 +3079,30 @@ static void CreateConfirmation(const wchar* hint, DialogButtonHandler handler)
     g_MatrixMap->m_DialogModeHints.Dword((dword)h);
 }
 
-void ExitRequestHandler(void)
+void ExitRequestHandler()
 {
     CreateConfirmation(TEMPLATE_DIALOG_EXIT, g_MatrixMap->OkExitHandler);
 }
 
-void ResetRequestHandler(void)
+void ResetRequestHandler()
 {
     CreateConfirmation(TEMPLATE_DIALOG_RESET, g_MatrixMap->OkResetHandler);
 }
 
-void HelpRequestHandler(void)
+void HelpRequestHandler()
 {
     g_MatrixMap->LeaveDialogMode();
     CWStr fn(g_CacheHeap);
     if(CFile::FileExist(fn, L"Manual.exe"))
     {
-        PROCESS_INFORMATION  pi0;
-        STARTUPINFOA         si0;
+        PROCESS_INFORMATION pi0;
+        STARTUPINFOA        si0;
 
         ZeroMemory(&si0, sizeof(si0));
         si0.cb = sizeof(si0);
         ZeroMemory(&pi0, sizeof(pi0));
 
-        CreateProcess("Manual.exe", "", nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si0, &pi0);
+        CreateProcess("Manual.exe", nullptr, nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si0, &pi0);
 
         ShowWindow(g_Wnd, SW_MINIMIZE);
 
@@ -3100,7 +3111,7 @@ void HelpRequestHandler(void)
     }
 }
 
-void SurrenderRequestHandler(void)
+void SurrenderRequestHandler()
 {
     CreateConfirmation(TEMPLATE_DIALOG_SURRENDER, g_MatrixMap->OkSurrenderHandler);
 }

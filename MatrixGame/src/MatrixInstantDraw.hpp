@@ -12,26 +12,28 @@ struct SVertBase
 
 struct SVert_V3_C_UV : public SVertBase
 {
-    D3DXVECTOR3 p;
-    dword       color;
-    float       tu,tv;
+    D3DXVECTOR3 p = { 0.0f, 0.0f, 0.0f };
+    dword       color = 0;
+    float       tu = 0.0f;
+    float       tv = 0.0f;
 };
 
 struct SVert_V4_UV : public SVertBase
 {
-    D3DXVECTOR4 p;
-    float       tu,tv;
+    D3DXVECTOR4 p = { 0.0f, 0.0f, 0.0f, 0.0f };
+    float       tu = 0.0f;
+    float       tv = 0.0f;
 };
 
 struct SVert_V4_C : public SVertBase
 {
-    D3DXVECTOR4 p;
-    dword       col;
+    D3DXVECTOR4 p = { 0.0f, 0.0f, 0.0f, 0.0f };
+    dword       col = 0;
 };
 
 struct SVert_V4 : public SVertBase
 {
-    D3DXVECTOR4 p;
+    D3DXVECTOR4 p = { 0.0f, 0.0f, 0.0f, 0.0f };
 };
 
 enum E_FVF
@@ -46,35 +48,34 @@ enum E_FVF
 
 struct  SOneSet
 {
-    void *          accum;
-    int             accumcntalloc;
-    int             accumcnt;
-    CBaseTexture *  tex;
-    dword           tf;
-    dword           tf_used;
+    void*         accum = nullptr;
+    int           accumcntalloc = 0;
+    int           accumcnt = 0;
+    CBaseTexture* tex = nullptr;
+    dword         tf = 0;
+    dword         tf_used = 0;
 };
 
 struct SFVF_VB
 {
-    dword   fvf;
-    int     stride;
-    int     statistic;
-    int     statistic_max_tex;
-    int     cursize;            // size of currently allocated VB
-    D3D_VB  vb;
-    SOneSet *sets;
-    int     sets_cnt;
-    int     sets_alloc;
-    int     disp; 
+    dword    fvf = 0;
+    int      stride = 0;
+    int      statistic = 0;
+    int      statistic_max_tex = 0;
+    int      cursize = 0; // size of currently allocated VB
+    D3D_VB   vb;
+    SOneSet* sets = nullptr;
+    int      sets_cnt = 0;
+    int      sets_alloc = 0;
+    int      disp = 0;
 };
 
 class CInstDraw : public CMain
 {
-
-    static SFVF_VB  m_FVFs[IDFVF_CNT];
-    static E_FVF    m_Current;
-    static D3D_IB   m_IB;
-    static int      m_IB_Count;
+    static SFVF_VB m_FVFs[IDFVF_CNT];
+    static E_FVF   m_Current;
+    static D3D_IB  m_IB;
+    static int     m_IB_Count;
 
 
 public:
@@ -102,15 +103,15 @@ public:
     }
 
 
-    static void    DrawFrameBegin(void);
-    static void    BeginDraw(E_FVF fvf);
-    static void    AddVerts(void *v, CBaseTexture *tex); // add 4 verts
-    static void    AddVerts(void *v, CBaseTexture *tex, dword tf); // add 4 verts
-    static void    ActualDraw(void);
+    static void DrawFrameBegin();
+    static void BeginDraw(E_FVF fvf);
+    static void AddVerts(void* v, CBaseTexture* tex); // add 4 verts
+    static void AddVerts(void* v, CBaseTexture* tex, dword tf); // add 4 verts
+    static void ActualDraw();
 
-    static void MarkAllBuffersNoNeed(void);
+    static void MarkAllBuffersNoNeed();
 
-    static  void ClearAll(void);
+    static  void ClearAll();
 };
 
 

@@ -16,10 +16,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
-extern Base::CHeap* g_MatrixHeap;
-
 CBigVB<SVOVertex>*  CVectorObject::m_VB;
 CBigIB*             CVectorObject::m_IB;
+
+namespace Base {
+    extern CHeap* g_MatrixHeap;
+}
 
 static bool FreeObjectResources(dword user)
 {
@@ -163,7 +165,7 @@ DTRACE();
         CDataBuf* c = stor.GetBuf(L"simple", L"data", ST_BYTE);
         if(c)
         {
-            BYTE* da = c->GetFirst<BYTE>(0);
+            byte* da = c->GetFirst<byte>(0);
 
             m_GeometrySimple = (SVOGeometrySimple*)HAlloc(sizeof(SVOGeometrySimple), g_CacheHeap);
 
@@ -206,7 +208,7 @@ DTRACE();
                 m_Geometry.m_Matrixs[i].m_MatrixStart = disp[i];
             }
             m_Geometry.m_AllMatrixs = (D3DXMATRIX*)HAlloc(c3->GetArrayLength(0), g_CacheHeap);
-            memcpy(m_Geometry.m_AllMatrixs, c3->GetFirst<BYTE>(0), c3->GetArrayLength(0));
+            memcpy(m_Geometry.m_AllMatrixs, c3->GetFirst<byte>(0), c3->GetArrayLength(0));
         }
     }
     {
@@ -216,7 +218,7 @@ DTRACE();
         {
             m_Geometry.m_Vertices.size = c->GetArrayLength(0);
             m_Geometry.m_Vertices.verts = (SVOVertex*)HAlloc(m_Geometry.m_Vertices.size, g_CacheHeap);
-            memcpy(m_Geometry.m_Vertices.verts, c->GetFirst<BYTE>(0), m_Geometry.m_Vertices.size);
+            memcpy(m_Geometry.m_Vertices.verts, c->GetFirst<byte>(0), m_Geometry.m_Vertices.size);
             m_VB->AddSource(&m_Geometry.m_Vertices);
         }
     }
@@ -250,7 +252,7 @@ DTRACE();
                 m_Geometry.m_Animations[i].m_FramesCnt = cnt[i];
             }
             m_Geometry.m_FramesIdx = (SVOFrameIndex*)HAlloc(c4->GetArrayLength(0), g_CacheHeap);
-            memcpy(m_Geometry.m_FramesIdx, c4->GetFirst<BYTE>(0), c4->GetArrayLength(0));
+            memcpy(m_Geometry.m_FramesIdx, c4->GetFirst<byte>(0), c4->GetArrayLength(0));
         }
     }
     {
@@ -266,13 +268,13 @@ DTRACE();
         sz = c0->GetArrayLength(0);
         m_Geometry.m_FramesCnt = sz / sizeof(SVOFrameModel);
         m_Geometry.m_Frames = (SVOFrameModel*)HAlloc(sz, g_CacheHeap);
-        memcpy(m_Geometry.m_Frames, c0->GetFirst<BYTE>(0), sz);
+        memcpy(m_Geometry.m_Frames, c0->GetFirst<byte>(0), sz);
 
         // verts idxs for frames
         sz = c1->GetArrayLength(0);
         //m_Geometry.m_VerticesIdx = sz / sizeof(int);
         m_Geometry.m_VerticesIdx = (int*)HAlloc(sz, g_CacheHeap);
-        memcpy(m_Geometry.m_VerticesIdx, c1->GetFirst<BYTE>(0), sz);
+        memcpy(m_Geometry.m_VerticesIdx, c1->GetFirst<byte>(0), sz);
 
         // edges
         sz = c2->GetArrayLength(0);
@@ -280,7 +282,7 @@ DTRACE();
         {
             m_Geometry.m_EdgesCnt = sz / sizeof(SVOFrameEdgeModel);
             m_Geometry.m_Edges = (SVOFrameEdgeModel*)HAlloc(sz, g_CacheHeap);
-            memcpy(m_Geometry.m_Edges, c2->GetFirst<BYTE>(0), sz);
+            memcpy(m_Geometry.m_Edges, c2->GetFirst<byte>(0), sz);
 
             /*
             int ic;
@@ -320,7 +322,7 @@ DTRACE();
         sz = c3->GetArrayLength(0);
         //m_Geometry.m_UnionsCnt = sz / sizeof(int);
         m_Geometry.m_UnionsIdx = (dword*)HAlloc(sz, g_CacheHeap);
-        memcpy(m_Geometry.m_UnionsIdx, c3->GetFirst<BYTE>(0), sz);
+        memcpy(m_Geometry.m_UnionsIdx, c3->GetFirst<byte>(0), sz);
     }
 
     {
@@ -332,7 +334,7 @@ DTRACE();
 
             m_Geometry.m_UnionsCnt = sz / sizeof(SVOUnion);
             m_Geometry.m_Unions = (SVOUnion*)HAlloc(sz, g_CacheHeap);
-            memcpy(m_Geometry.m_Unions, c->GetFirst<BYTE>(0), sz);
+            memcpy(m_Geometry.m_Unions, c->GetFirst<byte>(0), sz);
         }
     }
     {
@@ -342,19 +344,19 @@ DTRACE();
         {
             int sz = c->GetArrayLength(0);
 
-            //m_Geometry.m_IdxCnt = sz / sizeof(WORD);
-            m_Geometry.m_TrianglesCnt = sz / (3 * sizeof(WORD));
+            //m_Geometry.m_IdxCnt = sz / sizeof(word);
+            m_Geometry.m_TrianglesCnt = sz / (3 * sizeof(word));
             m_Geometry.m_Triangles = (SVOTriangle*)HAlloc(sizeof(SVOTriangle) * m_Geometry.m_TrianglesCnt, g_CacheHeap);
 
             m_Geometry.m_Idxs.size = sz;
-            m_Geometry.m_Idxs.inds = (WORD*)HAlloc(sz, g_CacheHeap);
-            memcpy(m_Geometry.m_Idxs.inds, c->GetFirst<BYTE>(0), sz);
+            m_Geometry.m_Idxs.inds = (word*)HAlloc(sz, g_CacheHeap);
+            memcpy(m_Geometry.m_Idxs.inds, c->GetFirst<byte>(0), sz);
 
             m_IB->AddSource(&m_Geometry.m_Idxs);
 
             // TODO : restore triangles
 
-            WORD* idx = m_Geometry.m_Idxs.inds;
+            word* idx = m_Geometry.m_Idxs.inds;
             for(int i = 0; i < m_Geometry.m_TrianglesCnt; ++i, idx += 3)
             {
                 m_Geometry.m_Triangles[i].i0 = *(idx + 0);
@@ -372,7 +374,8 @@ DTRACE();
             m_Geometry.m_Surfaces = (SVOSurface*)HAlloc(sizeof(SVOSurface) * m_Geometry.m_SurfacesCnt, g_CacheHeap);
             for(int i = 0; i < m_Geometry.m_SurfacesCnt; ++i)
             {
-                m_Geometry.m_Surfaces[i].texname.CWStr::CWStr(c->GetAsWStr(i));
+                new(&m_Geometry.m_Surfaces[i]) SVOSurface();
+                m_Geometry.m_Surfaces[i].texname = c->GetAsWStr(i);
                 m_Geometry.m_Surfaces[i].skin = nullptr;
             }
         }
@@ -531,7 +534,7 @@ bool CVectorObject::PickSimple(const D3DXMATRIX& ma, const D3DXMATRIX& ima, cons
 
 	if(!D3DXBoxBoundProbe(&m_GeometrySimple->m_AsIs.m_Mins,&m_GeometrySimple->m_AsIs.m_Maxs,&_orig,&_dir)) return false;
 
-    BYTE *vflags = (BYTE *)_alloca(m_GeometrySimple->m_AsIs.m_VertsCnt);
+    byte *vflags = (byte *)_alloca(m_GeometrySimple->m_AsIs.m_VertsCnt);
 
     //TAKT_BEGIN();
     
@@ -559,8 +562,8 @@ bool CVectorObject::PickSimple(const D3DXMATRIX& ma, const D3DXMATRIX& ima, cons
                 float coord[2] = {cv->y + cv->x * k[0] - coordc[0], cv->z + cv->x * k[1] - coordc[1]};
                 dword t0 = *((dword *)&coord[0]);
                 dword t1 = *((dword *)&coord[1]);
-                BYTE r0 = (BYTE((t0 >> 31) + 1) & BYTE(((t0&0x7FFFFFF)==0)?0:-1)); 
-                BYTE r1 = (BYTE(((t1 >> 31) + 1)<<2) & BYTE(((t1&0x7FFFFFF)==0)?0:-1));
+                byte r0 = (byte((t0 >> 31) + 1) & byte(((t0&0x7FFFFFF)==0)?0:-1)); 
+                byte r1 = (byte(((t1 >> 31) + 1)<<2) & byte(((t1&0x7FFFFFF)==0)?0:-1));
 
                 *(vflags+i) = r0 | r1;
             }
@@ -585,8 +588,8 @@ bool CVectorObject::PickSimple(const D3DXMATRIX& ma, const D3DXMATRIX& ima, cons
                 float coord[2] = {cv->x + cv->y * k[0] - coordc[0], cv->z + cv->y * k[1] - coordc[1]};
                 dword t0 = *((dword *)&coord[0]);
                 dword t1 = *((dword *)&coord[1]);
-                BYTE r0 = (BYTE((t0 >> 31) + 1) & BYTE(((t0&0x7FFFFFF)==0)?0:-1)); 
-                BYTE r1 = (BYTE(((t1 >> 31) + 1)<<2) & BYTE(((t1&0x7FFFFFF)==0)?0:-1));
+                byte r0 = (byte((t0 >> 31) + 1) & byte(((t0&0x7FFFFFF)==0)?0:-1)); 
+                byte r1 = (byte(((t1 >> 31) + 1)<<2) & byte(((t1&0x7FFFFFF)==0)?0:-1));
 
                 *(vflags+i) = r0 | r1;
             }
@@ -608,8 +611,8 @@ calcxy:
                 float coord[2] = {cv->x + cv->z * k[0] - coordc[0], cv->y + cv->z * k[1] - coordc[1]};
                 dword t0 = *((dword *)&coord[0]);
                 dword t1 = *((dword *)&coord[1]);
-                BYTE r0 = (BYTE((t0 >> 31) + 1) & BYTE(((t0&0x7FFFFFF)==0)?0:-1)); 
-                BYTE r1 = (BYTE(((t1 >> 31) + 1)<<2) & BYTE(((t1&0x7FFFFFF)==0)?0:-1));
+                byte r0 = (byte((t0 >> 31) + 1) & byte(((t0&0x7FFFFFF)==0)?0:-1)); 
+                byte r1 = (byte(((t1 >> 31) + 1)<<2) & byte(((t1&0x7FFFFFF)==0)?0:-1));
 
                 *(vflags+i) = r0 | r1;
             }
@@ -672,8 +675,8 @@ DTRACE();
 
     int i;
 
-    BYTE *vflags = (BYTE *)_alloca(m_Geometry.m_Vertices.size / sizeof(SVOVertex));
-    BYTE *cvflags;
+    byte *vflags = (byte *)_alloca(m_Geometry.m_Vertices.size / sizeof(SVOVertex));
+    byte *cvflags;
 
     //TAKT_BEGIN();
     
@@ -705,8 +708,8 @@ DTRACE();
                 float coord[2] = {cv->v.y + cv->v.x * k[0] - coordc[0], cv->v.z + cv->v.x * k[1] - coordc[1]};
                 dword t0 = *((dword *)&coord[0]);
                 dword t1 = *((dword *)&coord[1]);
-                BYTE r0 = (BYTE((t0 >> 31) + 1) & BYTE(((t0&0x7FFFFFF)==0)?0:-1)); 
-                BYTE r1 = (BYTE(((t1 >> 31) + 1)<<2) & BYTE(((t1&0x7FFFFFF)==0)?0:-1));
+                byte r0 = (byte((t0 >> 31) + 1) & byte(((t0&0x7FFFFFF)==0)?0:-1)); 
+                byte r1 = (byte(((t1 >> 31) + 1)<<2) & byte(((t1&0x7FFFFFF)==0)?0:-1));
 
                 *(vflags+vi) = r0 | r1;
             }
@@ -732,8 +735,8 @@ DTRACE();
                 float coord[2] = {cv->v.x + cv->v.y * k[0] - coordc[0], cv->v.z + cv->v.y * k[1] - coordc[1]};
                 dword t0 = *((dword *)&coord[0]);
                 dword t1 = *((dword *)&coord[1]);
-                BYTE r0 = (BYTE((t0 >> 31) + 1) & BYTE(((t0&0x7FFFFFF)==0)?0:-1)); 
-                BYTE r1 = (BYTE(((t1 >> 31) + 1)<<2) & BYTE(((t1&0x7FFFFFF)==0)?0:-1));
+                byte r0 = (byte((t0 >> 31) + 1) & byte(((t0&0x7FFFFFF)==0)?0:-1)); 
+                byte r1 = (byte(((t1 >> 31) + 1)<<2) & byte(((t1&0x7FFFFFF)==0)?0:-1));
 
                 *(vflags+vi) = r0 | r1;
             }
@@ -756,8 +759,8 @@ calcxy:
                 float coord[2] = {cv->v.x + cv->v.z * k[0] - coordc[0], cv->v.y + cv->v.z * k[1] - coordc[1]};
                 dword t0 = *((dword *)&coord[0]);
                 dword t1 = *((dword *)&coord[1]);
-                BYTE r0 = (BYTE((t0 >> 31) + 1) & BYTE(((t0&0x7FFFFFF)==0)?0:-1)); 
-                BYTE r1 = (BYTE(((t1 >> 31) + 1)<<2) & BYTE(((t1&0x7FFFFFF)==0)?0:-1));
+                byte r0 = (byte((t0 >> 31) + 1) & byte(((t0&0x7FFFFFF)==0)?0:-1)); 
+                byte r1 = (byte(((t1 >> 31) + 1)<<2) & byte(((t1&0x7FFFFFF)==0)?0:-1));
 
                 *(vflags+vi) = r0 | r1;
             }
@@ -1023,8 +1026,8 @@ DTRACE();
 //							SVOEdge * et=m_Edge+edgecnt;
 //							et->m_Tri1=i;
 //							et->m_Tri2=p;
-//							et->m_Edge1=(BYTE)u;
-//							et->m_Enge2=(BYTE)k;
+//							et->m_Edge1=(byte)u;
+//							et->m_Enge2=(byte)k;
 //							edgecnt++;
 //							cntff++;
 ////							break;
@@ -1048,212 +1051,213 @@ DTRACE();
 
 void CVectorObject::GetBound(int noframe, const D3DXMATRIX& ma, D3DXVECTOR3& bmin, D3DXVECTOR3& bmax) const
 {
-DTRACE();
+    SVOFrameModel* k = m_Geometry.m_Frames + noframe;
 
-	SVOFrameModel * k = m_Geometry.m_Frames + noframe;
+    bmin = D3DXVECTOR3(1e30f, 1e30f, 1e30f);
+    bmax = D3DXVECTOR3(-1e30f, -1e30f, -1e30f);
+    D3DXVECTOR3 v[8];
 
-	bmin=D3DXVECTOR3(1e30f,1e30f,1e30f);
-	bmax=D3DXVECTOR3(-1e30f,-1e30f,-1e30f);
-	D3DXVECTOR3 v[8];
-
-	v[0]=D3DXVECTOR3(k->m_Min.x,k->m_Min.y,k->m_Min.z);
-	v[1]=D3DXVECTOR3(k->m_Max.x,k->m_Min.y,k->m_Min.z);
-	v[2]=D3DXVECTOR3(k->m_Max.x,k->m_Max.y,k->m_Min.z);
-	v[3]=D3DXVECTOR3(k->m_Min.x,k->m_Max.y,k->m_Min.z);
-	v[4]=D3DXVECTOR3(k->m_Min.x,k->m_Min.y,k->m_Max.z);
-	v[5]=D3DXVECTOR3(k->m_Max.x,k->m_Min.y,k->m_Max.z);
-	v[6]=D3DXVECTOR3(k->m_Max.x,k->m_Max.y,k->m_Max.z);
-	v[7]=D3DXVECTOR3(k->m_Min.x,k->m_Max.y,k->m_Max.z);
+    v[0] = D3DXVECTOR3(k->m_Min.x, k->m_Min.y, k->m_Min.z);
+    v[1] = D3DXVECTOR3(k->m_Max.x, k->m_Min.y, k->m_Min.z);
+    v[2] = D3DXVECTOR3(k->m_Max.x, k->m_Max.y, k->m_Min.z);
+    v[3] = D3DXVECTOR3(k->m_Min.x, k->m_Max.y, k->m_Min.z);
+    v[4] = D3DXVECTOR3(k->m_Min.x, k->m_Min.y, k->m_Max.z);
+    v[5] = D3DXVECTOR3(k->m_Max.x, k->m_Min.y, k->m_Max.z);
+    v[6] = D3DXVECTOR3(k->m_Max.x, k->m_Max.y, k->m_Max.z);
+    v[7] = D3DXVECTOR3(k->m_Min.x, k->m_Max.y, k->m_Max.z);
 
     D3DXVec3TransformCoordArray(v, sizeof(D3DXVECTOR3), v, sizeof(D3DXVECTOR3), &ma, 8);
 
-	for(int u=0;u<8;u++)
+    for(int u = 0; u < 8; u++)
     {
-		if (v[u].x < bmin.x) bmin.x = v[u].x;
-		if (v[u].y < bmin.y) bmin.y = v[u].y;
-		if (v[u].z < bmin.z) bmin.z = v[u].z;
-		if (v[u].x > bmax.x) bmax.x = v[u].x;
-		if (v[u].y > bmax.y) bmax.y = v[u].y;
-		if (v[u].z > bmax.z) bmax.z = v[u].z;
-	}
+        if(v[u].x < bmin.x) bmin.x = v[u].x;
+        if(v[u].y < bmin.y) bmin.y = v[u].y;
+        if(v[u].z < bmin.z) bmin.z = v[u].z;
+        if(v[u].x > bmax.x) bmax.x = v[u].x;
+        if(v[u].y > bmax.y) bmax.y = v[u].y;
+        if(v[u].z > bmax.z) bmax.z = v[u].z;
+    }
 }
 
-void CVectorObject::CalcShadowProjMatrix(int noframe,SProjData &pd,D3DXVECTOR3 & dir,float addsize)
+void CVectorObject::CalcShadowProjMatrix(int noframe, SProjData& pd, D3DXVECTOR3& dir, float addsize)
 {
-    DTRACE();
 	D3DXMATRIX ml;
-	D3DXMatrixLookAtLH(&ml,&(-dir),&D3DXVECTOR3(0,0,0),&D3DXVECTOR3(0,0,1));
+    D3DXVECTOR3 temp1 = -dir;
+    D3DXVECTOR3 temp2 = { 0.0f, 0.0f, 0.0f };
+    D3DXVECTOR3 temp3 = { 0.0f, 0.0f, 1.0f };
+    D3DXMatrixLookAtLH(&ml, &temp1, &temp2, &temp3);
 
-	//SVOFrame * fr=((SVOFrame * )(Data()+Header()->m_FrameSme))+noframe;
+	//SVOFrame* fr = ((SVOFrame*)(Data() + Header()->m_FrameSme)) + noframe;
 
-	D3DXVECTOR3 vmin,vmax;
-	GetBound(noframe,ml,vmin,vmax);
+    D3DXVECTOR3 vmin, vmax;
+    GetBound(noframe, ml, vmin, vmax);
 
-	vmin.x-=addsize; vmin.y-=addsize; vmin.z-=addsize;
-	vmax.x+=addsize; vmax.y+=addsize; vmax.z+=addsize;
+    vmin.x -= addsize; vmin.y -= addsize; vmin.z -= addsize;
+    vmax.x += addsize; vmax.y += addsize; vmax.z += addsize;
 
-	pd.vpos=D3DXVECTOR3(vmin.x,vmin.y,vmin.z);
-	pd.vx=D3DXVECTOR3(vmax.x,vmin.y,vmin.z);
-	pd.vy=D3DXVECTOR3(vmin.x,vmax.y,vmin.z);
-	pd.vz=D3DXVECTOR3(vmin.x,vmin.y,vmax.z);
+    pd.vpos = D3DXVECTOR3(vmin.x, vmin.y, vmin.z);
+    pd.vx = D3DXVECTOR3(vmax.x, vmin.y, vmin.z);
+    pd.vy = D3DXVECTOR3(vmin.x, vmax.y, vmin.z);
+    pd.vz = D3DXVECTOR3(vmin.x, vmin.y, vmax.z);
 
-	D3DXMatrixInverse(&ml,nullptr,&ml);
+    D3DXMatrixInverse(&ml, nullptr, &ml);
 
-	D3DXVec3TransformCoord(&pd.vpos,&pd.vpos,&ml);
-	D3DXVec3TransformCoord(&pd.vx,&pd.vx,&ml);
-	D3DXVec3TransformCoord(&pd.vy,&pd.vy,&ml);
-	D3DXVec3TransformCoord(&pd.vz,&pd.vz,&ml);
+    D3DXVec3TransformCoord(&pd.vpos, &pd.vpos, &ml);
+    D3DXVec3TransformCoord(&pd.vx, &pd.vx, &ml);
+    D3DXVec3TransformCoord(&pd.vy, &pd.vy, &ml);
+    D3DXVec3TransformCoord(&pd.vz, &pd.vz, &ml);
 
-	pd.vx-=pd.vpos;
-	pd.vy-=pd.vpos;
-	pd.vz-=pd.vpos;
+    pd.vx -= pd.vpos;
+    pd.vy -= pd.vpos;
+    pd.vz -= pd.vpos;
 }
 
-void CVectorObject::CalcShadowProjMatrix(int cnt, CVectorObjectAnim ** obj ,const  int * noframe, const D3DXMATRIX * wm, SProjData &pd,D3DXVECTOR3 & dir,float addsize)
+void CVectorObject::CalcShadowProjMatrix(int cnt, CVectorObjectAnim** obj, const  int* noframe, const D3DXMATRIX* wm, SProjData& pd, D3DXVECTOR3& dir, float addsize)
 {
-    DTRACE();
-	D3DXMATRIX ml,ml2;
-	D3DXMatrixLookAtLH(&ml,&(-dir),&D3DXVECTOR3(0,0,0),&D3DXVECTOR3(0,0,1));
+    D3DXMATRIX ml, ml2;
+    D3DXVECTOR3 temp1 = -dir;
+    D3DXVECTOR3 temp2 = { 0.0f, 0.0f, 0.0f };
+    D3DXVECTOR3 temp3 = { 0.0f, 0.0f, 1.0f };
+    D3DXMatrixLookAtLH(&ml, &temp1, &temp2, &temp3);
 
-	D3DXVECTOR3 vmin,vmax,_vmin,_vmax;
+    D3DXVECTOR3 vmin, vmax, _vmin, _vmax;
 
-	vmin.x=1e30f; vmin.y=1e30f; vmin.z=1e30f;
-	vmax.x=-1e30f; vmax.y=-1e30f; vmax.z=-1e30f;
+    vmin.x = 1e30f; vmin.y = 1e30f; vmin.z = 1e30f;
+    vmax.x = -1e30f; vmax.y = -1e30f; vmax.z = -1e30f;
 
-	for(int i=0;i<cnt;i++) {
-		D3DXMatrixMultiply(&ml2,wm+i,&ml);
-		obj[i]->VO()->GetBound(noframe[i],ml2,_vmin,_vmax);
-		vmin.x=min(vmin.x,_vmin.x-addsize);
-		vmin.y=min(vmin.y,_vmin.y-addsize);
-		vmin.z=min(vmin.z,_vmin.z-addsize);
-		vmax.x=max(vmax.x,_vmax.x+addsize);
-		vmax.y=max(vmax.y,_vmax.y+addsize);
-		vmax.z=max(vmax.z,_vmax.z+addsize);
-	}
+    for(int i = 0; i < cnt; i++)
+    {
+        D3DXMatrixMultiply(&ml2, wm + i, &ml);
+        obj[i]->VO()->GetBound(noframe[i], ml2, _vmin, _vmax);
+        vmin.x = min(vmin.x, _vmin.x - addsize);
+        vmin.y = min(vmin.y, _vmin.y - addsize);
+        vmin.z = min(vmin.z, _vmin.z - addsize);
+        vmax.x = max(vmax.x, _vmax.x + addsize);
+        vmax.y = max(vmax.y, _vmax.y + addsize);
+        vmax.z = max(vmax.z, _vmax.z + addsize);
+    }
 
-	pd.vpos=D3DXVECTOR3(vmin.x,vmin.y,vmin.z);
-	pd.vx=D3DXVECTOR3(vmax.x,vmin.y,vmin.z);
-	pd.vy=D3DXVECTOR3(vmin.x,vmax.y,vmin.z);
-	pd.vz=D3DXVECTOR3(vmin.x,vmin.y,vmax.z);
+    pd.vpos = D3DXVECTOR3(vmin.x, vmin.y, vmin.z);
+    pd.vx = D3DXVECTOR3(vmax.x, vmin.y, vmin.z);
+    pd.vy = D3DXVECTOR3(vmin.x, vmax.y, vmin.z);
+    pd.vz = D3DXVECTOR3(vmin.x, vmin.y, vmax.z);
 
-	D3DXMatrixInverse(&ml,nullptr,&ml);
+    D3DXMatrixInverse(&ml, nullptr, &ml);
 
-	D3DXVec3TransformCoord(&pd.vpos,&pd.vpos,&ml);
-	D3DXVec3TransformCoord(&pd.vx,&pd.vx,&ml);
-	D3DXVec3TransformCoord(&pd.vy,&pd.vy,&ml);
-	D3DXVec3TransformCoord(&pd.vz,&pd.vz,&ml);
+    D3DXVec3TransformCoord(&pd.vpos, &pd.vpos, &ml);
+    D3DXVec3TransformCoord(&pd.vx, &pd.vx, &ml);
+    D3DXVec3TransformCoord(&pd.vy, &pd.vy, &ml);
+    D3DXVec3TransformCoord(&pd.vz, &pd.vz, &ml);
 
-	pd.vx-=pd.vpos;
-	pd.vy-=pd.vpos;
-	pd.vz-=pd.vpos;
+    pd.vx -= pd.vpos;
+    pd.vy -= pd.vpos;
+    pd.vz -= pd.vpos;
 }
 
 
-CTextureManaged* CVectorObject::CalcShadowTexture(int cnt, CVectorObjectAnim ** obj, const int * noframe, const D3DXMATRIX * wm, const SProjData & pd,int texsize,CVOShadowCliper *cliper, CBaseTexture * tex_to_update)
+CTextureManaged* CVectorObject::CalcShadowTexture(int cnt, CVectorObjectAnim** obj, const int* noframe, const D3DXMATRIX* wm, const SProjData& pd, int texsize, CVOShadowCliper* cliper, CBaseTexture* tex_to_update)
 {
-    DTRACE();
-
     D3DXMATRIX mWorld;
     D3DXMATRIX mView;
-	D3DXMATRIX mProj(-2,0,0,0,0,2,0,0,0,0,float(1.0/(10000-1)),0,0,0,-float(1.0/(10000-1)),1);
-	D3DXVECTOR3 vpos(pd.vpos + ((pd.vx+pd.vy)*0.5f));
+    D3DXMATRIX mProj(-2, 0, 0, 0, 0, 2, 0, 0, 0, 0, float(1.0 / (10000 - 1)), 0, 0, 0, -float(1.0 / (10000 - 1)), 1);
+    D3DXVECTOR3 vpos(pd.vpos + ((pd.vx + pd.vy) * 0.5f));
 
-    D3DXMatrixLookAtLH(&mView,&(vpos-pd.vz),&vpos,&-pd.vy);
+    D3DXVECTOR3 temp1 = vpos - pd.vz;
+    D3DXVECTOR3 temp2 = -pd.vy;
+    D3DXMatrixLookAtLH(&mView, &temp1, &vpos, &temp2);
 
     D3DXMatrixIdentity(&mWorld);
-	ASSERT_DX(g_D3DD->SetTransform(D3DTS_WORLD,&mWorld));
+    ASSERT_DX(g_D3DD->SetTransform(D3DTS_WORLD, &mWorld));
 
     float _sx = (1.0f / D3DXVec3Length(&pd.vx));
     float _sy = (1.0f / D3DXVec3Length(&pd.vy));
     mView._11 *= _sx; mView._21 *= _sx; mView._31 *= _sx; mView._41 *= _sx;
     mView._12 *= _sy; mView._22 *= _sy; mView._32 *= _sy; mView._42 *= _sy;
-	ASSERT_DX(g_D3DD->SetTransform( D3DTS_VIEW, &mView ));
+    ASSERT_DX(g_D3DD->SetTransform(D3DTS_VIEW, &mView));
 
-    ASSERT_DX(g_D3DD->SetTransform( D3DTS_PROJECTION, &mProj ));
+    ASSERT_DX(g_D3DD->SetTransform(D3DTS_PROJECTION, &mProj));
 
     return CalcShadowTextureWOMat(cnt, obj, noframe, wm, texsize, cliper, tex_to_update);
 }
 
-CTextureManaged* CVectorObject::CalcShadowTextureWOMat(int cnt, CVectorObjectAnim ** obj, const int * noframe, const D3DXMATRIX * wm, int texsize,CVOShadowCliper *cliper, CBaseTexture * tex_to_update)
+CTextureManaged* CVectorObject::CalcShadowTextureWOMat(int cnt, CVectorObjectAnim** obj, const int* noframe, const D3DXMATRIX* wm, int texsize, CVOShadowCliper* cliper, CBaseTexture* tex_to_update)
 {
-    DTRACE();
-
     // store old viewport
-    D3DVIEWPORT9    oldViewport;
-	ASSERT_DX(g_D3DD->GetViewport(&oldViewport));
+    D3DVIEWPORT9 oldViewport;
+    ASSERT_DX(g_D3DD->GetViewport(&oldViewport));
 
-    //IDirect3DSurface9 * oldZBuffer = nullptr;
-	//FAILED_DX(g_D3DD->GetDepthStencilSurface(&oldZBuffer));
-
+    //IDirect3DSurface9* oldZBuffer = nullptr;
+    //FAILED_DX(g_D3DD->GetDepthStencilSurface(&oldZBuffer));
 
     // set new viewport
     D3DVIEWPORT9 newViewport;
-	newViewport.X=0;
-	newViewport.Y=0;
-	newViewport.Width=texsize;
-	newViewport.Height=texsize;
-	newViewport.MinZ=0.0f;
-	newViewport.MaxZ=1.0f;
-	ASSERT_DX(g_D3DD->SetViewport(&newViewport));
+    newViewport.X = 0;
+    newViewport.Y = 0;
+    newViewport.Width = texsize;
+    newViewport.Height = texsize;
+    newViewport.MinZ = 0.0f;
+    newViewport.MaxZ = 1.0f;
+    ASSERT_DX(g_D3DD->SetViewport(&newViewport));
 
     // store old render target
-    IDirect3DSurface9 * oldTarget;
-	ASSERT_DX(g_D3DD->GetRenderTarget(0,&oldTarget));
+    IDirect3DSurface9* oldTarget;
+    ASSERT_DX(g_D3DD->GetRenderTarget(0, &oldTarget));
 
     // create and set render target
     LPDIRECT3DTEXTURE9 newTexture;
-    IDirect3DSurface9 * newTarget;
-    //IDirect3DSurface9 * tss;
+    IDirect3DSurface9* newTarget;
+    //IDirect3DSurface9* tss;
     const int pxsz_src = 4;
     int pxsz_dst;
 
-
-    if (tex_to_update != nullptr)
+    if(tex_to_update != nullptr)
     {
-        if (!tex_to_update->IsLoaded())
+        if(!tex_to_update->IsLoaded())
         {
-            if (D3D_OK != D3DXCreateTexture(g_D3DD, texsize, texsize, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8, D3DPOOL_DEFAULT, &newTexture))
+            if(D3D_OK != D3DXCreateTexture(g_D3DD, texsize, texsize, 1, D3DUSAGE_RENDERTARGET, D3DFMT_A8, D3DPOOL_DEFAULT, &newTexture))
             {
                 ASSERT_DX(g_D3DD->SetViewport(&oldViewport));
                 return nullptr;
             }
             ASSERT_DX(newTexture->GetSurfaceLevel(0, &newTarget));
             tex_to_update->Set(newTexture, 0);
-        } else
+        }
+        else
         {
             ASSERT_DX(tex_to_update->DX()->GetSurfaceLevel(0, &newTarget));
         }
-
-    } else
+    }
+    else
     {
-        if (D3D_OK != g_D3DD->CreateRenderTarget(texsize,texsize, D3DFMT_A8R8G8B8, D3DMULTISAMPLE_NONE,  0, TRUE, &newTarget, 0))
+        if(D3D_OK != g_D3DD->CreateRenderTarget(texsize, texsize, D3DFMT_A8R8G8B8, D3DMULTISAMPLE_NONE, 0, TRUE, &newTarget, 0))
         {
             ASSERT_DX(g_D3DD->SetViewport(&oldViewport));
             return nullptr;
         }
     }
 
-    ASSERT_DX(g_D3DD->SetRenderTarget(0,newTarget));
+    ASSERT_DX(g_D3DD->SetRenderTarget(0, newTarget));
 
-    IDirect3DSurface9 * newZ, * oldZ;
+    IDirect3DSurface9* newZ, * oldZ;
     bool CustomZ = (texsize > g_ScreenY) || (texsize > g_ScreenX);
-    if (CustomZ)
+    if(CustomZ)
     {
         D3DSURFACE_DESC d;
         g_D3DD->GetDepthStencilSurface(&oldZ);
         oldZ->GetDesc(&d);
-        g_D3DD->CreateDepthStencilSurface(texsize,texsize, d.Format, d.MultiSampleType, d.MultiSampleQuality, TRUE, &newZ, nullptr);
+        g_D3DD->CreateDepthStencilSurface(texsize, texsize, d.Format, d.MultiSampleType, d.MultiSampleQuality, TRUE, &newZ, nullptr);
         g_D3DD->SetDepthStencilSurface(newZ);
         newZ->Release();
     }
 
 
-    if (FLAG(g_Flags, GFLAG_STENCILAVAILABLE))
+    if(FLAG(g_Flags, GFLAG_STENCILAVAILABLE))
     {
-        ASSERT_DX(g_D3DD->Clear(0,nullptr,D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER|D3DCLEAR_STENCIL,0x00000000L, 1.0f, 0L ));
-    } else
+        ASSERT_DX(g_D3DD->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER | D3DCLEAR_STENCIL, 0x00000000L, 1.0f, 0L));
+    }
+    else
     {
-        ASSERT_DX(g_D3DD->Clear(0,nullptr,D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER,0x00000000L, 1.0f, 0L ));
+        ASSERT_DX(g_D3DD->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000L, 1.0f, 0L));
     }
 
 
@@ -1283,13 +1287,13 @@ CTextureManaged* CVectorObject::CalcShadowTextureWOMat(int cnt, CVectorObjectAni
         ASSERT_DX(g_D3DD->SetRenderState(D3DRS_COLORWRITEENABLE, 0));
         SetColorOpDisable(0);
         cliper->Render();
-    } else
+    }
+    else
     {
         ASSERT_DX(g_D3DD->SetRenderState(D3DRS_ZENABLE,				D3DZB_FALSE));
     }
 
     ASSERT_DX(g_D3DD->SetRenderState(D3DRS_COLORWRITEENABLE, 0xF));
-
 
 	ASSERT_DX(g_D3DD->SetRenderState(D3DRS_TEXTUREFACTOR,		0xFFFFFFFF));
 
@@ -1838,7 +1842,7 @@ DTRACE();
                 }                                
                 
                 m_Lights[l].matid = m_VO->GetMatrixId(m);
-                m_Lights[l].BB().CSprite::CSprite(TRACE_PARAM_CALL D3DXVECTOR3(0, 0, 0), ra, 0, m_Lights[l].intervals[0].c1, tex_light);
+                m_Lights[l].BB() = CSprite(TRACE_PARAM_CALL D3DXVECTOR3(0, 0, 0), ra, 0, m_Lights[l].intervals[0].c1, tex_light);
                 ++l;
             }
         }
@@ -2102,7 +2106,7 @@ DTRACE();
         {
 			//if(m_Obj->VO()->EdgeExist())
             //{
-            if(!m_ShadowStencil) m_ShadowStencil = HNew(g_CacheHeap) CVOShadowStencil(g_MatrixHeap);
+            if(!m_ShadowStencil) m_ShadowStencil = HNew(g_CacheHeap) CVOShadowStencil(Base::g_MatrixHeap);
 
             //m_ShadowStencil->Build(*(m_Obj->VO()), m_Obj->FrameVO(), m_Parent->m_ShadowStencilLight, m_MatrixWorld, m_Parent->m_ShadowStencilCutPlane);
             //STENCIL

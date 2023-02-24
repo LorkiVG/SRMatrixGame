@@ -133,11 +133,11 @@ void SRemindCore::Tact(int ms)
 //        return i;
 //    }
 //
-//    BYTE *pp = m_Items.Buff<BYTE>();
+//    byte *pp = m_Items.Buff<byte>();
 //
 //    m_Items.Expand(sizeof(SReminderItem));
 //
-//    BYTE *pp2 = m_Items.Buff<BYTE>();
+//    byte *pp2 = m_Items.Buff<byte>();
 //
 //    if (pp != pp2)
 //    {
@@ -145,20 +145,20 @@ void SRemindCore::Tact(int ms)
 //
 //        int delta = pp2 - pp;
 //
-//        if (m_FirstFree) m_FirstFree = (SReminderItem *)((BYTE *)m_FirstFree + delta);
-//        if (m_LastFree) m_LastFree = (SReminderItem *)((BYTE *)m_LastFree + delta);
+//        if (m_FirstFree) m_FirstFree = (SReminderItem *)((byte *)m_FirstFree + delta);
+//        if (m_LastFree) m_LastFree = (SReminderItem *)((byte *)m_LastFree + delta);
 //
 //        SReminderItem * i = m_FirstFree;
 //        while (i != nullptr)
 //        {
-//            if (i->next_free) i->next_free = (SReminderItem *)((BYTE *)i->next_free + delta);
-//            if (i->prev_free) i->prev_free = (SReminderItem *)((BYTE *)i->prev_free + delta);
+//            if (i->next_free) i->next_free = (SReminderItem *)((byte *)i->next_free + delta);
+//            if (i->prev_free) i->prev_free = (SReminderItem *)((byte *)i->prev_free + delta);
 //
 //            i = i->next_free;
 //        }
 //    }
 //
-//    return (SReminderItem*)(((BYTE *)m_Items.Get()) + m_Items.Len() - sizeof(SReminderItem));
+//    return (SReminderItem*)(((byte *)m_Items.Get()) + m_Items.Len() - sizeof(SReminderItem));
 //}
 //
 //void    CReminder::ReleaseItem(SReminderItem *item)
@@ -177,7 +177,7 @@ void SRemindCore::Tact(int ms)
 //        CBuf *b = m_TimeArray[i];
 //
 //        dword *id = (dword*)b->Get();
-//        dword *idend = (dword*)((BYTE*)b->Get() + b->Len());
+//        dword *idend = (dword*)((byte*)b->Get() + b->Len());
 //        while (id < idend)
 //        {
 //            SReminderItem * item = (SReminderItem *)m_Items.Get() + (*id);
@@ -310,11 +310,11 @@ void SRemindCore::Tact(int ms)
 //
 //        //ASSERT(ptl >=0);
 //
-//        dword rid =  *(dword*)((BYTE *)m_TimeArray[item->index0]->Get() + ptl);
+//        dword rid =  *(dword*)((byte *)m_TimeArray[item->index0]->Get() + ptl);
 //
 //        SReminderItem *item1 = (SReminderItem *)m_Items.Get() + rid;
 //        item1->index1 = item->index1;
-//        *(dword *)(((BYTE *)m_TimeArray[item->index0]->Get()) + item->index1) = rid;
+//        *(dword *)(((byte *)m_TimeArray[item->index0]->Get()) + item->index1) = rid;
 //        m_TimeArray[item->index0]->SetLenNoShrink(ptl);
 //
 //    }
@@ -411,14 +411,14 @@ void SRemindCore::Tact(int ms)
 //
 //    ASSERT(ptl >= 0);
 //
-//    dword rid =  *(dword*)((BYTE *)m_TimeArray[item->index0]->Get() + ptl);
+//    dword rid =  *(dword*)((byte *)m_TimeArray[item->index0]->Get() + ptl);
 //
 //    SReminderItem *item1 = (SReminderItem *)m_Items.Get() + rid;
 //
 //    ASSERT (item1->index1 == ptl);
 //
 //    item1->index1 = item->index1;
-//    *(dword *)(((BYTE *)m_TimeArray[item->index0]->Get()) + item->index1) = rid;
+//    *(dword *)(((byte *)m_TimeArray[item->index0]->Get()) + item->index1) = rid;
 //    m_TimeArray[item->index0]->SetLenNoShrink(ptl);
 //
 //    //Validate();

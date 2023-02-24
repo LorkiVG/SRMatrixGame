@@ -25,7 +25,8 @@ DTRACE();
 
     m_Props.time = 0;
     m_Props.endoflife = false;
-    m_Props.distance = D3DXVec3Length(&(m_Props.target - m_Props.startpos));
+    D3DXVECTOR3 temp = m_Props.target - m_Props.startpos;
+    m_Props.distance = D3DXVec3Length(&temp);
     //m_Props.curpos = m_Props.startpos;
     m_Props.endhandler = handler;
     m_Props.uservalue = user;
@@ -50,7 +51,8 @@ CMatrixEffectMovingObject::~CMatrixEffectMovingObject()
     if(m_Props.object) UnloadObject(m_Props.object, m_Heap);
     if(m_Props.endhandler)
     {
-        m_Dist2 = D3DXVec3LengthSq(&(m_Props.curpos - m_Props.startpos));
+        D3DXVECTOR3 temp = m_Props.curpos - m_Props.startpos;
+        m_Dist2 = D3DXVec3LengthSq(&temp);
         m_Props.endhandler(TRACE_STOP_NONE, m_Props.curpos, (dword)m_Props.uservalue, FEHF_LASTHIT);
     }
 
@@ -158,7 +160,8 @@ static bool HMEnum(const D3DXVECTOR3& fpos, CMatrixMapStatic* ms, dword user)
                 ((ms->GetObjectType() == OBJECT_TYPE_FLYER) || (ms->GetObjectType() == OBJECT_TYPE_ROBOTAI) || (ms->GetObjectType() == OBJECT_TYPE_CANNON));
 
     p = &ms->GetGeoCenter();
-    float cc = D3DXVec3Dot(&hmd->dir, D3DXVec3Normalize(&to_dir, &(*p - hmd->props->curpos)));
+    D3DXVECTOR3 temp = *p - hmd->props->curpos;
+    float cc = D3DXVec3Dot(&hmd->dir, D3DXVec3Normalize(&to_dir, &temp));
 
     SObjectCore* oc = ms->GetCore(DEBUG_CALL_INFO);
 
@@ -186,7 +189,8 @@ static bool MOEnum(const D3DXVECTOR3& center, CMatrixMapStatic* ms, dword user)
     SMOProps* props = (SMOProps*)user;
     if(props->endhandler)
     {
-        CMatrixEffect::m_Dist2 = D3DXVec3LengthSq(&(center - props->startpos));
+        D3DXVECTOR3 temp = center - props->startpos;
+        CMatrixEffect::m_Dist2 = D3DXVec3LengthSq(&temp);
         props->endhandler(ms, center, (dword)props->uservalue, 0);
     }
     return true;
@@ -249,7 +253,8 @@ DTRACE();
         props.endoflife = true;
         if(props.endhandler)
         {
-            CMatrixEffect::m_Dist2 = D3DXVec3LengthSq(&(hitpos - props.startpos));
+            D3DXVECTOR3 temp = hitpos - props.startpos;
+            CMatrixEffect::m_Dist2 = D3DXVec3LengthSq(&temp);
             props.endhandler(hito, hitpos, (dword)props.uservalue, FEHF_LASTHIT);
             props.endhandler = nullptr;
         }
@@ -259,7 +264,8 @@ DTRACE();
         props.endoflife = true;
         if(props.endhandler)
         {
-            CMatrixEffect::m_Dist2 = D3DXVec3LengthSq(&(hitpos - props.startpos));
+            D3DXVECTOR3 temp = hitpos - props.startpos;
+            CMatrixEffect::m_Dist2 = D3DXVec3LengthSq(&temp);
             props.endhandler(TRACE_STOP_NONE, hitpos, (dword)props.uservalue, FEHF_LASTHIT);
             props.endhandler = nullptr;
         }
@@ -293,6 +299,9 @@ void MO_Homing_Missile_Tact(D3DXMATRIX& m, SMOProps& props, float tact)
         //props.target - координаты цели, в которые должна попасть ракета (при наличии объекта в props.hm.target в props.target будет записан его координатный центр)
         //data.to_tgt - необходимый вектор отклонения от текущих координат ракеты до выхода на координаты цели props.target
 
+        D3DXVECTOR3 seek_center;
+        D3DXVECTOR3 temp;
+
         //Для наведения ракеты по курсору из ручного управления роботом
         if(g_Config.IsManualMissileControl())
         {
@@ -300,7 +309,8 @@ void MO_Homing_Missile_Tact(D3DXMATRIX& m, SMOProps& props, float tact)
             if(g_MatrixMap->GetPlayerSide()->IsArcadeMode() && g_MatrixMap->GetPlayerSide()->GetArcadedObject() == props.hm.missile_owner)
             {
                 props.target = g_MatrixMap->m_TraceStopPos;
-                D3DXVec3Normalize(&data.to_tgt, &(props.target - props.curpos));
+                D3DXVECTOR3 temp = props.target - props.curpos;
+                D3DXVec3Normalize(&data.to_tgt, &temp);
                 data.props = &props;
                 data.found = false; //На всякий случай, чтобы наверняка сбросить ранее выбранную цель
                 props.hm.target = nullptr;
@@ -308,12 +318,11 @@ void MO_Homing_Missile_Tact(D3DXMATRIX& m, SMOProps& props, float tact)
             }
         }
 
-        D3DXVECTOR3 seek_center;
-
         //Этот параметр используется в проверке валидности выбора цели HMEnum
         if(props.hm.target)
         {
-            data.maxcos = D3DXVec3Dot(&data.dir, D3DXVec3Normalize(&seek_center, &(props.target - props.curpos)));
+            D3DXVECTOR3 temp = props.target - props.curpos;
+            data.maxcos = D3DXVec3Dot(&data.dir, D3DXVec3Normalize(&seek_center, &temp));
             //seekcenter = props.target;
         }
         else data.maxcos = -1;
@@ -339,7 +348,8 @@ void MO_Homing_Missile_Tact(D3DXMATRIX& m, SMOProps& props, float tact)
         //В комменте просто ручной вариант нормализации вектора
         //data.to_tgt = props.target - props.curpos;
         //data.to_tgt /= D3DXVec3Length(&data.to_tgt) + 0.000001;
-        D3DXVec3Normalize(&data.to_tgt, &(props.target - props.curpos));
+        temp = props.target - props.curpos;
+        D3DXVec3Normalize(&data.to_tgt, &temp);
 
     skip_obj_seek:
         //Меняем направление движения ракеты, если включено самонаведение и уже выбрана цель
@@ -400,7 +410,8 @@ void MO_Homing_Missile_Tact(D3DXMATRIX& m, SMOProps& props, float tact)
 
     VecToMatrixY(m, props.curpos, props.velocity * k);
 
-    float distance = D3DXVec3LengthSq(&(props.curpos - props.target));
+    D3DXVECTOR3 temp = props.curpos - props.target;
+    float distance = D3DXVec3LengthSq(&temp);
     if(hit || distance < (MISSILE_IMPACT_RADIUS * MISSILE_IMPACT_RADIUS)) //Сравниваем площади
     {
         if(hit_obj == TRACE_STOP_NONE && props.hm.target != nullptr && props.hm.target->m_Object != nullptr)
@@ -431,7 +442,8 @@ void MO_Homing_Missile_Tact(D3DXMATRIX& m, SMOProps& props, float tact)
         props.endoflife = true;
         if(props.endhandler)
         {
-            CMatrixEffect::m_Dist2 = D3DXVec3LengthSq(&(props.curpos - props.startpos));
+            D3DXVECTOR3 temp = props.curpos - props.startpos;
+            CMatrixEffect::m_Dist2 = D3DXVec3LengthSq(&temp);
             props.endhandler(TRACE_STOP_NONE, props.curpos, (dword)props.uservalue, FEHF_LASTHIT);
             props.endhandler = nullptr;
         }
@@ -449,7 +461,8 @@ void MO_Homing_Missile_Tact(D3DXMATRIX& m, SMOProps& props, float tact)
 
         if(props.endhandler)
         {
-            CMatrixEffect::m_Dist2 = D3DXVec3LengthSq(&(props.curpos - props.startpos));
+            D3DXVECTOR3 temp = props.curpos - props.startpos;
+            CMatrixEffect::m_Dist2 = D3DXVec3LengthSq(&temp);
             props.endhandler(hit_obj, hit ? hit_pos : props.curpos, (dword)props.uservalue, FEHF_LASTHIT);
             props.endhandler = nullptr;
             CMatrixEffect::CreateExplosion(props.curpos, ExplosionMissile, false);
@@ -480,7 +493,8 @@ void MO_Grenade_Tact(D3DXMATRIX& m, SMOProps& props, float tact)
     D3DXVECTOR3 newpos, dir;
     props.bomb.trajectory->CalcPoint(newpos, props.bomb.pos);
 
-    D3DXVec3Normalize(&dir, &(newpos - props.curpos));
+    D3DXVECTOR3 temp = newpos - props.curpos;
+    D3DXVec3Normalize(&dir, &temp);
 
     float t, dt;
     if(props.time > props.bomb.next_fire_time)
@@ -560,7 +574,8 @@ void MO_Grenade_Tact(D3DXMATRIX& m, SMOProps& props, float tact)
         props.endoflife = true;
         if(props.endhandler)
         {
-            CMatrixEffect::m_Dist2 = D3DXVec3LengthSq(&(hitpos - props.startpos));
+            D3DXVECTOR3 temp = hitpos - props.startpos;
+            CMatrixEffect::m_Dist2 = D3DXVec3LengthSq(&temp);
             props.endhandler(hito, hitpos, (dword)props.uservalue, FEHF_LASTHIT);
             props.endhandler = nullptr;
         }

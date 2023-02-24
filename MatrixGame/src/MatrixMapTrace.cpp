@@ -423,7 +423,8 @@ CMatrixMapStatic* CMatrixMap::Trace(
     data.dy = end.y - start.y;
     data.dz = end.z - start.z;
 
-    data.len = D3DXVec3Length(&D3DXVECTOR3(data.dx, data.dy, data.dz));
+    D3DXVECTOR3 temp = { data.dx, data.dy, data.dz };
+    data.len = D3DXVec3Length(&temp);
 
     const float oblen = INVERT(((data.len != 0) ? data.len : 1.0f));
     data.dir = D3DXVECTOR3(data.dx * oblen, data.dy * oblen, data.dz * oblen);
@@ -1065,11 +1066,9 @@ DTRACE();
     return SR_NONE;
 }
 
-
-
-bool    CMatrixMap::TraceLand(D3DXVECTOR3 *out, const D3DXVECTOR3 &start, const D3DXVECTOR3 &dir)
+bool CMatrixMap::TraceLand(D3DXVECTOR3* out, const D3DXVECTOR3& start, const D3DXVECTOR3& dir)
 {
-    DTRACE();
+DTRACE();
 
     internal_trace_data data;
 
@@ -1083,26 +1082,26 @@ bool    CMatrixMap::TraceLand(D3DXVECTOR3 *out, const D3DXVECTOR3 &start, const 
     data.dir = dir;
 
     data.last_t = data.len;
-    float zz = (start.z+dir.z*data.len);
+    float zz = (start.z + dir.z * data.len);
     data.minz = min(start.z, zz);
     data.maxz = max(start.z, zz);
-    if (data.minz < 0) data.minz = 0;
+    if(data.minz < 0) data.minz = 0;
 
     D3DXVECTOR3 end = start + dir * data.len;
-    
-    if ( ((*((dword*)(&data.dx)) | *((dword*)(&data.dy))) & 0x7FFFFFFF)  == 0)
+
+    if(((*((dword*)(&data.dx)) | *((dword*)(&data.dy))) & 0x7FFFFFFF) == 0)
     {
-        if (data.dz == 0)
+        if(data.dz == 0)
         {
-            if (out) *out = start;
+            if(out) *out = start;
             return false;
         }
 
         float z = GetZLand(start.x, start.y);
-        if (z < 0) z = 0;
+        if(z < 0) z = 0;
 
-        bool down = (data.dir.z<0);
-        if (out)
+        bool down = (data.dir.z < 0);
+        if(out)
         {
             out->x = start.x;
             out->y = start.y;
@@ -1111,32 +1110,28 @@ bool    CMatrixMap::TraceLand(D3DXVECTOR3 *out, const D3DXVECTOR3 &start, const 
         return true;
     }
 
-    if (dir.z < 0)
+    if(dir.z < 0)
     {
         //data.out = start + dir * data.len;
         float k = (0 - start.z) / dir.z;
-        data.out.x = start.x + dir.x*k;
-        data.out.y = start.y + dir.y*k;
+        data.out.x = start.x + dir.x * k;
+        data.out.y = start.y + dir.y * k;
         data.out.z = 0;
 
         end = data.out;
-        data.last_t = D3DXVec3Length(&(start - end));
-
-    } else
-    {
-        data.out = start + dir * data.len;
-
+        D3DXVECTOR3 temp = start - end;
+        data.last_t = D3DXVec3Length(&temp);
     }
+    else data.out = start + dir * data.len;
 
     data.usex = fabs(data.dx) > fabs(data.dy);
 
-
-    if (data.dx != 0)
+    if(data.dx != 0)
     {
         data.ddx = INVERT(data.dir.x);
         data.dzdx = data.dir.z * data.ddx;
     }
-    if (data.dy != 0)
+    if(data.dy != 0)
     {
         data.ddy = INVERT(data.dir.y);
         data.dzdy = data.dir.z * data.ddy;

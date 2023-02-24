@@ -36,15 +36,14 @@ void CLoadProgress::SetCurLP(int lp)
     OutputDebugStringW(L"\n" + CWStr(lp_props[lp].description));
 #endif
 }
+
 void CLoadProgress::SetCurLPPos(int i)
 {
-
     float k = m_fullsize1 * (m_cursizedone + ((m_cur_lp_size1 * float(i)) * lp_props[m_CurLoadProcess].len));
 
     int ac = Float2Int(k * LPACCURACY);
-    if (ac > m_lastacc)
+    if(ac > m_lastacc)
     {
-
         if(g_RangersInterface) g_RangersInterface->m_ProgressBar(float(ac)/LPACCURACY);
 
 #ifdef _DEBUG
@@ -53,5 +52,4 @@ void CLoadProgress::SetCurLPPos(int i)
 
         m_lastacc = ac;
     }
-
 }

@@ -52,7 +52,7 @@ class BASE_API CStr : public CMain
 		explicit CStr(int zn, CHeap* heap = nullptr);
 		explicit CStr(double zn, int zpz = 8, CHeap* heap = nullptr);
 		//CStr(void* zn, CHeap* heap = nullptr);
-		//CStr(BYTE zn, CHeap* heap = nullptr);
+		//CStr(byte zn, CHeap* heap = nullptr);
 		~CStr() { ClearFull(); }
 		
 		//Clear - Очищает строку
@@ -74,7 +74,7 @@ class BASE_API CStr : public CMain
 		void Set(int zn);
 		void Set(double zn,int zpz=8);
 		void SetHex(void * zn);
-		void SetHex(BYTE zn);
+		void SetHex(byte zn);
 
 		void Add(const CStr & cstr);
 		void Add(const char * str);
@@ -84,7 +84,7 @@ class BASE_API CStr : public CMain
 		void Add(int zn)						{ Add(CStr(zn)); }
 		void Add(double zn,int zpz=8)			{ Add(CStr(zn,zpz)); }
 		void Add(void * zn)						{ CStr s; s.SetHex(zn); Add(s); }
-		void Add(BYTE zn)						{ CStr s; s.SetHex(zn); Add(s); }
+		void Add(byte zn)						{ CStr s; s.SetHex(zn); Add(s); }
 
 		const char* Get(void) const			    { return m_Str; }
 		const char* GetEx(void) const			{ if(IsEmpty()) return nullptr; return m_Str; }

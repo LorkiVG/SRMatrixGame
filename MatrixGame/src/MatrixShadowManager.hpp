@@ -14,7 +14,7 @@ class CMatrixShadowProj : public CVOShadowProj
 public:
 
     bool AlreadyDraw(void);
-    BYTE* ReadGeometry(BYTE* raw);
+    byte* ReadGeometry(byte* raw);
 
     CMatrixMapStatic *GetOwner(void) { return m_Owner; }
 

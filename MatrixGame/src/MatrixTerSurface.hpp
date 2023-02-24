@@ -104,8 +104,8 @@ public:
     //static void PrepareSurfaces(bool macro);
     static void ClearSurfaces(void);
 
-    static void Load(int i, BYTE *raw) {m_Surfaces[i].Load(raw);};
-    static void LoadM(int i, BYTE *raw) {m_Surfaces[i].LoadM(raw);};
+    static void Load(int i, byte *raw) {m_Surfaces[i].Load(raw);};
+    static void LoadM(int i, byte *raw) {m_Surfaces[i].LoadM(raw);};
 
 
     static void BeforeDrawAll(void)
@@ -136,8 +136,8 @@ public:
     void BeforeDraw(void);
 
 
-    void Load(BYTE *raw);
-    void LoadM(BYTE *raw);
+    void Load(byte *raw);
+    void LoadM(byte *raw);
 
 };
 

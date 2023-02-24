@@ -33,28 +33,28 @@ namespace Base
         static int      last_id;
         return last_id++;
     }
-    BYTE            DCS_semetery_heap[SEMETERY_HEAP_SIZE];
+    byte            DCS_semetery_heap[SEMETERY_HEAP_SIZE];
     DCS_SDeadMem    DCS_semetery[SEMETERY_SIZE];
 
     int DCS_semetery_cnt = 0;
     int DCS_semetery_heap_size = 0;
 
 
-static int DCS_find_by_id(int id, BYTE **ptr)
+static int DCS_find_by_id(int id, byte **ptr)
 {
     DCS_SDeadMemBody *b = (DCS_SDeadMemBody *)&DCS_semetery_heap;
 
     while (id != b->id)
     {
-        b = (DCS_SDeadMemBody *)(((BYTE *)b) + b->size);
+        b = (DCS_SDeadMemBody *)(((byte *)b) + b->size);
     }
 
-    *ptr = (BYTE *)b;
+    *ptr = (byte *)b;
     return b->size;
 }
 static void DCS_remove_by_id(int id)
 {
-    BYTE *ptr;
+    byte *ptr;
     int sz = DCS_find_by_id(id, &ptr);
 
     memcpy(ptr, ptr+sz, DCS_semetery_heap_size - sz);
@@ -104,7 +104,7 @@ CMain *     CMain::DCS_GetDeadBody(void) const
     {
         if (DCS_semetery[i].ptr_was == this)
         {
-            BYTE *ptr;
+            byte *ptr;
             int sz = DCS_find_by_id(DCS_semetery[i].id, &ptr);
             return (CMain *)(ptr + sizeof(DCS_SDeadMemBody));
         }

@@ -142,7 +142,7 @@ struct SObjectCore
 
     static SObjectCore* Create(CMatrixMapStatic* obj)
     {
-        SObjectCore* c = (SObjectCore*)HAlloc(sizeof(SObjectCore), g_MatrixHeap);
+        SObjectCore* c = (SObjectCore*)HAlloc(sizeof(SObjectCore), Base::g_MatrixHeap);
 
         c->m_Object = obj;
         c->m_Ref = 1;
@@ -157,7 +157,7 @@ struct SObjectCore
         --m_Ref;
         if(m_Ref <= 0)
         {
-            HFree(this, g_MatrixHeap);
+            HFree(this, Base::g_MatrixHeap);
         }
     }
 
@@ -186,7 +186,7 @@ class CMatrixMapStatic : public CMain
     int m_ObjectStateTTLAblaze = 0;
     int m_ObjectStateTTLShorted = 0;
 
-    int m_Z;
+    int m_Z = 0;
 
     static PCMatrixMapStatic objects[MAX_OBJECTS_PER_SCREEN];
     static int               objects_left;
@@ -199,8 +199,8 @@ class CMatrixMapStatic : public CMain
     static CMatrixMapStatic* m_FirstVisOld;
     static CMatrixMapStatic* m_LastVisOld;
 
-    CMatrixMapStatic* m_NextVis;
-    CMatrixMapStatic* m_PrevVis;
+    CMatrixMapStatic* m_NextVis = nullptr;
+    CMatrixMapStatic* m_PrevVis = nullptr;
 
 protected:
     struct SEVH_data
@@ -231,16 +231,16 @@ protected:
 
     static CMatrixMapStatic* m_FirstLogicTemp;
     static CMatrixMapStatic* m_LastLogicTemp;
-    CMatrixMapStatic* m_PrevLogicTemp;
-    CMatrixMapStatic* m_NextLogicTemp;
+    CMatrixMapStatic* m_PrevLogicTemp = nullptr;
+    CMatrixMapStatic* m_NextLogicTemp = nullptr;
 
     PCMatrixMapGroup m_InGroups[MAX_GROUPS_PER_OBJECT];    // max size of object is MAX_GROUPS_PER_OBJECT groups
-    int              m_InCnt;
+    int              m_InCnt = 0;
 
 
-    float           m_CamDistSq;    // квадрат растояния до камеры. вычисляется только в графическом такте.
+    float           m_CamDistSq = 10000.0f;    // квадрат растояния до камеры. вычисляется только в графическом такте.
 
-    int             m_NearBaseCnt;
+    int             m_NearBaseCnt = 0;
 
     // for visibility
     void WillDraw()
@@ -254,8 +254,8 @@ protected:
     }
 
 public:
-    CMatrixMapStatic* m_NextQueueItem;
-    CMatrixMapStatic* m_PrevQueueItem;
+    CMatrixMapStatic* m_NextQueueItem = nullptr;
+    CMatrixMapStatic* m_PrevQueueItem = nullptr;
         
     bool IsNotOnMinimap() const { return FLAG(m_RChange, MR_MiniMap); }
     void SetInvulnerability() { SETFLAG(m_ObjectFlags, OBJECT_STATE_INVULNERABLE); }
@@ -306,19 +306,19 @@ public:
     bool IsVisible() const { return !FLAG(m_ObjectFlags, OBJECT_STATE_INVISIBLE); }
     void SetInterfaceDraw(bool flag) { INITFLAG(m_ObjectFlags, OBJECT_STATE_INTERFACE, flag); }
     bool IsInterfaceDraw() const { return FLAG(m_ObjectFlags, OBJECT_STATE_INTERFACE); }
-		
-    PCMatrixMapGroup GetGroup(int n)    { return m_InGroups[n]; }
-    int GetGroupCnt()               { return m_InCnt; }
+
+    PCMatrixMapGroup GetGroup(int n) { return m_InGroups[n]; }
+    int GetGroupCnt()                { return m_InCnt; }
 
     D3DXVECTOR3 m_AdditionalPoint; // to check visibility with shadows
 
-    dword   m_LastVisFrame;
-    int     m_IntersectFlagTracer;
-    int     m_IntersectFlagFindObjects;
+    dword   m_LastVisFrame = 0xFFFFFFFF;
+    int     m_IntersectFlagTracer = 0xFFFFFFFF;
+    int     m_IntersectFlagFindObjects = 0xFFFFFFFF;
 
 #pragma warning (disable : 4355)
     CMatrixMapStatic() :
-        CMain(), m_LastVisFrame(0xFFFFFFFF), m_NearBaseCnt(0), m_IntersectFlagTracer(0xFFFFFFFF), m_IntersectFlagFindObjects(0xFFFFFFFF), m_InCnt(0), m_PrevLogicTemp(nullptr), m_NextLogicTemp(nullptr), m_RemindCore(FreeObjResources, (dword)this)
+        CMain(), m_RemindCore(FreeObjResources, (dword)this)
     {
         m_Core = SObjectCore::Create(this);
 
@@ -326,14 +326,6 @@ public:
         m_Core->m_Type = OBJECT_TYPE_EMPTY;
 
         memset(m_InGroups, 0, sizeof(m_InGroups));
-            
-        m_NextQueueItem = nullptr;
-        m_PrevQueueItem = nullptr;
-            
-        m_NextVis = nullptr;
-        m_PrevVis = nullptr;
-
-        m_CamDistSq = 10000.0f;
     }
 #pragma warning (default : 4355)
 

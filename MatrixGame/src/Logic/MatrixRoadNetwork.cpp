@@ -2481,7 +2481,7 @@ void CMatrixRoadNetwork::Save(CBuf & b)
         b.Int(m_Zone[i].m_Perim);
         b.AnyStruct<CRect>(m_Zone[i].m_Rect);
         b.Bool(m_Zone[i].m_Road);
-        b.Byte(BYTE(m_Zone[i].m_Move));
+        b.Byte(byte(m_Zone[i].m_Move));
         b.Byte(m_Zone[i].m_NearZoneCnt);
         for(u=0;u<m_Zone[i].m_NearZoneCnt;u++) {
             b.Int(m_Zone[i].m_NearZone[u]);
@@ -2530,7 +2530,7 @@ void CMatrixRoadNetwork::Save(CBuf & b)
         SMatrixPlace * place=GetPlace(i);
 
         b.AnyStruct<CPoint>(place->m_Pos);
-        b.Byte(BYTE(place->m_Move));
+        b.Byte(byte(place->m_Move));
         b.Byte(place->m_BorderLeft);
         b.Byte(place->m_BorderTop);
         b.Byte(place->m_BorderRight);

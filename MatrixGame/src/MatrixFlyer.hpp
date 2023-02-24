@@ -355,7 +355,7 @@ public:
     int         GetCtrlGroup()              { return m_CtrlGroup; } 
     void        SetCtrlGroup(int group)     { m_CtrlGroup = group; }
 
-    CMatrixBuilding* GetBase(void) const    { return m_Base; }
+    CMatrixBuilding* GetBase() const    { return m_Base; }
 
     bool        IsDeliveryCopter() const    { return FLAG(m_ObjectFlags, FLYER_FLAG_DELIVERY_COPTER); }
     void        SetDeliveryCopter(bool set) { INITFLAG(m_ObjectFlags, FLYER_FLAG_DELIVERY_COPTER, set); }
@@ -364,14 +364,14 @@ public:
 
     EFlyerKind  m_FlyerKind = FLYER_SPEED;
 
-    static void StaticInit(void)
+    static void StaticInit()
     {
         m_VB = nullptr;
         m_VB_ref = 0;
     }
 
-    static void MarkAllBuffersNoNeed(void);
-    static void InitBuffers(void);
+    static void MarkAllBuffersNoNeed();
+    static void InitBuffers();
 
     CMatrixFlyer();
     ~CMatrixFlyer();
@@ -379,26 +379,26 @@ public:
     void ApplyOrder(const D3DXVECTOR2& pos, int side, EFlyerOrder order, float ang, int place, const CPoint& bpos, int robot_template);
 
     // carry robot
-    bool IsCarryingRobot(void) const { return m_CarryData.m_Robot != nullptr; }
-    CMatrixRobot* GetCarryingRobot(void) { return m_CarryData.m_Robot; }
-    CMatrixFlyer::SCarryData* GetCarryData(void) { return &m_CarryData; };
+    bool IsCarryingRobot() const { return m_CarryData.m_Robot != nullptr; }
+    CMatrixRobot* GetCarryingRobot() { return m_CarryData.m_Robot; }
+    CMatrixFlyer::SCarryData* GetCarryData() { return &m_CarryData; };
 
-    void  ShowHitpoint(void) { m_ShowHitpointTime = HITPOINT_SHOW_TIME; }
-    float GetHitPoint(void) const { return m_HitPoint; }
+    void  ShowHitpoint() { m_ShowHitpointTime = HITPOINT_SHOW_TIME; }
+    float GetHitPoint() const { return m_HitPoint; }
     float GetMaxHitPoint() { return m_HitPointMax; }
     void  InitMaxHitpoint(float hp) { m_HitPoint = hp; m_HitPointMax = hp; m_MaxHitPointInversed = 1.0f / hp; }
 
     void SetHitpoint(float hp) { m_HitPoint = hp; }
 
-    const D3DXVECTOR3& GetPos(void) const { return m_Pos; } //Возвращает текущие фактические координаты вертолёта по всем трём осям
-    const D3DXVECTOR3  GetPos(float ahead_to) const { return GetPos() + D3DXVECTOR3(-m_AngleZSin, m_AngleZCos, 0) * ahead_to; } //Возвращает координатам на удалении, равном значению аргумента, по направлению вперёд ровно от носа вертолёта, можно использовать для расчёта вектора прямолинейного движения
-    const D3DXVECTOR3  GetForward(float ahead_to) const { return D3DXVECTOR2(-m_AngleZSin, m_AngleZCos) * ahead_to; } //Возвращает указанную в аргументе прибавку к координатам (не точные координаты, а именно плюс к фактической m_Pos) ровно перед носом вертолёта, по которым считается вектор направления и которые можно использовать, чтобы отдавать команду двигаться строго вперёд
+    const D3DXVECTOR3& GetPos() const { return m_Pos; } //Возвращает текущие фактические координаты вертолёта по всем трём осям
+    const D3DXVECTOR3  GetPos(float ahead_to) const { return GetPos() + D3DXVECTOR3(-m_AngleZSin, m_AngleZCos, 0.0f) * ahead_to; } //Возвращает координатам на удалении, равном значению аргумента, по направлению вперёд ровно от носа вертолёта, можно использовать для расчёта вектора прямолинейного движения
+    const D3DXVECTOR3  GetForward(float ahead_to) const { return D3DXVECTOR3(-m_AngleZSin, m_AngleZCos, 0.0f) * ahead_to; } //Возвращает указанную в аргументе прибавку к координатам (не точные координаты, а именно плюс к фактической m_Pos) ровно перед носом вертолёта, по которым считается вектор направления и которые можно использовать, чтобы отдавать команду двигаться строго вперёд
 
     const D3DXVECTOR2  GetTarget() const { return m_Target; }
     //void             SetAlt(float alt) { m_TargetAlt = alt; }
 
     //Угол направления носа вертолёта
-    float GetDirectionAngle(void) const { return m_AngleZ; };
+    float GetDirectionAngle() const { return m_AngleZ; };
     void SetDirectionAngle(float a)
     {
         a = (float)AngleNorm(a);

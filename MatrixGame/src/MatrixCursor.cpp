@@ -6,61 +6,62 @@
 #include "stdafx.h"
 #include "MatrixMap.hpp"
 
-#define CURSOR_Z    0.0f
+#define CURSOR_Z 0.0f
 
 void CMatrixCursor::SetVisible(bool flag)
 {
-
-    if (!g_Config.m_SoftwareCursor)
+    if(!g_Config.m_SoftwareCursor)
     {
-        if (FLAG(m_CursorFlags, CURSOR_VISIBLE) && !flag)
+        if(FLAG(m_CursorFlags, CURSOR_VISIBLE) && !flag)
         {
-            while (ShowCursor(false)>=0);
+            while (ShowCursor(false) >= 0);
             g_D3DD->ShowCursor(false);
             SetCursor(nullptr);
-        } else if (!FLAG(m_CursorFlags, CURSOR_VISIBLE) && flag)
+        }
+        else if(!FLAG(m_CursorFlags, CURSOR_VISIBLE) && flag)
         {
-			SetCursor(m_CursorIcons[m_Frame]);
-			int cntTry=0;
-			int cntCurs=ShowCursor(true);
-			int cntCursPrev=cntCurs-1;
-			while (cntCurs < 0){
-				if (cntCurs==cntCursPrev) ++cntTry;
-				if (cntTry>100){
-					g_Config.m_SoftwareCursor=true;
-					m_CurCursor=0;
-					Select(CURSOR_ARROW);
-					INITFLAG(m_CursorFlags, CURSOR_VISIBLE, flag);
-					return;
-				}
-				cntCursPrev=cntCurs;
-				cntCurs=ShowCursor(true);
-			}
-            g_D3DD->ShowCursor(true);ShowCursor(true);
+            SetCursor(m_CursorIcons[m_Frame]);
+            int cntTry = 0;
+            int cntCurs = ShowCursor(true);
+            int cntCursPrev = cntCurs - 1;
+            while(cntCurs < 0)
+            {
+                if(cntCurs == cntCursPrev) ++cntTry;
+                if(cntTry > 100)
+                {
+                    g_Config.m_SoftwareCursor = true;
+                    m_CurCursor = 0;
+                    Select(CURSOR_ARROW);
+                    INITFLAG(m_CursorFlags, CURSOR_VISIBLE, flag);
+                    return;
+                }
+
+                cntCursPrev = cntCurs;
+                cntCurs = ShowCursor(true);
+            }
+
+            g_D3DD->ShowCursor(true); ShowCursor(true);
 
         }
     }
+
     INITFLAG(m_CursorFlags, CURSOR_VISIBLE, flag);
 }
 
 void CMatrixCursor::Select(const wchar* name)
 {
-DTRACE();
-
     if(m_CurCursor)
     {
         if(WStrCmp(name, m_CurCursor)) return;
     }
-DCP();
+
     m_CurCursor = name;
 
     Clear();
-DCP();
 
     m_Frame = 0;
     CWStr n(g_CacheHeap);
 
-DCP();
     int idx;
     for(idx = 0; idx < g_Config.m_CursorsCnt; ++idx)
     {
@@ -68,7 +69,7 @@ DCP();
         {
             n.Set(g_Config.m_Cursors[idx].val);
             
-            CWStr& par = n.GetStrPar(1, L"?");
+            const CWStr& par = n.GetStrPar(1, L"?");
             m_HotSpot.x = par.GetIntPar(0, L",");
             m_HotSpot.y = par.GetIntPar(1, L",");
 
@@ -92,7 +93,6 @@ DCP();
             break;
         }
     }
-DCP();
 
     if(g_Config.m_SoftwareCursor)
     {
@@ -134,20 +134,17 @@ DCP();
             if(y + m_CursorSize > bm.SizeY()) break;
             frame.Copy(CPoint(0, 0), frame.Size(), bm, CPoint(x, y));
             frame.WBM_Init();
-DCP();
 
             ii.hbmMask = frame.WBM_Bitmap();
             ii.hbmColor = frame.WBM_Bitmap();
 
             m_CursorIcons[i++] = CreateIconIndirect(&ii);
-DCP();
 
             x += m_CursorSize;
         } while (i < m_FramesCnt);
 
         SetCursor(m_CursorIcons[0]);
         if(FLAG(m_CursorFlags, CURSOR_VISIBLE)) while (ShowCursor(true) < 0);
-DCP();
     }
 }
 

@@ -78,7 +78,7 @@ public:
 
     void DestroyTexture(void);
     
-    void Prepare(float dx, float dy, SVOShadowProjVertex *verts, int vertscnt, WORD *idxs, int idxscnt);
+    void Prepare(float dx, float dy, SVOShadowProjVertex *verts, int vertscnt, word *idxs, int idxscnt);
     void BeforeRender(void)
     {
         if (m_Tex)

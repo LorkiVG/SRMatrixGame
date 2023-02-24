@@ -102,7 +102,7 @@ struct SMemHeader
     }
     static SMemHeader *CalcBegin(void * ptr)
     {
-        return (SMemHeader*)(((BYTE *)ptr) - sizeof(SMemHeader)
+        return (SMemHeader*)(((byte *)ptr) - sizeof(SMemHeader)
 #ifdef MEM_CHECK
         - MEM_CHECK_BOUND_SIZE
 #endif
@@ -134,8 +134,8 @@ struct SMemHeader
         void *ptr;
 #ifdef MEM_CHECK
         memset(this + 1, MEM_CHECK_FILLER, MEM_CHECK_BOUND_SIZE);
-        memset((((BYTE *)this) + sz) - MEM_CHECK_BOUND_SIZE , MEM_CHECK_FILLER, MEM_CHECK_BOUND_SIZE);
-        ptr = ((BYTE *)(this + 1)) + MEM_CHECK_BOUND_SIZE;
+        memset((((byte *)this) + sz) - MEM_CHECK_BOUND_SIZE , MEM_CHECK_FILLER, MEM_CHECK_BOUND_SIZE);
+        ptr = ((byte *)(this + 1)) + MEM_CHECK_BOUND_SIZE;
 #else
         ptr = this + 1;
 #endif
@@ -368,7 +368,7 @@ __forceinline void* CHeap::AllocEx(void* buf, size_t size)
     return buf;
 }
 
-__forceinline void * CHeap::AllocClearEx(void * buf, size_t size)
+__forceinline void* CHeap::AllocClearEx(void* buf, size_t size)
 {
     if(this == nullptr)
     {
@@ -469,7 +469,7 @@ inline void MemCopy(void* s1, void* s2, int len) {
 	}
 }
 
-inline void MemSet(void* s1, BYTE zn, int len) {
+inline void MemSet(void* s1, byte zn, int len) {
 	__asm {
 		cld
 		mov		al,zn

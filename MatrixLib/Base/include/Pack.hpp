@@ -73,12 +73,12 @@ struct SFileHandleRec
     dword   m_StartOffset;  // Смещение начала файла относительно начала пакетного файла
     dword   m_Offset;       // Настоящее смещение
     dword   m_Size;         // Размер файла
-    BYTE   *m_SouBuf;       // Буфер для чтения сжатых данных
-    BYTE   *m_DesBuf;       // Буфер для расжатых данных
+    byte   *m_SouBuf;       // Буфер для чтения сжатых данных
+    byte   *m_DesBuf;       // Буфер для расжатых данных
     int     m_Blocknumber;  // Номер блока в сжатом файле
     bool    m_Free;         // Запись свободна
     bool    m_Compressed;   // Является ли файл сжатым
-    WORD    dummy00;    // align
+    word    dummy00;    // align
 };
 
 
@@ -112,7 +112,7 @@ class CHsFolder : public CMain
     {
         if (dword(ind)<m_FolderRec.m_Recnum)
         {
-            return (SFileRec *)(((BYTE *)m_Files) + m_FolderRec.m_RecSize *ind);
+            return (SFileRec *)(((byte *)m_Files) + m_FolderRec.m_RecSize *ind);
         }
         return nullptr;
     }

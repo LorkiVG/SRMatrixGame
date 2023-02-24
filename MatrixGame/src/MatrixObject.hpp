@@ -98,16 +98,16 @@ public:
     }
     ~CMatrixMapObject()
     {
-        if(m_Graph) UnloadObject(m_Graph, g_MatrixHeap);
-        if(m_ShadowStencil) HDelete(CVOShadowStencil, m_ShadowStencil, g_MatrixHeap);
+        if(m_Graph) UnloadObject(m_Graph, Base::g_MatrixHeap);
+        if(m_ShadowStencil) HDelete(CVOShadowStencil, m_ShadowStencil, Base::g_MatrixHeap);
         if(m_ShadowProj)
         {
             FreeShadowTexture();
-            HDelete(CMatrixShadowProj, m_ShadowProj, g_MatrixHeap);
+            HDelete(CMatrixShadowProj, m_ShadowProj, Base::g_MatrixHeap);
         }
-        if(m_BehaviorFlag == BEHF_TERRON && m_ProgressBar != nullptr) HDelete(CMatrixProgressBar, m_ProgressBar, g_MatrixHeap);
-        if(m_BehaviorFlag == BEHF_BREAK && m_ProgressBar != nullptr) HDelete(CMatrixProgressBar, m_ProgressBar, g_MatrixHeap);
-        if(m_BehaviorFlag == BEHF_ANIM && m_ProgressBar != nullptr) HDelete(CMatrixProgressBar, m_ProgressBar, g_MatrixHeap);
+        if(m_BehaviorFlag == BEHF_TERRON && m_ProgressBar != nullptr) HDelete(CMatrixProgressBar, m_ProgressBar, Base::g_MatrixHeap);
+        if(m_BehaviorFlag == BEHF_BREAK && m_ProgressBar != nullptr) HDelete(CMatrixProgressBar, m_ProgressBar, Base::g_MatrixHeap);
+        if(m_BehaviorFlag == BEHF_ANIM && m_ProgressBar != nullptr) HDelete(CMatrixProgressBar, m_ProgressBar, Base::g_MatrixHeap);
         if(m_BehaviorFlag == BEHF_SPAWNER && m_SpawnRobotCore) m_SpawnRobotCore->Release();
     }
 

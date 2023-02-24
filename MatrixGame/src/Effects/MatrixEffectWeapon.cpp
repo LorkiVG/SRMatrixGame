@@ -334,7 +334,8 @@ void CMatrixEffectWeapon::FireWeapon()
 
                 //CHelper::Create(100, 0)->Line(m_Speed, m_Speed + D3DXVECTOR3(0, 0, 100));
 
-                float len = D3DXVec3Length(&(m_Pos - m_Speed));
+                D3DXVECTOR3 temp = m_Pos - m_Speed;
+                float len = D3DXVec3Length(&temp);
                 D3DXVECTOR3 dir((m_Pos - m_Speed) * (1.0f / len));
                 if(len > m_WeaponDist * m_WeaponCoefficient) len = m_WeaponDist * m_WeaponCoefficient;
 
@@ -714,15 +715,15 @@ CMatrixEffect(), m_Sprites(TRACE_PARAM_CALL pos0, pos1, LASER_WIDTH, 0xFFFFFFFF,
 {
     m_EffectType = EFFECT_LASER;
 
-    if(m_SpriteTextures[SPR_LASER_SPOT].IsSingleBrightTexture()) m_end.CSprite::CSprite(TRACE_PARAM_CALL pos0, LASER_WIDTH * 0.5f, 0, 0xFFFFFFFF, m_SpriteTextures[SPR_LASER_SPOT].tex);
-    else m_end.CSprite::CSprite(TRACE_PARAM_CALL pos0, LASER_WIDTH * 0.5f, 0, 0xFFFFFFFF, &m_SpriteTextures[SPR_LASER_SPOT].spr_tex);
+    if(m_SpriteTextures[SPR_LASER_SPOT].IsSingleBrightTexture()) m_end = CSprite(TRACE_PARAM_CALL pos0, LASER_WIDTH * 0.5f, 0, 0xFFFFFFFF, m_SpriteTextures[SPR_LASER_SPOT].tex);
+    else m_end = CSprite(TRACE_PARAM_CALL pos0, LASER_WIDTH * 0.5f, 0, 0xFFFFFFFF, &m_SpriteTextures[SPR_LASER_SPOT].spr_tex);
 }
 
 void CLaser::Draw(void)
 {
 DTRACE();
 
-    BYTE a = g_MatrixMap->IsPaused()?240:(BYTE(FRND(128) + 128));
+    byte a = g_MatrixMap->IsPaused()?240:(byte(FRND(128) + 128));
 
     m_Sprites.SetAlpha(a);
     m_Sprites.AddToDrawQueue();

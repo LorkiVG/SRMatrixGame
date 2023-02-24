@@ -104,19 +104,21 @@ DTRACE();
 
     for(int i = 0; i < m_SelCnt; ++i)
     {
-        D3DXVECTOR3 dir(0, 0, 0);
+        D3DXVECTOR3 dir = { 0.0f, 0.0f, 0.0f };
         for(int j = 0; j < m_SelCnt; ++j)
         {
             if(i == j) continue;
             D3DXVECTOR3 dir0;
-            D3DXVec3Normalize(&dir0, &(m_Points[i].m_Pos[0] - m_Points[j].m_Pos[0]));
+            D3DXVECTOR3 temp = m_Points[i].m_Pos[0] - m_Points[j].m_Pos[0];
+            D3DXVec3Normalize(&dir0, &temp);
             dir += dir0;
         }
 
         D3DXVec3Normalize(&dir, &dir);
 
         D3DXVECTOR3 move;
-        D3DXVec3Cross(&move, &m_Points[i].m_Pos[0], &D3DXVECTOR3(0, 0, 1));
+        D3DXVECTOR3 temp = { 0.0f, 0.0f, 1.0f };
+        D3DXVec3Cross(&move, &m_Points[i].m_Pos[0], &temp);
         D3DXVec3Normalize(&move, &move);
 
         //if(i & 1)
@@ -174,7 +176,7 @@ DTRACE();
         {
             for(int j = 0; j < SEL_BLUR_CNT; ++j)
             {
-                dword c = (BYTE((m_Radius / m_InitRadius) * float(m_Color_current >> 24)) << 24) | (m_Color_current & 0x00FFFFFF);
+                dword c = (byte((m_Radius / m_InitRadius) * float(m_Color_current >> 24)) << 24) | (m_Color_current & 0x00FFFFFF);
 
                 m_Points[i].m_Blur[j].SetColor(c);
                 //m_Points[i].m_Blur[j].SetAlpha();

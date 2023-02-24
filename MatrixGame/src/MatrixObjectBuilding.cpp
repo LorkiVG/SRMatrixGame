@@ -21,7 +21,7 @@
 
 #pragma warning (disable:4355)
 
-CMatrixBuilding::CMatrixBuilding() : CMatrixMapStatic(), m_Name(L"FACTORY", g_MatrixHeap), m_BS(this), m_UnderAttackTime(0)
+CMatrixBuilding::CMatrixBuilding() : CMatrixMapStatic(), m_Name(L"FACTORY", Base::g_MatrixHeap), m_BS(this), m_UnderAttackTime(0)
 {
 DTRACE();
 
@@ -43,7 +43,7 @@ DTRACE();
     m_BaseFloor = 0.2f;
     m_State = BASE_CLOSING;
 
-	m_GGraph = HNew(g_MatrixHeap) CVectorObjectGroup();
+	m_GGraph = HNew(Base::g_MatrixHeap) CVectorObjectGroup();
     /*m_Busy = false;*/
 
     m_Capturer = nullptr;
@@ -95,8 +95,8 @@ DTRACE();
     ReleaseMe();
     //if(m_Graph) { HDelete(CVectorObjectAnim, m_Graph, g_MatrixHeap); m_Graph = nullptr; }
     //if(m_ShadowStencil) { HDelete(CVOShadowStencil, m_ShadowStencil, g_MatrixHeap); m_ShadowStencil = nullptr; }
-    if(m_GGraph) { HDelete(CVectorObjectGroup, m_GGraph, g_MatrixHeap); }
-    if(m_ShadowProj) { HDelete(CMatrixShadowProj, m_ShadowProj, g_MatrixHeap); m_ShadowProj = nullptr; }
+    if(m_GGraph) { HDelete(CVectorObjectGroup, m_GGraph, Base::g_MatrixHeap); }
+    if(m_ShadowProj) { HDelete(CMatrixShadowProj, m_ShadowProj, Base::g_MatrixHeap); m_ShadowProj = nullptr; }
 
 #ifdef _DEBUG
     if(m_Capture) g_MatrixMap->SubEffect(DEBUG_CALL_INFO, m_Capture);
@@ -546,10 +546,10 @@ DTRACE();
 
     SFindRobotForCaptureAny* data = (SFindRobotForCaptureAny*)user;
 
-    float dist2 = D3DXVec2LengthSq(&(center - *(D3DXVECTOR2*)&ms->GetGeoCenter()));
+    D3DXVECTOR2 temp = center - *(D3DXVECTOR2*)&ms->GetGeoCenter();
+    float dist2 = D3DXVec2LengthSq(&temp);
     if(dist2 < data->dist2)
     {
-
         data->found = (CMatrixRobotAI*)ms;
         data->dist2 = dist2;
     }
@@ -566,10 +566,7 @@ DTRACE();
     if(m_State != BUILDING_DIP && m_State != BUILDING_DIP_EXPLODED)
     {
         m_ShowHitpointTime -= cms;
-        if(m_ShowHitpointTime < 0)
-        {
-            m_ShowHitpointTime = 0;
-        }
+        if(m_ShowHitpointTime < 0) m_ShowHitpointTime = 0;
     }
 }
 
@@ -597,7 +594,8 @@ DTRACE();
                 pos.x = m_Core->m_Matrix._41 + FSRND(m_Core->m_Radius);
                 pos.y = m_Core->m_Matrix._42 + FSRND(m_Core->m_Radius);
                 pos.z = m_Core->m_Matrix._43 + FRND(m_Core->m_Radius * 2);
-                D3DXVec3Normalize(&dir, &D3DXVECTOR3(m_Core->m_Matrix._41 - pos.x, m_Core->m_Matrix._42 - pos.y, m_Core->m_Matrix._43 - pos.z));
+                D3DXVECTOR3 temp = { m_Core->m_Matrix._41 - pos.x, m_Core->m_Matrix._42 - pos.y, m_Core->m_Matrix._43 - pos.z };
+                D3DXVec3Normalize(&dir, &temp);
 
             } while(!Pick(pos, dir, &t) && (--cnt > 0));
 
@@ -714,94 +712,104 @@ DTRACE();
 
             switch(m_Kind)
             {
-            case BUILDING_TITAN:
-                if(m_ResourcePeriod >= g_Config.m_Timings[RESOURCE_TITAN])
+                case BUILDING_TITAN:
                 {
-                    //m_ResourceAmount += RESOURCES_INCOME;
-                    SETFLAG(m_ObjectFlags, BUILDING_NEW_INCOME);
-                    m_ResourcePeriod = 0;
-                    su->AddResourceAmount(TITAN, RESOURCES_INCOME);
-                }
-                break;
-            case BUILDING_PLASMA:
-                if(m_ResourcePeriod >= g_Config.m_Timings[RESOURCE_PLASMA])
-                {
-                    //m_ResourceAmount += RESOURCES_INCOME;
-                    SETFLAG(m_ObjectFlags, BUILDING_NEW_INCOME);
-                    m_ResourcePeriod = 0;
-                    su->AddResourceAmount(PLASMA, RESOURCES_INCOME);
-                }
-                break;
-            case BUILDING_ELECTRONIC:
-                if(m_ResourcePeriod >= g_Config.m_Timings[RESOURCE_ELECTRONICS])
-                {
-                    //m_ResourceAmount += RESOURCES_INCOME;
-                    SETFLAG(m_ObjectFlags, BUILDING_NEW_INCOME);
-                    m_ResourcePeriod = 0;
-                    su->AddResourceAmount(ELECTRONICS, RESOURCES_INCOME);
-                }
-                break;
-            case BUILDING_ENERGY:
-                if(m_ResourcePeriod >= g_Config.m_Timings[RESOURCE_ENERGY])
-                {
-                    //m_ResourceAmount += RESOURCES_INCOME;
-                    SETFLAG(m_ObjectFlags, BUILDING_NEW_INCOME);
-                    m_ResourcePeriod = 0;
-                    su->AddResourceAmount(ENERGY, RESOURCES_INCOME);
-                }
-                break;
-            case BUILDING_REPAIR:
-                //Ремонтируем всех союзных роботов, находящихся в радиусе 5000 от центра точки захвата рембазы
-                obj = CMatrixMapStatic::GetFirstLogic();
-                while(obj)
-                {
-                    if(obj->IsRobotAlive() && obj->GetSide() == GetSide() && obj->NeedRepair())
+                    if(m_ResourcePeriod >= g_Config.m_Timings[RESOURCE_TITAN])
                     {
-                        CMatrixRobotAI *robot = (CMatrixRobotAI*)obj;
-                        //D3DXVECTOR3 dist = this->m_Pos - D3DXVECTOR2(robot->m_PosX, robot->m_PosY);
-                        D3DXVECTOR3 dist = (m_Pos + (*(D3DXVECTOR2*)&GetMatrix()._21) * 8.0f) - D3DXVECTOR2(robot->m_PosX, robot->m_PosY);
-                        dist.z = m_BuildZ - robot->Z_From_Pos();
-                        if(D3DXVec3LengthSq(&dist) <= 5000)
-                        {
-                            robot->ModifyHitpoints(4);
-                        }
+                        //m_ResourceAmount += RESOURCES_INCOME;
+                        SETFLAG(m_ObjectFlags, BUILDING_NEW_INCOME);
+                        m_ResourcePeriod = 0;
+                        su->AddResourceAmount(TITAN, RESOURCES_INCOME);
                     }
-                    obj = obj->GetNextLogic();
+                    break;
                 }
-                break;
-            case BUILDING_BASE:
-                if(m_ResourcePeriod >= g_Config.m_Timings[RESOURCE_BASE])
+                case BUILDING_PLASMA:
                 {
-                    //m_BaseRCycle++;
-                    //if(m_BaseRCycle > 3) m_BaseRCycle = 0;
-                    int fu = su->GetResourceForceUp();
-                    int ra = RESOURCES_INCOME_BASE * fu / 100;
-                    SETFLAG(m_ObjectFlags, BUILDING_NEW_INCOME);
-                    m_ResourcePeriod = 0;
-
-                    su->AddResourceAmount(TITAN, ra);
-                    su->AddResourceAmount(ELECTRONICS, ra);
-                    su->AddResourceAmount(ENERGY, ra);
-                    su->AddResourceAmount(PLASMA, ra);
-                        
-                    //if(m_BaseRCycle == 0)
-                    //{
-                    //    su->AddTitan(RESOURCES_INCOME * fu / 100);
-                    //}
-                    //else if(m_BaseRCycle == 1)
-                    //{
-                    //    su->AddElectronics(RESOURCES_INCOME * fu / 100);
-                    //}
-                    //else if(m_BaseRCycle == 2)
-                    //{
-                    //    su->AddEnergy(RESOURCES_INCOME * fu / 100);
-                    //}
-                    //else if(m_BaseRCycle == 3)
-                    //{
-                    //    su->AddPlasma(RESOURCES_INCOME * fu / 100);
-                    //}
+                    if(m_ResourcePeriod >= g_Config.m_Timings[RESOURCE_PLASMA])
+                    {
+                        //m_ResourceAmount += RESOURCES_INCOME;
+                        SETFLAG(m_ObjectFlags, BUILDING_NEW_INCOME);
+                        m_ResourcePeriod = 0;
+                        su->AddResourceAmount(PLASMA, RESOURCES_INCOME);
+                    }
+                    break;
                 }
-                break;
+                case BUILDING_ELECTRONIC:
+                {
+                    if(m_ResourcePeriod >= g_Config.m_Timings[RESOURCE_ELECTRONICS])
+                    {
+                        //m_ResourceAmount += RESOURCES_INCOME;
+                        SETFLAG(m_ObjectFlags, BUILDING_NEW_INCOME);
+                        m_ResourcePeriod = 0;
+                        su->AddResourceAmount(ELECTRONICS, RESOURCES_INCOME);
+                    }
+                    break;
+                }
+                case BUILDING_ENERGY:
+                {
+                    if(m_ResourcePeriod >= g_Config.m_Timings[RESOURCE_ENERGY])
+                    {
+                        //m_ResourceAmount += RESOURCES_INCOME;
+                        SETFLAG(m_ObjectFlags, BUILDING_NEW_INCOME);
+                        m_ResourcePeriod = 0;
+                        su->AddResourceAmount(ENERGY, RESOURCES_INCOME);
+                    }
+                    break;
+                }
+                case BUILDING_REPAIR:
+                {
+                    //Ремонтируем всех союзных роботов, находящихся в радиусе 5000 от центра точки захвата рембазы
+                    obj = CMatrixMapStatic::GetFirstLogic();
+                    while(obj)
+                    {
+                        if(obj->IsRobotAlive() && obj->GetSide() == GetSide() && obj->NeedRepair())
+                        {
+                            CMatrixRobotAI* robot = (CMatrixRobotAI*)obj;
+                            //D3DXVECTOR3 dist = this->m_Pos - D3DXVECTOR2(robot->m_PosX, robot->m_PosY);
+                            D3DXVECTOR2 temp = (m_Pos + (*(D3DXVECTOR2*)&GetMatrix()._21) * 8.0f);
+                            D3DXVECTOR3 dist = D3DXVECTOR3(temp.x, temp.y, 0.0f) - D3DXVECTOR3(robot->m_PosX, robot->m_PosY, 0.0f);
+                            dist.z = m_BuildZ - robot->Z_From_Pos();
+                            if(D3DXVec3LengthSq(&dist) <= 5000) robot->ModifyHitpoints(4);
+                        }
+                        obj = obj->GetNextLogic();
+                    }
+                    break;
+                }
+                case BUILDING_BASE:
+                {
+                    if(m_ResourcePeriod >= g_Config.m_Timings[RESOURCE_BASE])
+                    {
+                        //m_BaseRCycle++;
+                        //if(m_BaseRCycle > 3) m_BaseRCycle = 0;
+                        int fu = su->GetResourceForceUp();
+                        int ra = RESOURCES_INCOME_BASE * fu / 100;
+                        SETFLAG(m_ObjectFlags, BUILDING_NEW_INCOME);
+                        m_ResourcePeriod = 0;
+
+                        su->AddResourceAmount(TITAN, ra);
+                        su->AddResourceAmount(ELECTRONICS, ra);
+                        su->AddResourceAmount(ENERGY, ra);
+                        su->AddResourceAmount(PLASMA, ra);
+
+                        //if(m_BaseRCycle == 0)
+                        //{
+                        //    su->AddTitan(RESOURCES_INCOME * fu / 100);
+                        //}
+                        //else if(m_BaseRCycle == 1)
+                        //{
+                        //    su->AddElectronics(RESOURCES_INCOME * fu / 100);
+                        //}
+                        //else if(m_BaseRCycle == 2)
+                        //{
+                        //    su->AddEnergy(RESOURCES_INCOME * fu / 100);
+                        //}
+                        //else if(m_BaseRCycle == 3)
+                        //{
+                        //    su->AddPlasma(RESOURCES_INCOME * fu / 100);
+                        //}
+                    }
+                    break;
+                }
             }
         }
     }
@@ -833,18 +841,18 @@ DTRACE();
         if(m_GGraph)
         {
             m_ShadowType = SHADOW_OFF;
-	        RChange(MR_ShadowStencil|MR_ShadowProjGeom);
-            GetResources(MR_ShadowStencil|MR_ShadowProjGeom);
+            RChange(MR_ShadowStencil | MR_ShadowProjGeom);
+            GetResources(MR_ShadowStencil | MR_ShadowProjGeom);
 
-            HDelete(CVectorObjectGroup, m_GGraph, g_MatrixHeap);
+            HDelete(CVectorObjectGroup, m_GGraph, Base::g_MatrixHeap);
             m_GGraph = nullptr;
 
             // replace geometry
             int n = (int)m_Kind;
 
-            CWStr namet(OBJECT_PATH_BUILDINGS_RUINS, g_MatrixHeap);
+            CWStr namet(OBJECT_PATH_BUILDINGS_RUINS, Base::g_MatrixHeap);
             namet += L"b"; namet += n;
-            CWStr namev(namet, g_MatrixHeap);
+            CWStr namev(namet, Base::g_MatrixHeap);
             namev += L".vo";
 
             CMatrixMapObject* mo = g_MatrixMap->StaticAdd<CMatrixMapObject>(false);
@@ -874,7 +882,8 @@ DTRACE();
                     pos.x = mo->GetGeoCenter().x + FSRND(mo->GetRadius());
                     pos.y = mo->GetGeoCenter().y + FSRND(mo->GetRadius());
                     pos.z = mo->GetMatrix()._43 + FRND(mo->GetRadius() * 2);
-                    D3DXVec3Normalize(&dir, &D3DXVECTOR3(mo->GetMatrix()._41 - pos.x, mo->GetMatrix()._42 - pos.y, mo->GetMatrix()._43 - pos.z));
+                    D3DXVECTOR3 temp = { mo->GetMatrix()._41 - pos.x, mo->GetMatrix()._42 - pos.y, mo->GetMatrix()._43 - pos.z };
+                    D3DXVec3Normalize(&dir, &temp);
                 }
                 while(!mo->PickFull(pos, dir, &t) && (--cnt > 0));
 
@@ -917,9 +926,10 @@ DTRACE();
                     pos0.y = m_Pos.y - m_Core->m_Matrix._22 * 60;
                     pos0.z = m_Core->m_Matrix._43;
 
-                    pos = pos0 + D3DXVECTOR3(FSRND(GetRadius()),FSRND(GetRadius()),FRND(2 * GetRadius()));
+                    pos = pos0 + D3DXVECTOR3(FSRND(GetRadius()), FSRND(GetRadius()), FRND(2 * GetRadius()));
 
-                    D3DXVec3Normalize(&dir, &(pos0-pos));
+                    D3DXVECTOR3 temp = pos0 - pos;
+                    D3DXVec3Normalize(&dir, &temp);
                 }
                 while(!Pick(pos, dir, &t) && (--cnt > 0));
                 if(cnt > 0)
@@ -1245,7 +1255,8 @@ static bool FindRobotForCapture(const D3DXVECTOR2& center, CMatrixMapStatic* ms,
 {
     SFindRobotForCapture* data = (SFindRobotForCapture*)user;
 
-    float dist2 = D3DXVec2LengthSq(&(center - *(D3DXVECTOR2*)&ms->GetGeoCenter()));
+    D3DXVECTOR2 temp = center - *(D3DXVECTOR2*)&ms->GetGeoCenter();
+    float dist2 = D3DXVec2LengthSq(&temp);
     if(dist2 < data->dist2)
     {
         if(data->by == data->found)
@@ -1785,13 +1796,13 @@ void CMatrixBuilding::CreatePlacesShow(void)
     CPoint pl[MAX_PLACES];
     int cnt = GetPlacesForTurrets(pl);
 
-    m_PlacesShow = (SEffectHandler*)HAlloc(sizeof(SEffectHandler) * MAX_PLACES, g_MatrixHeap);
+    m_PlacesShow = (SEffectHandler*)HAlloc(sizeof(SEffectHandler) * MAX_PLACES, Base::g_MatrixHeap);
     for(int i = 0; i < MAX_PLACES; ++i)
     {
 #ifdef _DEBUG
         m_PlacesShow[i].SEffectHandler::SEffectHandler(DEBUG_CALL_INFO);
 #else
-        m_PlacesShow[i].SEffectHandler::SEffectHandler();
+        m_PlacesShow[i] = SEffectHandler();
 #endif
     }
 
@@ -1815,7 +1826,7 @@ void CMatrixBuilding::DeletePlacesShow()
             m_PlacesShow[i].Release();
 #endif
         }
-        HFree(m_PlacesShow, g_MatrixHeap);
+        HFree(m_PlacesShow, Base::g_MatrixHeap);
         m_PlacesShow = nullptr;
     }
 }
@@ -2074,7 +2085,7 @@ int CBuildQueue::DeleteItem(int no)
                 if(items->IsRobot())
                 {
                     ReturnRobotResources(items->AsRobot());
-                    HDelete(CMatrixRobotAI, (CMatrixRobotAI*)items, g_MatrixHeap);
+                    HDelete(CMatrixRobotAI, (CMatrixRobotAI*)items, Base::g_MatrixHeap);
                 }
                 else if(items->IsCannon())
                 {
@@ -2084,7 +2095,7 @@ int CBuildQueue::DeleteItem(int no)
                 }
                 else if(items->IsFlyer())
                 {
-                    HDelete(CMatrixFlyer, (CMatrixFlyer*)items, g_MatrixHeap);
+                    HDelete(CMatrixFlyer, (CMatrixFlyer*)items, Base::g_MatrixHeap);
                 }
 
                 --m_Items;
@@ -2112,11 +2123,11 @@ CBuildQueue::~CBuildQueue()
             {
                 if(items->IsRobot())
                 {
-                    HDelete(CMatrixRobotAI, (CMatrixRobotAI*)items, g_MatrixHeap);
+                    HDelete(CMatrixRobotAI, (CMatrixRobotAI*)items, Base::g_MatrixHeap);
                 }
                 else if(items->IsFlyer())
                 {
-                    HDelete(CMatrixFlyer, (CMatrixFlyer*)items, g_MatrixHeap);
+                    HDelete(CMatrixFlyer, (CMatrixFlyer*)items, Base::g_MatrixHeap);
                 }
                 else if(items->IsCannon())
                 {
@@ -2132,11 +2143,11 @@ CBuildQueue::~CBuildQueue()
             {
                 if(items->m_PrevQueueItem->IsRobot())
                 {
-                    HDelete(CMatrixRobotAI, (CMatrixRobotAI*)items->m_PrevQueueItem, g_MatrixHeap);
+                    HDelete(CMatrixRobotAI, (CMatrixRobotAI*)items->m_PrevQueueItem, Base::g_MatrixHeap);
                 }
                 else if(items->m_PrevQueueItem->IsFlyer())
                 {
-                    HDelete(CMatrixFlyer, (CMatrixFlyer*)items->m_PrevQueueItem, g_MatrixHeap);
+                    HDelete(CMatrixFlyer, (CMatrixFlyer*)items->m_PrevQueueItem, Base::g_MatrixHeap);
                 }
                 else if(items->m_PrevQueueItem->IsCannon())
                 {

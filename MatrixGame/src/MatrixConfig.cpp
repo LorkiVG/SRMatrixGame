@@ -458,7 +458,7 @@ DTRACE();
 }
 
 
-void CMatrixConfig::ReadParams(void)
+void CMatrixConfig::ReadParams()
 {
 DTRACE();
 
@@ -470,12 +470,12 @@ DTRACE();
     CBlockPar* bp_tmp = g_MatrixData->BlockGet(PAR_SOURCE_CURSORS);
 
     m_CursorsCnt = bp_tmp->ParCount();
-
     m_Cursors = (SStringPair*)HAlloc(sizeof(SStringPair) * m_CursorsCnt, g_CacheHeap);
     for(int i = 0; i < m_CursorsCnt; ++i)
     {
-        m_Cursors[i].key.CWStr::CWStr(bp_tmp->ParGetName(i), g_CacheHeap);
-        m_Cursors[i].val.CWStr::CWStr(bp_tmp->ParGet(i), g_CacheHeap);
+        new(&m_Cursors[i]) SStringPair();
+        m_Cursors[i].key = bp_tmp->ParGetName(i);
+        m_Cursors[i].val = bp_tmp->ParGet(i);
     }
 
     // top size
@@ -644,7 +644,7 @@ DTRACE();
             float shots_per_second = bp->ParGetNE(L"ShotsPerSecond").GetFloat();
             weapon_data.shots_delay = shots_per_second > 0 ? 1000.0f / min(shots_per_second, 1000.0f) : 0.0f;
 
-            CWStr* effect_type = &bp->ParGetNE(L"EffectType");
+            const CWStr* effect_type = &bp->ParGetNE(L"EffectType");
             if(*effect_type == L"Cannon")
             {
                 weapon_data.primary_effect = EFFECT_CANNON;
@@ -656,7 +656,7 @@ DTRACE();
                 CBlockPar* gun_flash = bp->BlockGetNE(L"GunFlash");
                 if(gun_flash)
                 {
-                    CWStr* sprites_str = &gun_flash->ParGetNE(L"SpritesInCache");
+                    const CWStr* sprites_str = &gun_flash->ParGetNE(L"SpritesInCache");
                     if(!sprites_str->IsEmpty())
                     {
                         SWeaponsConsts::SSpriteSet spr_set;
@@ -674,7 +674,7 @@ DTRACE();
                     {
                         weapon_data.light_duration = int(1000.0f * gun_flash->ParGetNE(L"LightSpotDuration").GetFloat());
 
-                        CWStr* par = &gun_flash->ParGetNE(L"LightSpotColor");
+                        const CWStr* par = &gun_flash->ParGetNE(L"LightSpotColor");
                         if(par->IsEmpty()) weapon_data.hex_BGRA_light_color = 0xFFFFFFFF;
                         else weapon_data.hex_BGRA_light_color = RGBAStringToABGRColorHEX(par);
                     }
@@ -688,7 +688,7 @@ DTRACE();
                     weapon_data.contrail_width = contrail->ParGet(L"SpritesWidth").GetInt();
                     weapon_data.contrail_duration = int(1000.0f * contrail->ParGet(L"SpritesDuration").GetFloat());
 
-                    CWStr* par = &contrail->ParGetNE(L"SpritesColor");
+                    const CWStr* par = &contrail->ParGetNE(L"SpritesColor");
                     if(par->IsEmpty()) weapon_data.hex_BGRA_sprites_color = 0xFFFFFFFF;
                     else weapon_data.hex_BGRA_sprites_color = RGBAStringToABGRColorHEX(par);
                 }
@@ -713,7 +713,7 @@ DTRACE();
                 CBlockPar* gun_flash = bp->BlockGetNE(L"GunFlash");
                 if(gun_flash)
                 {
-                    CWStr* sprites_str = &gun_flash->ParGetNE(L"SpritesInCache");
+                    const CWStr* sprites_str = &gun_flash->ParGetNE(L"SpritesInCache");
                     if(!sprites_str->IsEmpty())
                     {
                         SWeaponsConsts::SSpriteSet spr_set;
@@ -731,7 +731,7 @@ DTRACE();
                     {
                         weapon_data.light_duration = int(1000.0f * gun_flash->ParGetNE(L"LightSpotDuration").GetFloat());
 
-                        CWStr* par = &gun_flash->ParGetNE(L"LightSpotColor");
+                        const CWStr* par = &gun_flash->ParGetNE(L"LightSpotColor");
                         if(par->IsEmpty()) weapon_data.hex_BGRA_light_color = 0xFFFFFFFF;
                         else weapon_data.hex_BGRA_light_color = RGBAStringToABGRColorHEX(par);
                     }
@@ -770,7 +770,7 @@ DTRACE();
                 weapon_data.primary_effect = EFFECT_REPAIRER;
                 weapon_data.is_repairer = true;
 
-                CWStr* sprites_str = &bp->ParGetNE(L"SpritesInCache");
+                const CWStr* sprites_str = &bp->ParGetNE(L"SpritesInCache");
                 if(!sprites_str->IsEmpty())
                 {
                     for(int i = 0; i < sprites_str->GetCountPar(L","); ++i)
@@ -791,7 +791,7 @@ DTRACE();
             //Пока что не разобранные все прочие первичные эффекты
             else
             {
-                CWStr* sprites_str = &bp->ParGetNE(L"SpritesInCache");
+                const CWStr* sprites_str = &bp->ParGetNE(L"SpritesInCache");
                 if(!sprites_str->IsEmpty())
                 {
                     for(int i = 0; i < sprites_str->GetCountPar(L","); ++i)
@@ -810,7 +810,7 @@ DTRACE();
             ++m_WeaponsConsts[0].secondary_effect; //Запоминаем общее число второстепенных эффектов
 
             //Определяем основной тип данного эффекта
-            CWStr* effect_type = &bp->ParGetNE(L"EffectType");
+            const CWStr* effect_type = &bp->ParGetNE(L"EffectType");
             if(!effect_type->IsEmpty())
             {
                 if(*effect_type == L"Ablaze") weapon_data.secondary_effect = SECONDARY_EFFECT_ABLAZE;
@@ -906,7 +906,7 @@ DTRACE();
         CBlockPar* damage = bp->BlockGetNE(L"Damage");
         if(damage)
         {
-            CWStr* par = &damage->ParGetNE(L"Robots");
+            const CWStr* par = &damage->ParGetNE(L"Robots");
             weapon_data.damage.to_robots = par->GetStrPar(0, L"until").GetFloat() * 10.0f;
             weapon_data.non_lethal_threshold.to_robots = par->GetCountPar(L"until") > 1 ? par->GetStrPar(1, L"until").GetFloat() * 10.0f : 0.0f;
             par = &damage->ParGetNE(L"Helicopters");
@@ -1090,7 +1090,7 @@ DTRACE();
             swprintf(buf, 32, L"Pylon%i_InvertedModel", j);
             weap_data.inverted_model = weapons_bp->ParGetNE(buf).GetBool();
             swprintf(buf, 32, L"Pylon%i_FitWeapon", j);
-            CWStr* fit_weapon = &weapons_bp->ParGetNE(buf);
+            const CWStr* fit_weapon = &weapons_bp->ParGetNE(buf);
             if(!fit_weapon->IsEmpty())
             {
                 weap_data.fit_weapon.reset(); //Инициализация
@@ -1182,7 +1182,7 @@ DTRACE();
             int j = 1;
             wchar_t buf[32];
             swprintf(buf, 32, L"MoveOutSound%i", j);
-            CWStr* move_sound = &bp->ParGetNE(buf);
+            const CWStr* move_sound = &bp->ParGetNE(buf);
             while(!move_sound->IsEmpty())
             {
                 m_RobotChassisConsts[i].move_out_sound_name.push_back(*move_sound);
@@ -1197,7 +1197,7 @@ DTRACE();
         CBlockPar* chars = bp->BlockGet(L"Characteristics");
         m_RobotChassisConsts[i].structure = max(10.0f * chars->ParGet(L"Structure").GetFloat(), 10.0f);
         m_RobotChassisConsts[i].move_speed = chars->ParGet(L"MoveSpeed").GetFloat();
-        CWStr* strafe_speed = &chars->ParGetNE(L"StrafeSpeed");
+        const CWStr* strafe_speed = &chars->ParGetNE(L"StrafeSpeed");
         if(!strafe_speed->IsEmpty()) m_RobotChassisConsts[i].strafe_speed = strafe_speed->GetFloat();
         else m_RobotChassisConsts[i].strafe_speed = m_RobotChassisConsts[i].move_speed;
         m_RobotChassisConsts[i].move_uphill_factor = chars->ParGet(L"MoveUphillFactor").GetFloat();
@@ -1208,7 +1208,7 @@ DTRACE();
         m_RobotChassisConsts[i].anim_move_speed = 1.0f;
         m_RobotChassisConsts[i].anim_move_speed = chars->ParGetNE(L"AnimationSpeed").GetFloat();
 
-        CWStr* passability = &chars->ParGetNE(L"Passability");
+        const CWStr* passability = &chars->ParGetNE(L"Passability");
         if(*passability == L"Worst") m_RobotChassisConsts[i].passability = 0;
         else if(*passability == L"Bad") m_RobotChassisConsts[i].passability = 1;
         else if(*passability == L"Average") m_RobotChassisConsts[i].passability = 2;
@@ -1222,7 +1222,7 @@ DTRACE();
         m_RobotChassisConsts[i].is_walking = false;
         m_RobotChassisConsts[i].is_rolling = false;
         m_RobotChassisConsts[i].is_hovering = false;
-        CWStr* chassis_type = &chars->ParGetNE(L"ChassisType");
+        const CWStr* chassis_type = &chars->ParGetNE(L"ChassisType");
         if(*chassis_type == L"Walking") m_RobotChassisConsts[i].is_walking = true;
         else if(*chassis_type == L"Rolling") m_RobotChassisConsts[i].is_rolling = true;
         else if(*chassis_type == L"Hovering") m_RobotChassisConsts[i].is_hovering = true;
@@ -1521,7 +1521,7 @@ DTRACE();
     //Если активен мод на автоподрыв роботов с бомбой при нулевом здоровье
     if(g_PlayerRobotsAutoBoom)
     {
-        CWStr* default_set = &robotsCFG.ParGetNE(L"AutoDetonationDefault");
+        const CWStr* default_set = &robotsCFG.ParGetNE(L"AutoDetonationDefault");
         if(!default_set->IsEmpty())
         {
             if(!default_set->GetBool()) g_PlayerRobotsAutoBoom = 2;
@@ -1600,7 +1600,7 @@ static void GenRamp(word* out, SGammaVals& vals)
         int v = Float2Int(f * 65535.0f);
         if(v < 0) v = 0;
         if(v > 65535) v = 65535;
-        out[i] = (WORD)v;
+        out[i] = (word)v;
     }
 }
 

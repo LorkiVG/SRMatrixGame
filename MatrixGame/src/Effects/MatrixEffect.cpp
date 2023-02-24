@@ -90,7 +90,8 @@ static bool FindOwner(const D3DXVECTOR3& center, CMatrixMapStatic* ms, dword use
     if(center.y > bmax.y) return true;
     if(center.z > bmax.z) return true;
 
-    float di = D3DXVec3LengthSq(&(center - pos));
+    D3DXVECTOR3 temp = center - pos;
+    float di = D3DXVec3LengthSq(&temp);
     if(di < d->dist)
     {
         d->dist = di;
@@ -108,7 +109,7 @@ void CEffectSpawner::Tact(float)
         data.dist = 100 * 100;
         data.target = &m_Under;
 
-        g_MatrixMap->FindObjects(m_Props->m_Pos, 100, 1.0f, TRACE_BUILDING | TRACE_OBJECT,nullptr, FindOwner, (dword)&data);
+        g_MatrixMap->FindObjects(m_Props->m_Pos, 100, 1.0f, TRACE_BUILDING | TRACE_OBJECT, nullptr, FindOwner, (dword)&data);
         if(m_Under == nullptr) m_Under = TRACE_STOP_LANDSCAPE;
     }
 
@@ -119,7 +120,7 @@ void CEffectSpawner::Tact(float)
     }
 }
 
-bool CEffectSpawner::OutOfTime(void) const
+bool CEffectSpawner::OutOfTime() const
 {
     return (m_TTL > 1) && (g_MatrixMap->GetTime() > m_TTL);
 }
@@ -236,7 +237,6 @@ DTRACE();
     g_UnitSpeedArcadeCoef = bp_in.BlockGet(BLOCK_PATH_MAIN_CONFIG)->ParGet(L"UnitSpeedArcadeCoef").GetDouble();
 
     // init debris
-
     CBlockPar& bp = *bp_in.BlockGet(L"Models")->BlockGet(L"Debris");
 
     m_DebrisCnt = bp.ParCount();
@@ -244,7 +244,7 @@ DTRACE();
 
     for(int i = 0; i < m_DebrisCnt; ++i)
     {
-        m_Debris[i].CDebris::CDebris();
+        m_Debris[i] = CDebris();
 
         CVectorObject* vo = (CVectorObject*)g_Cache->Get(cc_VO, bp.ParGet(i).Get());
         vo->PrepareSpecial(OLF_AUTO, CSkinManager::GetSkin, GSP_ORDINAL);
@@ -268,44 +268,44 @@ DTRACE();
 
     //init spots
     m_SpotProperties[SPOT_CONSTANT].color = 0xFF000000;
-    m_SpotProperties[SPOT_CONSTANT].func = SpotTactConstant;
+    m_SpotProperties[SPOT_CONSTANT].func = CMatrixEffectLandscapeSpot::SpotTactConstant;
     m_SpotProperties[SPOT_CONSTANT].texture = (CTextureManaged*)g_Cache->Get(cc_TextureManaged, TEXTURE_PATH_SPOT);
     m_SpotProperties[SPOT_CONSTANT].ttl = 15000;
     m_SpotProperties[SPOT_CONSTANT].flags = 0;
 
     m_SpotProperties[SPOT_SELECTION].color = 0x80808080;
-    m_SpotProperties[SPOT_SELECTION].func = SpotTactAlways;
+    m_SpotProperties[SPOT_SELECTION].func = CMatrixEffectLandscapeSpot::SpotTactAlways;
     m_SpotProperties[SPOT_SELECTION].texture = (CTextureManaged*)g_Cache->Get(cc_TextureManaged, TEXTURE_PATH_OBJSEL);
     m_SpotProperties[SPOT_SELECTION].texture->MipmapOff();
     m_SpotProperties[SPOT_SELECTION].ttl = 0;
     m_SpotProperties[SPOT_SELECTION].flags = 0;
 
     m_SpotProperties[SPOT_PLASMA_HIT].color = 0xFFFFFFFF;
-    m_SpotProperties[SPOT_PLASMA_HIT].func = SpotTactPlasmaHit;
+    m_SpotProperties[SPOT_PLASMA_HIT].func = CMatrixEffectLandscapeSpot::SpotTactPlasmaHit;
     m_SpotProperties[SPOT_PLASMA_HIT].texture = (CTextureManaged*)g_Cache->Get(cc_TextureManaged, TEXTURE_PATH_HIT);
     m_SpotProperties[SPOT_PLASMA_HIT].ttl = 3000;
     m_SpotProperties[SPOT_PLASMA_HIT].flags = LSFLAG_SCALE_BY_NORMAL;
 
     //m_SpotProperties[SPOT_MOVE_TO].color = 0x80808080;
-    //m_SpotProperties[SPOT_MOVE_TO].func = SpotTactMoveTo;
+    //m_SpotProperties[SPOT_MOVE_TO].func = CMatrixEffectLandscapeSpot::SpotTactMoveTo;
     //m_SpotProperties[SPOT_MOVE_TO].texture = (CTextureManaged*)g_Cache->Get(cc_TextureManaged, TEXTURE_PATH_MOVETO);
     //m_SpotProperties[SPOT_MOVE_TO].ttl = 1500;
     //m_SpotProperties[SPOT_MOVE_TO].flags = LSFLAG_SCALE_BY_NORMAL;
 
     m_SpotProperties[SPOT_POINTLIGHT].color = 0xFFFFFFFF;
-    m_SpotProperties[SPOT_POINTLIGHT].func = SpotTactPointlight;
+    m_SpotProperties[SPOT_POINTLIGHT].func = CMatrixEffectLandscapeSpot::SpotTactPointlight;
     m_SpotProperties[SPOT_POINTLIGHT].texture = (CTextureManaged*)g_Cache->Get(cc_TextureManaged, TEXTURE_PATH_POINTLIGHT);
     m_SpotProperties[SPOT_POINTLIGHT].ttl = 1500;
     m_SpotProperties[SPOT_POINTLIGHT].flags = LSFLAG_INTENSE;
 
     m_SpotProperties[SPOT_VORONKA].color = 0x00FFFFFF;
-    m_SpotProperties[SPOT_VORONKA].func = SpotTactVoronka;
+    m_SpotProperties[SPOT_VORONKA].func = CMatrixEffectLandscapeSpot::SpotTactVoronka;
     m_SpotProperties[SPOT_VORONKA].texture = (CTextureManaged*)g_Cache->Get(cc_TextureManaged, TEXTURE_PATH_VORONKA);
     m_SpotProperties[SPOT_VORONKA].ttl = 30000;
     m_SpotProperties[SPOT_VORONKA].flags = 0;
 
     m_SpotProperties[SPOT_TURRET].color = 0x80FFFFFF;
-    m_SpotProperties[SPOT_TURRET].func = SpotTactAlways;
+    m_SpotProperties[SPOT_TURRET].func = CMatrixEffectLandscapeSpot::SpotTactAlways;
     m_SpotProperties[SPOT_TURRET].texture = (CTextureManaged*)g_Cache->Get(cc_TextureManaged, TEXTURE_PATH_TURRET_RADIUS);
     m_SpotProperties[SPOT_TURRET].texture->MipmapOff();
     m_SpotProperties[SPOT_TURRET].ttl = 0;
@@ -319,7 +319,7 @@ DTRACE();
         g_Config.m_RobotChassisConsts[i].ground_trace.trace_num = m_SpotProperties.size();
         SSpotProperties spot_tex;
         spot_tex.color = 0xFFFFFFFF; //Цвет в данном случае не используется
-        spot_tex.func = SpotTactConstant;
+        spot_tex.func = CMatrixEffectLandscapeSpot::SpotTactConstant;
         spot_tex.texture = (CTextureManaged*)g_Cache->Get(cc_TextureManaged, g_Config.m_RobotChassisConsts[i].ground_trace.texture_path);
         spot_tex.ttl = g_Config.m_RobotChassisConsts[i].ground_trace.trace_duration;
         spot_tex.flags = 0;
@@ -522,7 +522,7 @@ int CMatrixEffect::AddSpriteTexture(CWStr sprite_name, int sprite_num, int sprit
     else //Иначе добавляем новую
     {
         SSpriteTextureArrayElement sprite;
-        new_num = (ESpriteTextureSort)m_SpriteTextures.size();
+        new_num = m_SpriteTextures.size();
         check_bp.ParAdd(name, (CWStr)new_num);
 
         sprite.SetSingleBrightTexture(true);
@@ -552,9 +552,8 @@ void SEffectHandler::Release(void)
 
 void CMatrixEffect::CreateExplosion(const D3DXVECTOR3& pos, const SExplosionProperties& props, bool fire)
 {
-DTRACE();
-
-    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&(pos-g_MatrixMap->m_Camera.GetFrustumCenter()))) return;
+    D3DXVECTOR3 temp = pos - g_MatrixMap->m_Camera.GetFrustumCenter();
+    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&temp)) return;
 
     if(ELIST_CNT(EFFECT_EXPLOSION) >= MAX_EFFECTS_EXPLOSIONS)
     {
@@ -606,9 +605,8 @@ void CMatrixEffect::CreateSmoke(
     float speed
 )
 {
-DTRACE();
-
-    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&(pos-g_MatrixMap->m_Camera.GetFrustumCenter()))) return;
+    D3DXVECTOR3 temp = pos - g_MatrixMap->m_Camera.GetFrustumCenter();
+    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&temp)) return;
 
     if(ELIST_CNT(EFFECT_SMOKE) >= MAX_EFFECTS_SMOKEFIRES)
     {
@@ -645,9 +643,8 @@ void CMatrixEffect::CreateFire(
     const SFloatRGBColor& far_color
 )
 {
-DTRACE();
-
-    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&(pos-g_MatrixMap->m_Camera.GetFrustumCenter()))) return;
+    D3DXVECTOR3 temp = pos - g_MatrixMap->m_Camera.GetFrustumCenter();
+    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&temp)) return;
 
     if(ELIST_CNT(EFFECT_SMOKE) >= MAX_EFFECTS_SMOKEFIRES)
     {
@@ -673,7 +670,8 @@ DTRACE();
 //Анимация горения с использованием готовых текстур (используется для горящих декоративных объектов)
 void CMatrixEffect::CreateFireAnim(SEffectHandler* eh, const D3DXVECTOR3& pos, float anim_width, float anim_height, int time_to_live, const std::vector<int>& sprites_id)
 {
-    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&(pos-g_MatrixMap->m_Camera.GetFrustumCenter()))) return;
+    D3DXVECTOR3 temp = pos - g_MatrixMap->m_Camera.GetFrustumCenter();
+    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&temp)) return;
 
     if(ELIST_CNT(EFFECT_FIREANIM) >= MAX_EFFECTS_FIREANIM)
     {
@@ -699,14 +697,10 @@ void CMatrixEffect::CreateFireAnim(SEffectHandler* eh, const D3DXVECTOR3& pos, f
 
 void CMatrixEffect::CreateFirePlasma(const D3DXVECTOR3& start, const D3DXVECTOR3& end, float speed, dword hitmask, CMatrixMapStatic* skip, FIRE_END_HANDLER handler, dword user)
 {
-DTRACE();
-
     CMatrixEffectFirePlasma* e = HNew(m_Heap) CMatrixEffectFirePlasma(start, end, speed, hitmask, skip, handler, user);
     g_MatrixMap->AddEffect(e);
 }
-#ifdef _DEBUG
-#include "stdio.h"
-#endif
+
 void CMatrixEffect::CreateLandscapeSpot(
     SEffectHandler* eh,
     const D3DXVECTOR2& pos,
@@ -715,11 +709,10 @@ void CMatrixEffect::CreateLandscapeSpot(
     ESpotType type
 )
 {
-DTRACE();
-
     if(type != SPOT_TURRET)
     {
-        if(MAX_EFFECT_DISTANCE_SQ < D3DXVec2LengthSq(&(pos - *(D3DXVECTOR2*)&g_MatrixMap->m_Camera.GetFrustumCenter()))) return;
+        D3DXVECTOR2 temp = pos - *(D3DXVECTOR2*)&g_MatrixMap->m_Camera.GetFrustumCenter();
+        if(MAX_EFFECT_DISTANCE_SQ < D3DXVec2LengthSq(&temp)) return;
     }
 
     CMatrixEffectLandscapeSpot* e = HNew(m_Heap) CMatrixEffectLandscapeSpot(pos, angle, scale, type);
@@ -738,10 +731,10 @@ DTRACE();
 //            for(; ef; ef = ef->m_TypeNext)
 //            {
 //                CWStr hex;
-//                hex.AddHex(BYTE((dword(ef) >> 24) & 0xFF));
-//                hex.AddHex(BYTE((dword(ef) >> 16) & 0xFF));
-//                hex.AddHex(BYTE((dword(ef) >> 8) & 0xFF));
-//                hex.AddHex(BYTE((dword(ef) >> 0) & 0xFF));
+//                hex.AddHex(byte((dword(ef) >> 24) & 0xFF));
+//                hex.AddHex(byte((dword(ef) >> 16) & 0xFF));
+//                hex.AddHex(byte((dword(ef) >> 8) & 0xFF));
+//                hex.AddHex(byte((dword(ef) >> 0) & 0xFF));
 //
 //                log += (int)ef->GetType();
 //                log += ":";
@@ -880,9 +873,8 @@ void CMatrixEffect::CreatePointLight(
     bool drawbill
 )
 {
-    DTRACE();
-
-    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&(pos - g_MatrixMap->m_Camera.GetFrustumCenter()))) return;
+    D3DXVECTOR3 temp = pos - g_MatrixMap->m_Camera.GetFrustumCenter();
+    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&temp)) return;
 
     if(ELIST_CNT(EFFECT_POINT_LIGHT) >= MAX_EFFECTS_POINT_LIGHTS)
     {
@@ -916,9 +908,8 @@ void CMatrixEffect::CreateKonus(
     CTextureManaged* tex
 )
 {
-DTRACE();
-
-    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&(start-g_MatrixMap->m_Camera.GetFrustumCenter()))) return;
+    D3DXVECTOR3 temp = start - g_MatrixMap->m_Camera.GetFrustumCenter();
+    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&temp)) return;
 
     CMatrixEffectKonus* e = HNew(m_Heap) CMatrixEffectKonus(start, dir, radius, height, angle, ttl, is_bright, tex);
     if(!g_MatrixMap->AddEffect(e)) e = nullptr;
@@ -945,9 +936,8 @@ void CMatrixEffect::CreateKonusSplash(
     CTextureManaged* tex
 )
 {
-DTRACE();
-
-    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&(start - g_MatrixMap->m_Camera.GetFrustumCenter()))) return;
+    D3DXVECTOR3 temp = start - g_MatrixMap->m_Camera.GetFrustumCenter();
+    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&temp)) return;
 
     CMatrixEffectKonusSplash* e = HNew(m_Heap) CMatrixEffectKonusSplash(start, dir, radius, height, angle, ttl, is_bright, tex);
 
@@ -1027,9 +1017,8 @@ void CMatrixEffect::CreateLightening(
     int beam_sprite_num
 )
 {
-DTRACE();
-
-    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&(pos0-g_MatrixMap->m_Camera.GetFrustumCenter()))) return;
+    D3DXVECTOR3 temp = pos0 - g_MatrixMap->m_Camera.GetFrustumCenter();
+    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&temp)) return;
 
     CMatrixEffectLightening* e = HNew(m_Heap) CMatrixEffectLightening(pos0, pos1, ttl, dispers, width, color, spot_sprite_num, beam_sprite_num);
     e->SetPos(pos0, pos1);
@@ -1091,9 +1080,8 @@ DTRACE();
 
 void CMatrixEffect::CreateSpritesLine(SEffectHandler* eh, const D3DXVECTOR3& pos0, const D3DXVECTOR3& pos1, float width, dword color1, dword color2, float ttl, CTextureManaged* tex)
 {
-DTRACE();
-
-    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&(pos0 - g_MatrixMap->m_Camera.GetFrustumCenter()))) return;
+    D3DXVECTOR3 temp = pos0 - g_MatrixMap->m_Camera.GetFrustumCenter();
+    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec3LengthSq(&temp)) return;
 
     CMatrixEffectSpritesLine* e = HNew(m_Heap) CMatrixEffectSpritesLine(pos0, pos1, width, color1, color2, ttl, tex);
     if(!g_MatrixMap->AddEffect(e)) e = nullptr;
@@ -1125,11 +1113,10 @@ DTRACE();
     return e;
 }
 
-void CMatrixEffect::CreateDust(SEffectHandler *eh, const D3DXVECTOR2 &pos,const D3DXVECTOR2 &adddir, float ttl)
+void CMatrixEffect::CreateDust(SEffectHandler* eh, const D3DXVECTOR2& pos, const D3DXVECTOR2& adddir, float ttl)
 {
-DTRACE();
-
-    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec2LengthSq(&(pos- *(D3DXVECTOR2*)&g_MatrixMap->m_Camera.GetFrustumCenter()))) return;
+    D3DXVECTOR2 temp = pos - *(D3DXVECTOR2*)&g_MatrixMap->m_Camera.GetFrustumCenter();
+    if(MAX_EFFECT_DISTANCE_SQ < D3DXVec2LengthSq(&temp)) return;
 
     CMatrixEffectDust* e = HNew(m_Heap) CMatrixEffectDust(pos, adddir, ttl);
     if(!g_MatrixMap->AddEffect(e)) e = nullptr;

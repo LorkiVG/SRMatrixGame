@@ -160,15 +160,14 @@ CMatrixHint* CMatrixHint::Build(int border, const CWStr& soundin, const CWStr& s
 
     struct SBordPart
     {
-        CPoint pos; // in texture
-        CPoint size;
-        CPoint size_down;
-        dword present;
-        wchar* name;
-        
+        CPoint pos = { 0.0f, 0.0f }; // in texture
+        CPoint size = { 0.0f, 0.0f };
+        CPoint size_down = { 0.0f, 0.0f };
+        dword present = 0;
+        const wchar* name = L"";
+
     } parts[9];
 
-    memset(parts, 0, sizeof(parts));
     parts[0].name = PAR_SOURCE_HINTS_LT;
     parts[1].name = PAR_SOURCE_HINTS_T;
     parts[2].name = PAR_SOURCE_HINTS_RT;
@@ -188,7 +187,6 @@ CMatrixHint* CMatrixHint::Build(int border, const CWStr& soundin, const CWStr& s
             parts[i].pos.y = bph->ParGet(parts[i].name).GetStrPar(1, L",").GetInt();
             parts[i].size.x = bph->ParGet(parts[i].name).GetStrPar(2, L",").GetInt();
             parts[i].size.y = bph->ParGet(parts[i].name).GetStrPar(3, L",").GetInt();
-
         }
         else
         {

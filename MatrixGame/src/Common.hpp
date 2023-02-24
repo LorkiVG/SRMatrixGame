@@ -204,10 +204,10 @@ struct SCompilePoint
 {
     int     move;
     float   z;
-    BYTE b;
-    BYTE g;
-    BYTE r;
-    BYTE flags; // flags for cell
+    byte b;
+    byte g;
+    byte r;
+    byte flags; // flags for cell
 
 };
 
@@ -232,8 +232,8 @@ struct SCompileMoveCell
 
 struct SCompileBottomVert
 {
-    WORD x, y; // point. z and color in points list
-    WORD tx, ty;
+    word x, y; // point. z and color in points list
+    word tx, ty;
     //float tu, tv;
     //float tum, tvm; // calc it from x and y
 

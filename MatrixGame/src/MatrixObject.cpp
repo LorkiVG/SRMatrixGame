@@ -278,11 +278,13 @@ void CMatrixMapObject::SetupMatricesForShadowTextureCalc(void)
 	D3DXMatrixIdentity(&mWorld);
 	g_D3DD->SetTransform( D3DTS_WORLD, &mWorld );
 
-    D3DXVec3TransformNormal(&camup, &D3DXVECTOR3(0, 0, 1), &m_Core->m_IMatrix);
+    D3DXVECTOR3 temp = { 0.0f, 0.0f, 1.0f };
+    D3DXVec3TransformNormal(&camup, &temp, &m_Core->m_IMatrix);
     D3DXVec3Normalize(&camup, &camup);
 
 	D3DXMATRIX mView;
-	D3DXMatrixLookAtLH(&mView,&m_ShCampos,&(m_ShCampos + light),&camup);
+    temp = m_ShCampos + light;
+	D3DXMatrixLookAtLH(&mView, &m_ShCampos, &temp, &camup);
 
     float _sx = 1.0f / m_ShDim.x;
     float _sy = 1.0f / m_ShDim.y;
@@ -728,9 +730,10 @@ DTRACE();
         m_BurnSkin->m_Preload(m_BurnSkin);
     }
 
-    if(m_BehaviorFlag == BEHF_TERRON && m_ProgressBar > 0 && m_BreakHitPoint > 0)
+    if(m_BehaviorFlag == BEHF_TERRON && m_ProgressBar && m_BreakHitPoint > 0)
     {
-        float dist = D3DXVec3Length(&(g_MatrixMap->m_Camera.GetFrustumCenter() - GetGeoCenter()));
+        D3DXVECTOR3 temp = g_MatrixMap->m_Camera.GetFrustumCenter() - GetGeoCenter();
+        float dist = D3DXVec3Length(&temp);
 
         if(dist < 1000)
         {
@@ -743,14 +746,15 @@ DTRACE();
             if(TRACE_STOP_NONE == g_MatrixMap->Trace(nullptr, g_MatrixMap->m_Camera.GetFrustumCenter(), pos, TRACE_LANDSCAPE, nullptr))
             {
                 D3DXVECTOR2 p = g_MatrixMap->m_Camera.Project(pos, g_MatrixMap->GetIdentityMatrix());
-                m_ProgressBar->Modify(p.x-r, p.y-r*0.5f, float(m_BreakHitPoint) / float(m_BreakHitPointMax));
+                m_ProgressBar->Modify(p.x - r, p.y - r * 0.5f, float(m_BreakHitPoint) / float(m_BreakHitPointMax));
             }
         }
     }
-    
-    if(m_BehaviorFlag == BEHF_BREAK && FLAG(m_ObjectFlags, OBJECT_STATE_SPECIAL) && m_ProgressBar > 0 && m_BreakHitPoint > 0)
+   
+    if(m_BehaviorFlag == BEHF_BREAK && FLAG(m_ObjectFlags, OBJECT_STATE_SPECIAL) && m_ProgressBar && m_BreakHitPoint > 0)
     {
-        float dist = D3DXVec3Length(&(g_MatrixMap->m_Camera.GetFrustumCenter() - GetGeoCenter()));
+        D3DXVECTOR3 temp = g_MatrixMap->m_Camera.GetFrustumCenter() - GetGeoCenter();
+        float dist = D3DXVec3Length(&temp);
 
         if(dist < 1000)
         {
@@ -766,9 +770,10 @@ DTRACE();
         }
     }
 
-    if(m_BehaviorFlag == BEHF_ANIM && FLAG(m_ObjectFlags, OBJECT_STATE_SPECIAL) && m_ProgressBar > 0 && m_BreakHitPoint > 0)
+    if(m_BehaviorFlag == BEHF_ANIM && FLAG(m_ObjectFlags, OBJECT_STATE_SPECIAL) && m_ProgressBar && m_BreakHitPoint > 0)
     {
-        float dist = D3DXVec3Length(&(g_MatrixMap->m_Camera.GetFrustumCenter() - GetGeoCenter()));
+        D3DXVECTOR3 temp = g_MatrixMap->m_Camera.GetFrustumCenter() - GetGeoCenter();
+        float dist = D3DXVec3Length(&temp);
 
         if(dist < 1000)
         {
@@ -1219,9 +1224,10 @@ DTRACE();
                         //pos0.z = m_Core->m_Matrix._43;
                         pos0 = GetGeoCenter();
 
-                        pos = pos0 + D3DXVECTOR3(FSRND(GetRadius()),FSRND(GetRadius()),FRND(2 * GetRadius()));
+                        pos = pos0 + D3DXVECTOR3(FSRND(GetRadius()), FSRND(GetRadius()), FRND(2 * GetRadius()));
 
-                        D3DXVec3Normalize(&dir, &(pos0-pos));
+                        D3DXVECTOR3 temp = pos0 - pos;
+                        D3DXVec3Normalize(&dir, &temp);
                     }
                     while(!Pick(pos, dir, &t) && (--cnt > 0));
 
@@ -1302,7 +1308,9 @@ DTRACE();
                 r->RChange(MR_Matrix);
                 r->CalcBounds(minv, maxv);
                 m_SpawnRobotCore->m_GeoCenter = (minv + maxv) * 0.5f;
-                m_SpawnRobotCore->m_Radius = D3DXVec3Length(&(minv - maxv));
+
+                D3DXVECTOR3 temp_vec = minv - maxv;
+                m_SpawnRobotCore->m_Radius = D3DXVec3Length(&temp_vec);
 
                 m_Graph->SetAnimById(temp.GetStrPar(1, L",").GetIntPar(6, L":"), 0);
 
@@ -1427,7 +1435,9 @@ DTRACE();
                     pos.x = m_Core->m_Matrix._41 + FSRND(GetRadius());
                     pos.y = m_Core->m_Matrix._42 + FSRND(GetRadius());
                     pos.z = m_Core->m_Matrix._43 + FRND(GetRadius() * 2);
-                    D3DXVec3Normalize(&dir, &D3DXVECTOR3(m_Core->m_Matrix._41 - pos.x, m_Core->m_Matrix._42 - pos.y, m_Core->m_Matrix._43 - pos.z));
+
+                    D3DXVECTOR3 temp = { m_Core->m_Matrix._41 - pos.x, m_Core->m_Matrix._42 - pos.y, m_Core->m_Matrix._43 - pos.z };
+                    D3DXVec3Normalize(&dir, &temp);
                     
                 } while(!PickFull(pos, dir, &t) && (--cnt > 0));
 

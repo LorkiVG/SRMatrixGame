@@ -38,7 +38,7 @@
 // NVidia stuff
 
 // r = 1/p
-#define FP_INV(r,p)                          \
+#define FP_INV(r, p)                         \
 {                                            \
     int _i = 2 * FP_ONE_BITS - *(int*)&(p);  \
     r = *(float*)&_i;                        \
@@ -54,13 +54,13 @@ __forceinline unsigned char FP_NORM_TO_BYTE2(float p)
 __forceinline unsigned char FP_NORM_TO_BYTE3(float p)     
 {
   float ftmp = p + 12582912.0f;                                                      
-  return (BYTE)((*(unsigned long *)&ftmp) & 0xFF);
+  return (byte)((*(unsigned long *)&ftmp) & 0xFF);
 }
 
 __forceinline int DetermineGreaterPowerOfTwo(int val)
 {
     int num = 1;
-    while (val > num) num <<= 1; 
+    while(val > num) num <<= 1; 
     return num;
 }
 
@@ -68,18 +68,19 @@ struct SPlane
 {
     union
     {
-        D3DXPLANE dxplane {};
+        //4 float
+        D3DXPLANE dxplane;
 
         struct
         {
+            //Суммарно здесь тоже 4 float
             D3DXVECTOR3 norm;
             float       dist;
         };
     };
-
     byte signbits = 0;
 
-    SPlane() = default;
+    SPlane() : dxplane(0.0f, 0.0f, 0.0f, 0.0f) {}
 
     static __forceinline void BuildFromPointNormal(SPlane& out, const D3DXVECTOR3& pt, const D3DXVECTOR3& norm)
     {
@@ -110,6 +111,7 @@ struct SPlane
             case 5: dist1 = CalcPointDist(D3DXVECTOR3(mins.x, maxs.y, mins.z)); dist2 = CalcPointDist(D3DXVECTOR3(maxs.x, mins.y, maxs.z)); break;
             case 6: dist1 = CalcPointDist(D3DXVECTOR3(maxs.x, mins.y, mins.z)); dist2 = CalcPointDist(D3DXVECTOR3(mins.x, maxs.y, maxs.z)); break;
             case 7: dist1 = CalcPointDist(mins); dist2 = CalcPointDist(maxs); break;
+            
             default: ERROR_S(L"Error in BoxSide method of SPlane struct.");
         }
 
@@ -157,13 +159,24 @@ __forceinline float DistOtrezokPoint(const D3DXVECTOR3& p0, const D3DXVECTOR3& p
 {
     D3DXVECTOR3 v(p1 - p0);
     D3DXVECTOR3 w(p - p0);
+    D3DXVECTOR3 ret;
+
     float c1 = D3DXVec3Dot(&w, &v);
-    if(c1 <= 0) return D3DXVec3Length(&(p0 - p));
+    if(c1 <= 0)
+    {
+        ret = p0 - p;
+        return D3DXVec3Length(&ret);
+    }
     float c2 = D3DXVec3Dot(&v, &v);
-    if(c2 <= c1) return D3DXVec3Length(&(p1 - p));
+    if(c2 <= c1)
+    {
+        ret = p1 - p;
+        return D3DXVec3Length(&ret);
+    }
     float b = c1 / c2;
 
-    return D3DXVec3Length(&(p - (p0 + b * v)));
+    ret = p - (p0 + b * v);
+    return D3DXVec3Length(&ret);
 }
 
 bool IntersectTriangle(const D3DXVECTOR3& orig, const D3DXVECTOR3& dir, const D3DXVECTOR3& v0, const D3DXVECTOR3& v1, const D3DXVECTOR3& v2, float& t, float& u, float& v);
@@ -192,14 +205,8 @@ __forceinline double AngleDist(double from, double to) // Дистанция м�
 
     double r = to - from;
 
-    if(from < M_PI)
-    {
-        if(r > M_PI) r -= 2.0 * M_PI;
-    }
-    else
-    {
-        if(r < -M_PI) r += 2.0 * M_PI;
-    }
+    if(from < M_PI) if(r > M_PI) r -= 2.0 * M_PI;
+    else if(r < -M_PI) r += 2.0 * M_PI;
 
     return r;
 }
@@ -416,10 +423,10 @@ __forceinline void CalcBSplinePoint(const SBSplineKoefs& k, D3DXVECTOR3& out, fl
 
 class CTrajectory : public CMain
 {
-    CHeap* m_Heap;
-    //float   m_TPerSeg;
+    CHeap* m_Heap = nullptr;
+    //float  m_TPerSeg = 0.0f;
 
-    float   m_Len; // if < 0 then not calculated
+    float  m_Len = -1.0f; // if < 0 then not calculated
 
     struct STrajectorySegment
     {
@@ -443,14 +450,14 @@ class CTrajectory : public CMain
             based_on[3] = p3;
             CalcBSplineKoefs2(koefs, p0, p1, p2, p3);
         }
-    }      *m_Segments;
-    int     m_SegCnt;
-    int     m_SegAlloc;
+    }    *m_Segments = nullptr;
+    int   m_SegCnt = 0;
+    int   m_SegAlloc = 0;
 
-    int     m_CurSeg;
-    float   m_CurSegT;
+    int   m_CurSeg = 0;
+    float m_CurSegT = 0.0f;
 
-    float   m_CurSegLen;
+    float m_CurSegLen = -1.0f;
 
 public:
     void Init1(const D3DXVECTOR3* points, int pcnt);    // примерно
@@ -460,9 +467,9 @@ public:
     void Continue2(const D3DXVECTOR3* points, int pcnt);    // точно
 
 
-    CTrajectory(void) : m_Heap(nullptr), m_CurSeg(0), m_CurSegT(0), m_SegAlloc(0), m_SegCnt(0), m_CurSegLen(-1) { m_Segments = nullptr; m_Len = -1; };
-    CTrajectory(CHeap* heap) : m_CurSeg(0), m_CurSegT(0), m_SegAlloc(0), m_SegCnt(0), m_CurSegLen(-1) { m_Heap = heap; m_Segments = nullptr; m_Len = -1; };
-    CTrajectory(CHeap* heap, D3DXVECTOR3* points, int pcnt) : m_Heap(heap), m_Len(-1), m_Segments(nullptr), m_CurSegLen(-1) { Init2(points, pcnt); }   // init2 // точно
+    CTrajectory() = default;
+    CTrajectory(CHeap* heap) : m_Heap(heap) { };
+    CTrajectory(CHeap* heap, D3DXVECTOR3* points, int pcnt) : m_Heap(heap) { Init2(points, pcnt); }   // init2 // точно
 
 
     ~CTrajectory() { if(m_Segments) { HFree(m_Segments, m_Heap); } };
@@ -486,7 +493,7 @@ public:
         return m_CurSeg >= (m_SegCnt - 2);
     }
 
-    __forceinline void GetCurPos(D3DXVECTOR3 &pos)
+    __forceinline void GetCurPos(D3DXVECTOR3& pos)
     {
         CalcBSplinePoint(m_Segments[m_CurSeg].koefs, pos, m_CurSegT);
     }

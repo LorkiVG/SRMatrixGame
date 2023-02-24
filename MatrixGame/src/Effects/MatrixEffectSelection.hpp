@@ -81,7 +81,7 @@ public:
         m_ColorTime = SEL_COLOR_CHANGE_TIME;
     }
 
-    void SetAlpha(BYTE a)
+    void SetAlpha(byte a)
     {
         m_ColorFrom = m_Color_current;
         m_ColorTo = (m_Color_current & 0x00FFFFFF) | (a << 24);

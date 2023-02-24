@@ -70,7 +70,7 @@ DTRACE();
 
     CREATE_VB(sizeof(m_Pts), BB_FVF, m_VB);
     if(!IS_VB(m_VB)) return false;
-    CREATE_IB16(BB_TRI_CNT * sizeof(m_Tris[0]) / sizeof(WORD), m_IB);
+    CREATE_IB16(BB_TRI_CNT * sizeof(m_Tris[0]) / sizeof(word), m_IB);
     if(!IS_IB(m_IB))
     {
         DESTROY_VB(m_VB);
@@ -122,28 +122,28 @@ DTRACE();
             D3DXVec3Normalize(&m_Pts[m_npts+3].p, &dir23);
 
 
-            m_Tris[newntris].i1 = (WORD)m_npts;
-            m_Tris[newntris].i2 = (WORD)m_Tris[i].i1;
-            m_Tris[newntris].i3 = (WORD)(m_npts + 1);
+            m_Tris[newntris].i1 = (word)m_npts;
+            m_Tris[newntris].i2 = (word)m_Tris[i].i1;
+            m_Tris[newntris].i3 = (word)(m_npts + 1);
 
-            m_Tris[newntris+1].i1 = (WORD)m_npts;
-            m_Tris[newntris+1].i2 = (WORD)(m_npts + 1);
-            m_Tris[newntris+1].i3 = (WORD)(m_Tris[i].i2);
+            m_Tris[newntris+1].i1 = (word)m_npts;
+            m_Tris[newntris+1].i2 = (word)(m_npts + 1);
+            m_Tris[newntris+1].i3 = (word)(m_Tris[i].i2);
 
-            m_Tris[newntris+2].i1 = (WORD)m_npts;
-            m_Tris[newntris+2].i2 = (WORD)(m_npts + 3);
-            m_Tris[newntris+2].i3 = (WORD)m_Tris[i].i3;
+            m_Tris[newntris+2].i1 = (word)m_npts;
+            m_Tris[newntris+2].i2 = (word)(m_npts + 3);
+            m_Tris[newntris+2].i3 = (word)m_Tris[i].i3;
 
-            m_Tris[newntris+3].i1 = (WORD)m_npts;
-            m_Tris[newntris+3].i2 = (WORD)m_Tris[i].i3;
-            m_Tris[newntris+3].i3 = (WORD)(m_npts + 2);
+            m_Tris[newntris+3].i1 = (word)m_npts;
+            m_Tris[newntris+3].i2 = (word)m_Tris[i].i3;
+            m_Tris[newntris+3].i3 = (word)(m_npts + 2);
 
-            m_Tris[newntris+4].i1 = (WORD)m_npts;
-            m_Tris[newntris+4].i2 = (WORD)(m_npts + 2);
-            m_Tris[newntris+4].i3 = (WORD)m_Tris[i].i1;
+            m_Tris[newntris+4].i1 = (word)m_npts;
+            m_Tris[newntris+4].i2 = (word)(m_npts + 2);
+            m_Tris[newntris+4].i3 = (word)m_Tris[i].i1;
 
-            m_Tris[i].i1 = (WORD)m_npts;
-            m_Tris[i].i3 = (WORD)(m_npts + 3);
+            m_Tris[i].i1 = (word)m_npts;
+            m_Tris[i].i3 = (word)(m_npts + 3);
 
             newntris += 5;
             m_npts += 4;
@@ -260,19 +260,20 @@ static bool BoomEnum(const D3DXVECTOR3& center, CMatrixMapStatic* ms, dword user
 {
     CMatrixEffectBigBoom* boom = (CMatrixEffectBigBoom*)user;
     D3DXVECTOR3 anorm;
-    D3DXVec3Normalize(&anorm, &(center - ms->GetGeoCenter()));
+    D3DXVECTOR3 temp = center - ms->GetGeoCenter();
+    D3DXVec3Normalize(&anorm, &temp);
     boom->m_Handler(ms, ms->GetGeoCenter() + anorm * ms->GetRadius(), (dword)boom->m_User, 0);
     return true;
 }
 
 static bool BoomEnumNaklon(const D3DXVECTOR3& center, CMatrixMapStatic* ms, dword user)
 {
-
     CMatrixEffectBigBoom* boom = (CMatrixEffectBigBoom*)user;
     if(ms->IsRobotAlive())
     {
         D3DXVECTOR3 anorm;
-        D3DXVec3Normalize(&anorm, &(ms->GetGeoCenter() - center));
+        D3DXVECTOR3 temp = ms->GetGeoCenter() - center;
+        D3DXVec3Normalize(&anorm, &temp);
         ms->AsRobot()->ApplyNaklon(anorm * 0.5f);
     }
 
@@ -281,8 +282,6 @@ static bool BoomEnumNaklon(const D3DXVECTOR3& center, CMatrixMapStatic* ms, dwor
 
 void CMatrixEffectBigBoom::Tact(float step)
 {
-DTRACE();
-
     m_TTL -= step;
     if(m_TTL < 0)
     {

@@ -15,31 +15,15 @@
 #include "MatrixHint.hpp"
 #include "../MatrixSampleStateManager.hpp"
 
-CIFaceElement::CIFaceElement(void):m_Flags(0)
+CIFaceElement::CIFaceElement()
 {
-	m_nId = 0;
-	m_nGroup = 0;
-	m_xPos = m_yPos = m_zPos = m_xSize = m_ySize = 0;
-	m_NextElement = m_PrevElement = nullptr;
-	m_Param1 = m_Param2 = 0;
-	SETFLAG(m_Flags, IFEF_VISIBLE);
-    m_PosElInX = 0; 
-    m_PosElInY = 0;
-    m_VisibleAlpha = IS_VISIBLE;
-    m_CurState = IFACE_NORMAL;
-    m_DefState = IFACE_NORMAL;
-
-    ZeroMemory(m_Actions, sizeof(m_Actions));
-
-    m_Animation = nullptr;
-    m_iParam = 0;
+    SETFLAG(m_Flags, IFEF_VISIBLE);
 }
-
 CIFaceElement::~CIFaceElement()
 {
     if(m_Animation)
     {
-        HDelete(CAnimation, m_Animation, g_MatrixHeap);
+        HDelete(CAnimation, m_Animation, Base::g_MatrixHeap);
     }
 }
 	
@@ -63,7 +47,6 @@ void CIFaceElement::ElementGeomInit(void* pObj, bool full_size)
             {
 				u1 = (float)((pElement->m_StateImages[nC].xTexPos + pElement->m_xSize ) / pElement->m_StateImages[nC].TexWidth);
 				v1 = (float)((pElement->m_StateImages[nC].yTexPos + pElement->m_ySize ) / pElement->m_StateImages[nC].TexHeight);
-
             }
             else
             {
@@ -150,7 +133,7 @@ void CIFaceElement::BeforeRender(void)
     }
 }
 
-void CIFaceElement::Render(BYTE alpha)
+void CIFaceElement::Render(byte alpha)
 {
     CMatrixSideUnit* player_side = g_MatrixMap->GetPlayerSide();
 
@@ -321,17 +304,31 @@ bool CIFaceElement::ElementAlpha(CPoint mouse)
 
 //Срабатывает при нажатиях/отжатиях кнопок мыши
 void CIFaceElement::Action(EActions action)
-{ 
+{
+    if(m_Actions[action].m_nonclassfunction)
+    {
+        m_Actions[action].m_nonclassfunction();
+    }
+    else if(m_Actions[action].m_classfunction)
+    {
+        //Вызов метода из массива
+        void (__stdcall CMain::* function)(void*) = m_Actions[action].m_classfunction;
+        (this->*function)(m_Actions[action].m_object);
+    }
+}
+/*
+void CIFaceElement::Action(EActions action)
+{
     if(m_Actions[action].m_function)
     {
         if(m_strName == IF_HINTS_OK ||
-           m_strName == IF_HINTS_CANCEL ||
-           m_strName == IF_HINTS_CANCEL_MENU ||
-           m_strName == IF_HINTS_CONTINUE ||
-           m_strName == IF_HINTS_EXIT ||
-           m_strName == IF_HINTS_RESET ||
-           m_strName == IF_HINTS_SURRENDER ||
-           m_strName == IF_HINTS_HELP)
+            m_strName == IF_HINTS_CANCEL ||
+            m_strName == IF_HINTS_CANCEL_MENU ||
+            m_strName == IF_HINTS_CONTINUE ||
+            m_strName == IF_HINTS_EXIT ||
+            m_strName == IF_HINTS_RESET ||
+            m_strName == IF_HINTS_SURRENDER ||
+            m_strName == IF_HINTS_HELP)
         {
             DialogButtonHandler(m_Actions[action].m_function)();
             //SetVisibility(false);
@@ -343,6 +340,7 @@ void CIFaceElement::Action(EActions action)
         }
     }
 }
+*/
 
 void CIFaceElement::LogicTact(int ms)
 {
@@ -455,9 +453,9 @@ void CIFaceElement::RecalcPos(
 //    D3DLOCKED_RECT lr;
 //    m_StateImages[IFACE_NORMAL].pImage->LockRect(lr, D3DLOCK_READONLY);
 //
-//    dword *src = (dword *)((BYTE *)lr.pBits + y * lr.Pitch + x * sizeof(dword));
-//    BYTE  *dst = (BYTE *)bmp.Data();
-//    for(int j = 0; j<szy; ++j, src = (dword *)(((BYTE *)src) + lr.Pitch), dst += bmp.Pitch() )
+//    dword *src = (dword *)((byte *)lr.pBits + y * lr.Pitch + x * sizeof(dword));
+//    byte  *dst = (byte *)bmp.Data();
+//    for(int j = 0; j<szy; ++j, src = (dword *)(((byte *)src) + lr.Pitch), dst += bmp.Pitch() )
 //    {
 //        for(int i = 0; i<szx; ++i)
 //        {

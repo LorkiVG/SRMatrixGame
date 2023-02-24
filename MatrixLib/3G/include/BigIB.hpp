@@ -131,8 +131,8 @@ __inline bool  SBigIBSource::Prepare(CBigIB *bib)
 
         bibo->PrepareIB();
         if (bibo->ib == nullptr) return true;
-        WORD * idx;
-        LOCKP_IB(bibo->ib, base * sizeof(WORD), size, &idx);
+        word * idx;
+        LOCKP_IB(bibo->ib, base * sizeof(word), size, &idx);
         memcpy(idx,inds,size);
         UNLOCK_IB(bibo->ib);
 
@@ -277,7 +277,7 @@ __inline void CBigIB::AddSource(SBigIBSource *src)
 
     int part = m_IB_array[index].count-1;
 
-    src->base = m_IB_array[index].ibsize / sizeof(WORD);
+    src->base = m_IB_array[index].ibsize / sizeof(word);
     src->one = index;
     src->part = part;
     m_IB_array[index].parts[part].flags = BIB_DIRTY_PART | BIB_NONEED_PART;
@@ -326,7 +326,7 @@ __inline bool CBigIB::DelSource(SBigIBSource *src) // return true if BigIB has d
 
     }
 
-    int dbase = src->size / sizeof(WORD);
+    int dbase = src->size / sizeof(word);
 
     for (int i=src->part + 1; i<m_IB_array[src->one].count; ++i)
     {

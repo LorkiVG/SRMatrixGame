@@ -75,37 +75,37 @@ DTRACE();
     m_MPFCnt = m_MPF2Cnt = 0;
     if(m_MPF)
     {
-        HFree(m_MPF, g_MatrixHeap);
+        HFree(m_MPF, Base::g_MatrixHeap);
         m_MPF = nullptr;
     }
 
     if(m_MPF2)
     {
-        HFree(m_MPF2, g_MatrixHeap);
+        HFree(m_MPF2, Base::g_MatrixHeap);
         m_MPF2 = nullptr;
     }
 
     if(m_ZoneIndex)
     {
-        HFree(m_ZoneIndex, g_MatrixHeap);
+        HFree(m_ZoneIndex, Base::g_MatrixHeap);
         m_ZoneIndex = nullptr;
     }
 
     if(m_ZoneIndexAccess)
     {
-        HFree(m_ZoneIndexAccess, g_MatrixHeap);
+        HFree(m_ZoneIndexAccess, Base::g_MatrixHeap);
         m_ZoneIndexAccess = nullptr;
     }
 
     if(m_ZoneDataZero)
     {
-        HFree(m_ZoneDataZero, g_MatrixHeap);
+        HFree(m_ZoneDataZero, Base::g_MatrixHeap);
         m_ZoneDataZero = nullptr;
     }
 
     if(m_MapPoint)
     {
-        HFree(m_MapPoint, g_MatrixHeap); m_MapPoint = nullptr;
+        HFree(m_MapPoint, Base::g_MatrixHeap); m_MapPoint = nullptr;
     }
 
     //ZoneClear();
@@ -145,24 +145,16 @@ DTRACE();
 
 void CMatrixMapLogic::GatherInfo(int type)
 {
-DTRACE();
-
     CMatrixMapStatic* obj = CMatrixMapStatic::GetFirstLogic();
-DCP();
     while(obj)
     {
-DCP();
         if(obj->IsRobotAlive())
         {
-DCP();
             obj->AsRobot()->GatherInfo(type);
-DCP();
         }
-DCP();
+
         obj = obj->GetNextLogic();
-DCP();
     }
-DCP();
 }
 
 void CMatrixMapLogic::PrepareBuf()
@@ -182,9 +174,9 @@ void CMatrixMapLogic::PrepareBuf()
 #endif
 
 
-    if(!m_ZoneIndex) m_ZoneIndex = (int*)HAlloc(max(m_RoadNetwork.m_ZoneCnt, m_RoadNetwork.m_PlaceCnt) * sizeof(int), g_MatrixHeap);
-    if(!m_ZoneDataZero) m_ZoneDataZero = (dword*)HAllocClear(max(m_RoadNetwork.m_ZoneCnt, m_RoadNetwork.m_PlaceCnt) * sizeof(dword), g_MatrixHeap);
-    if(!m_ZoneIndexAccess) m_ZoneIndexAccess = (int*)HAlloc(max(m_RoadNetwork.m_ZoneCnt, m_RoadNetwork.m_PlaceCnt) * sizeof(int), g_MatrixHeap);
+    if(!m_ZoneIndex) m_ZoneIndex = (int*)HAlloc(max(m_RoadNetwork.m_ZoneCnt, m_RoadNetwork.m_PlaceCnt) * sizeof(int), Base::g_MatrixHeap);
+    if(!m_ZoneDataZero) m_ZoneDataZero = (dword*)HAllocClear(max(m_RoadNetwork.m_ZoneCnt, m_RoadNetwork.m_PlaceCnt) * sizeof(dword), Base::g_MatrixHeap);
+    if(!m_ZoneIndexAccess) m_ZoneIndexAccess = (int*)HAlloc(max(m_RoadNetwork.m_ZoneCnt, m_RoadNetwork.m_PlaceCnt) * sizeof(int), Base::g_MatrixHeap);
 }
 
 //void CMatrixMapLogic::ZoneClear()
@@ -631,8 +623,6 @@ bool CMatrixMapLogic::IsAbsenceWall(int nsh, int size, int mx, int my)
 
 bool CMatrixMapLogic::PlaceFindNear(int nsh, int size, int& mx, int& my, int other_cnt, int* other_size, CPoint* other_des)
 {
-DTRACE();
-
     int k, tx, ty;
     int *os;
     CPoint *od;
@@ -1286,7 +1276,7 @@ void CMatrixMapLogic::SetWeightFromTo(int size, int x1, int y1, int x2, int y2)
     int sx = x2 >= x1 ? 1 : -1;
     int sy = y2 >= y1 ? m_SizeMove.x : -m_SizeMove.x;
 
-    SMatrixMapMove *smm = MoveGet(x1, y1);//(BYTE *)bufdes + x1 * 4 + y1 * ll;
+    SMatrixMapMove *smm = MoveGet(x1, y1);//(byte *)bufdes + x1 * 4 + y1 * ll;
     SMatrixMapMove *smmt;
 
     if(dy <= dx)
@@ -1364,7 +1354,7 @@ int CMatrixMapLogic::FindLocalPath(
         ERROR_E;
     }
 
-    if(!m_MapPoint) m_MapPoint = (CPoint*)HAlloc(m_SizeMove.x * m_SizeMove.y * sizeof(CPoint), g_MatrixHeap);
+    if(!m_MapPoint) m_MapPoint = (CPoint*)HAlloc(m_SizeMove.x * m_SizeMove.y * sizeof(CPoint), Base::g_MatrixHeap);
 
     int zoneskipcnt = min(zonepathcnt - 1, 6);
 
@@ -2042,7 +2032,7 @@ bool CMatrixMapLogic::CanMoveFromTo(int nsh, int size, int x1, int y1, int x2, i
     int sx = x2 >= x1 ? 1 : -1;
     int sy = y2 >= y1 ? m_SizeMove.x : -m_SizeMove.x;
 
-    SMatrixMapMove* smm = MoveGet(x1, y1);//(BYTE *)bufdes + x1 * 4 + y1 * ll;
+    SMatrixMapMove* smm = MoveGet(x1, y1);//(byte *)bufdes + x1 * 4 + y1 * ll;
     //SMatrixMapMove * smmt;
 
     ASSERT(size >= 1 && size <= 5);
@@ -2141,7 +2131,7 @@ bool CMatrixMapLogic::CanOptimize(int nsh, int size, int x1, int y1, int x2, int
     int sx = x2 >= x1 ? 1 : -1;
     int sy = y2 >= y1 ? m_SizeMove.x : -m_SizeMove.x;
 
-    SMatrixMapMove *smm = MoveGet(x1, y1);//(BYTE *)bufdes + x1 * 4 + y1 * ll;
+    SMatrixMapMove *smm = MoveGet(x1, y1);//(byte *)bufdes + x1 * 4 + y1 * ll;
     SMatrixMapMove *smmt;
 
     ASSERT(size >= 1 && size <= 5);
@@ -2463,7 +2453,7 @@ int CMatrixMapLogic::FindPlace(const CPoint& mappos)
     return -1;
 }
 
-int CMatrixMapLogic::PlaceList(byte mm, CPoint &from, CPoint &to, int radius, bool farpath, int *list, int *listcnt, int *outdist)
+int CMatrixMapLogic::PlaceList(byte mm, const CPoint &from, const CPoint &to, int radius, bool farpath, int *list, int *listcnt, int *outdist)
 {
     int i, u, cnt, sme, np, dist, next, x, y, clcnt, oldcnt;
     SMatrixPlace* place;
@@ -2539,8 +2529,10 @@ int CMatrixMapLogic::PlaceList(byte mm, CPoint &from, CPoint &to, int radius, bo
                     ++cnt;
                     m_ZoneDataZero[np] = 1;
                 }
+
                 if(i < place->m_NearCnt) break;
                 ++sme;
+
                 if(sme >= next)
                 {
                     next = cnt;
@@ -2684,6 +2676,7 @@ int CMatrixMapLogic::PlaceList(byte mm, CPoint &from, CPoint &to, int radius, bo
                 ++cnt;
                 m_ZoneDataZero[np] = m_ZoneDataZero[m_ZoneIndex[sme]] & 0x7fff0000;
             }
+
             if(u) break;
             ++sme;
             if(sme >= next)
@@ -2711,7 +2704,7 @@ int CMatrixMapLogic::PlaceList(byte mm, CPoint &from, CPoint &to, int radius, bo
             if(*listcnt >= m_RoadNetwork.m_PlaceCnt) __asm int 3;
 
             list[*listcnt] = m_ZoneIndex[i];
-            (*listcnt)++;
+            ++(*listcnt);
         }
     }
 
@@ -3319,9 +3312,9 @@ oblom:
     }
 }
 
-SMatrixPathObj *CMatrixMapLogic::ObjAdd()
+SMatrixPathObj* CMatrixMapLogic::ObjAdd()
 {
-    SMatrixPathObj *obj = (SMatrixPathObj*)HAllocClear(sizeof(SMatrixPathObj), g_MatrixHeap);
+    SMatrixPathObj* obj = (SMatrixPathObj*)HAllocClear(sizeof(SMatrixPathObj), Base::g_MatrixHeap);
     LIST_ADD(obj, m_ObjFirst, m_ObjLast, m_Prev, m_Next);
     return obj;
 }
@@ -3329,7 +3322,7 @@ SMatrixPathObj *CMatrixMapLogic::ObjAdd()
 void CMatrixMapLogic::ObjDelete(SMatrixPathObj* obj)
 {
     LIST_DEL(obj, m_ObjFirst, m_ObjLast, m_Prev, m_Next);
-    HFree(obj, g_MatrixHeap);
+    HFree(obj, Base::g_MatrixHeap);
 }
 
 void CMatrixMapLogic::ObjClear()
@@ -3339,12 +3332,12 @@ void CMatrixMapLogic::ObjClear()
 
 SMatrixPath *CMatrixMapLogic::PathAlloc()
 {
-    return (SMatrixPath*)HAllocClear(sizeof(SMatrixPath), g_MatrixHeap);
+    return (SMatrixPath*)HAllocClear(sizeof(SMatrixPath), Base::g_MatrixHeap);
 }
 
 void CMatrixMapLogic::PathFree(SMatrixPath *path)
 {
-    HFree(path, g_MatrixHeap);
+    HFree(path, Base::g_MatrixHeap);
 }
 
 void CMatrixMapLogic::PathClear()
@@ -3640,10 +3633,10 @@ void CMatrixMapLogic::DumpLogic()
 {
     FILE *fi;
 
-    char *ats[] = { "mlat_None","mlat_Defence","mlat_Attack","mlat_Forward","mlat_Retreat","mlat_Capture","mlat_Intercept" };
-    char *rss[] = { "ROBOT_IN_SPAWN","ROBOT_BASE_MOVEOUT","ROBOT_SUCCESSFULLY_BUILD","ROBOT_CARRYING","ROBOT_FALLING","ROBOT_DIP","ROBOT_CAPTURING_BASE","ROBOT_EMBRYO" };
-    char *ros[] = { "ROBOT_EMPTY_ORDER","ROT_MOVE_TO","ROT_MOVE_BACK","ROT_MOVE_RETURN","ROT_STOP_MOVE","ROT_FIRE","ROT_STOP_FIRE","ROT_CAPTURE_BUILDING","ROT_STOP_CAPTURE" };
-    char *rps[] = { "ROBOT_EMPTY_PHASE","ROBOT_WAITING_FOR_PARAMS","ROBOT_MOVING","ROBOT_FIRING","ROP_CAPTURE_MOVING","ROP_CAPTURE_IN_POSITION","ROP_CAPTURE_SETTING_UP","ROP_CAPTURING","ROBOT_GETING_LOST" };
+    const char *ats[] = { "mlat_None","mlat_Defence","mlat_Attack","mlat_Forward","mlat_Retreat","mlat_Capture","mlat_Intercept" };
+    const char *rss[] = { "ROBOT_IN_SPAWN","ROBOT_BASE_MOVEOUT","ROBOT_SUCCESSFULLY_BUILD","ROBOT_CARRYING","ROBOT_FALLING","ROBOT_DIP","ROBOT_CAPTURING_BASE","ROBOT_EMBRYO" };
+    const char *ros[] = { "ROBOT_EMPTY_ORDER","ROT_MOVE_TO","ROT_MOVE_BACK","ROT_MOVE_RETURN","ROT_STOP_MOVE","ROT_FIRE","ROT_STOP_FIRE","ROT_CAPTURE_BUILDING","ROT_STOP_CAPTURE" };
+    const char *rps[] = { "ROBOT_EMPTY_PHASE","ROBOT_WAITING_FOR_PARAMS","ROBOT_MOVING","ROBOT_FIRING","ROP_CAPTURE_MOVING","ROP_CAPTURE_IN_POSITION","ROP_CAPTURE_SETTING_UP","ROP_CAPTURING","ROBOT_GETING_LOST" };
 
     if((fi = fopen("#DumpLogic.txt", "w+")) == nullptr) return;
 

@@ -365,7 +365,7 @@ DTRACE();
 
         if(m_IB != nullptr)
         {
-            WORD* p;
+            word* p;
             LOCK_IB(m_IB, &p);
             for(int i = 0; i < MAX_SPRITES; ++i)
             {

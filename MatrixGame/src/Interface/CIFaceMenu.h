@@ -66,10 +66,8 @@ enum EMenuParent {
 };
 
 struct SMenuItemText {
-    CWStr text;
-    dword color = 0;
-
-    SMenuItemText(CHeap* heap) : text(heap) { color = DEFAULT_LABELS_COLOR; }
+    CWStr text = (CWStr)L"";
+    dword color = DEFAULT_LABELS_COLOR;
 };
 
 //Класс выпадающего списка для выбора модулей в конструкторе (по нажатию ПКМ на модуле)
@@ -120,7 +118,7 @@ public:
             m_RamTex = nullptr;
         }
 
-        if(m_RobotConfig) HDelete(SRobotConfig, m_RobotConfig, g_MatrixHeap);
+        if(m_RobotConfig) HDelete(SRobotConfig, m_RobotConfig, Base::g_MatrixHeap);
     }
 };
 

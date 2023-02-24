@@ -42,12 +42,12 @@ void CMinimap::SMMTex::Load(CBlockPar *mm, const wchar *name)
 void CMinimap::Init(void)
 {
     DTRACE();
-    if (m_Texture == nullptr)
+    if(m_Texture == nullptr)
     {
         m_Texture = CACHE_CREATE_TEXTURE();
     }
 
-    CBlockPar * bp = g_MatrixData->BlockGet(PAR_SOURCE_MINIMAP);
+    CBlockPar* bp = g_MatrixData->BlockGet(PAR_SOURCE_MINIMAP);
 
     m_Tex[MMT_POINT].Load(bp, PAR_SOURCE_MINIMAP_POINT);
     m_Tex[MMT_ARROW].Load(bp, PAR_SOURCE_MINIMAP_ARROW);
@@ -482,68 +482,71 @@ void CMinimap::DrawRadar(float x, float y, float radius)
     //m_Rotation = trans * ma;
 
 
-    CMatrixMapStatic *ms = CMatrixMapStatic::GetFirstLogic();
+    CMatrixMapStatic* ms = CMatrixMapStatic::GetFirstLogic();
 
     float r2 = mapradius * mapradius;
 
-    for (;ms;ms = ms->GetNextLogic())
+    for(; ms; ms = ms->GetNextLogic())
     {
         EMMTex tex;
         float r;
-        switch (ms->GetObjectType())
+        switch(ms->GetObjectType())
         {
             case OBJECT_TYPE_ROBOTAI:
-                if (!ms->IsRobotAlive()) continue;
-                if (g_MatrixMap->GetPlayerSide()->GetArcadedObject() == ms) continue;
-                if (r2 < D3DXVec2LengthSq(&(*(D3DXVECTOR2 *)&ms->GetGeoCenter() - *(D3DXVECTOR2 *)&arcaded->GetGeoCenter())))
-                {
-                    continue;
-                }
+            {
+                if(!ms->IsRobotAlive()) continue;
+                if(g_MatrixMap->GetPlayerSide()->GetArcadedObject() == ms) continue;
+
+                D3DXVECTOR2 temp = *(D3DXVECTOR2*)&ms->GetGeoCenter() - *(D3DXVECTOR2*)&arcaded->GetGeoCenter();
+                if(r2 < D3DXVec2LengthSq(&temp)) continue;
 
                 tex = MMT_ROBOT_R;
                 r = MINIMAP_ROBOT_R;
                 break;
+            }
             case OBJECT_TYPE_FLYER:
-                if (g_MatrixMap->GetPlayerSide()->GetArcadedObject() == ms) continue;
-                if (r2 < D3DXVec2LengthSq(&(*(D3DXVECTOR2 *)&ms->GetGeoCenter() - *(D3DXVECTOR2 *)&arcaded->GetGeoCenter())))
-                {
-                    continue;
-                }
+            {
+                if(g_MatrixMap->GetPlayerSide()->GetArcadedObject() == ms) continue;
+
+                D3DXVECTOR2 temp = *(D3DXVECTOR2*)&ms->GetGeoCenter() - *(D3DXVECTOR2*)&arcaded->GetGeoCenter();
+                if(r2 < D3DXVec2LengthSq(&temp)) continue;
+
                 tex = MMT_FLYER_R;
                 r = MINIMAP_FLYER_R;
                 break;
+            }
             case OBJECT_TYPE_BUILDING:
-                if (!ms->IsBuildingAlive()) continue;
-                if (r2 < D3DXVec2LengthSq(&(*(D3DXVECTOR2 *)&ms->GetGeoCenter() - *(D3DXVECTOR2 *)&arcaded->GetGeoCenter())))
-                {
-                    continue;
-                }
-                if (ms->IsBase())
+            {
+                if(!ms->IsBuildingAlive()) continue;
+
+                D3DXVECTOR2 temp = *(D3DXVECTOR2*)&ms->GetGeoCenter() - *(D3DXVECTOR2*)&arcaded->GetGeoCenter();
+                if(r2 < D3DXVec2LengthSq(&temp)) continue;
+
+                if(ms->IsBase())
                 {
                     tex = MMT_BASE_R;
                     r = MINIMAP_BUILDING_BASE_R;
-                } else
+                }
+                else
                 {
                     tex = MMT_FACTORY_R;
                     r = MINIMAP_BUILDING_R;
                 }
                 break;
+            }
             case OBJECT_TYPE_CANNON:
-                if (!ms->IsCannonAlive())
-                {
-                    continue;
-                }
-                if (r2 < D3DXVec2LengthSq(&(*(D3DXVECTOR2 *)&ms->GetGeoCenter() - *(D3DXVECTOR2 *)&arcaded->GetGeoCenter())))
-                {
-                    continue;
-                }
+            {
+                if(!ms->IsCannonAlive()) continue;
+
+                D3DXVECTOR2 temp = *(D3DXVECTOR2*)&ms->GetGeoCenter() - *(D3DXVECTOR2*)&arcaded->GetGeoCenter();
+                if(r2 < D3DXVec2LengthSq(&temp)) continue;
+
                 tex = MMT_TURRET_R;
                 r = MINIMAP_CANNON_R;
                 break;
-            default:
-                {
-                    continue;
-                }
+            }
+
+            default: continue;
         }
 
         dword c = (m_Color & 0xFF000000) | g_MatrixMap->GetSideColorMM(ms->GetSide());
@@ -901,8 +904,8 @@ void CMinimap::RenderBackground(const CWStr &name, dword uniq)
             D3DLOCKED_RECT lr;
             ASSERT_DX(lt->LockRect(0,&lr,nullptr,0));
 
-            BYTE * sou=(BYTE *)bm.Data();
-            BYTE * des=(BYTE *)lr.pBits;
+            byte * sou=(byte *)bm.Data();
+            byte * des=(byte *)lr.pBits;
             for(int y=0;y<MINIMAP_SIZE;y++,sou+=bm.Pitch()-MINIMAP_SIZE*3,des+=lr.Pitch-MINIMAP_SIZE*4)
             {
                 for(int x=0;x<MINIMAP_SIZE;x++,sou+=3,des+=4)
@@ -962,26 +965,28 @@ render:
 
     // set new viewport
     D3DVIEWPORT9 newViewport;
-	newViewport.X=0;
-	newViewport.Y=0;
-	newViewport.Width=MINIMAP_SIZE;
-	newViewport.Height=MINIMAP_SIZE;
-	newViewport.MinZ=0.0f;
-	newViewport.MaxZ=1.0f;
+    newViewport.X = 0;
+    newViewport.Y = 0;
+    newViewport.Width = MINIMAP_SIZE;
+    newViewport.Height = MINIMAP_SIZE;
+    newViewport.MinZ = 0.0f;
+    newViewport.MaxZ = 1.0f;
 	FAILED_DX(g_D3DD->SetViewport(&newViewport));
 
     // store old render target
-    IDirect3DSurface9 * oldTarget;
-	FAILED_DX(g_D3DD->GetRenderTarget(0,&oldTarget));
+    IDirect3DSurface9* oldTarget;
+    FAILED_DX(g_D3DD->GetRenderTarget(0, &oldTarget));
 
-	ASSERT_DX(g_D3DD->SetRenderTarget(0,newTarget));
+    ASSERT_DX(g_D3DD->SetRenderTarget(0, newTarget));
 
 
-    ASSERT_DX(g_D3DD->Clear(0,nullptr,D3DCLEAR_TARGET|D3DCLEAR_ZBUFFER,0x00000000L, 1.0f, 0L ));
+    ASSERT_DX(g_D3DD->Clear(0, nullptr, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER, 0x00000000L, 1.0f, 0L));
 
     D3DXMATRIX mView;
-    D3DXVECTOR3 campos(float(g_MatrixMap->m_Size.x)*(GLOBAL_SCALE/2), float(g_MatrixMap->m_Size.y)*(GLOBAL_SCALE/2), 1300);
-    D3DXMatrixLookAtLH(&mView,&campos,&(campos-D3DXVECTOR3(0,0,1)),&D3DXVECTOR3(0,-1,0));
+    D3DXVECTOR3 campos(float(g_MatrixMap->m_Size.x) * (GLOBAL_SCALE / 2), float(g_MatrixMap->m_Size.y) * (GLOBAL_SCALE / 2), 1300);
+    D3DXVECTOR3 temp1 = campos - D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+    D3DXVECTOR3 temp2 = { 0.0f, -1.0f, 0.0f };
+    D3DXMatrixLookAtLH(&mView, &campos, &temp1, &temp2);
 
     int sz = max(g_MatrixMap->m_Size.x, g_MatrixMap->m_Size.y);
     float fsz = (float(sz) * GLOBAL_SCALE);
@@ -1149,21 +1154,22 @@ render:
 
 
     CMatrixMapStatic* ms = CMatrixMapStatic::GetFirstLogic();
-    while(ms!=nullptr)
+    while(ms != nullptr)
     {
         if(ms->IsBuildingAlive())
         {
-            ((CMatrixBuilding *)ms)->LogicTact(100000);
-            ms->GetResources(MR_Matrix|MR_Graph|MR_MiniMap);
+            ((CMatrixBuilding*)ms)->LogicTact(100000);
+            ms->GetResources(MR_Matrix | MR_Graph | MR_MiniMap);
         }
+
         ms = ms->GetNextLogic();
     }
 
     {
-        CreateDirectory(PathToOutputFiles(FOLDER_NAME_CACHE), nullptr);
+        CreateDirectory(PathToOutputFiles((char*)FOLDER_NAME_CACHE), nullptr);
 
         // seek files
-        CStr    n(PathToOutputFiles(FOLDER_NAME_CACHE),g_CacheHeap);
+        CStr n(PathToOutputFiles((char*)FOLDER_NAME_CACHE), g_CacheHeap);
         n += "\\";
         n += CStr(name, g_CacheHeap);
         n += ".*";
@@ -1175,7 +1181,7 @@ render:
             ff = FindFirstFile(n.Get(), &fd);
             if(ff != INVALID_HANDLE_VALUE)
             {
-                CStr    nn(PathToOutputFiles(FOLDER_NAME_CACHE),g_CacheHeap);
+                CStr nn(PathToOutputFiles((char*)FOLDER_NAME_CACHE), g_CacheHeap);
                 nn += "\\";
                 nn += fd.cFileName;
                 DeleteFile(nn.Get());
@@ -1285,7 +1291,9 @@ void CMinimap::RenderObjectToBackground(CMatrixMapStatic *s)
 
     D3DXMATRIX mView;
     D3DXVECTOR3 campos(float(g_MatrixMap->m_Size.x) * (GLOBAL_SCALE / 2), float(g_MatrixMap->m_Size.y) * (GLOBAL_SCALE / 2), 1300);
-    D3DXMatrixLookAtLH(&mView, &campos, &(campos - D3DXVECTOR3(0, 0, 1)), &D3DXVECTOR3(0, -1, 0));
+    D3DXVECTOR3 temp1 = campos - D3DXVECTOR3(0.0f, 0.0f, 1.0f);
+    D3DXVECTOR3 temp2 = { 0.0f, -1.0f, 0.0f };
+    D3DXMatrixLookAtLH(&mView, &campos, &temp1, &temp2);
 
     int sz = max(g_MatrixMap->m_Size.x, g_MatrixMap->m_Size.y);
     float fsz = (float(sz) * GLOBAL_SCALE);

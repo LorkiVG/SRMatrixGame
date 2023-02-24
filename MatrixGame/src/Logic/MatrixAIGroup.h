@@ -16,7 +16,6 @@ class CMatrixGroup;
 class CMatrixTactics;
 
 
-
 /*
 enum Team
 {
@@ -57,23 +56,26 @@ public:
 class CMatrixGroup : public CMain
 {
 public:
-    int                 m_Team;
-    int                 m_ObjectsCnt;
-    int                 m_RobotsCnt;
-    int                 m_FlyersCnt;
-    int                 m_BuildingsCnt;
-    //CMatrixTactics*     m_Tactics;
-    D3DXVECTOR3         m_GroupPosition;
-    int                 m_Id;
-    float               m_GroupSpeed;
-    int                 m_SimpleTimer;
+    int                 m_Team = -1;
+    int                 m_ObjectsCnt = 0;
+    int                 m_RobotsCnt = 0;
+    int                 m_FlyersCnt = 0;
+    int                 m_BuildingsCnt = 0;
+    //CMatrixTactics*   m_Tactics = nullptr;
+    D3DXVECTOR3         m_GroupPosition = { 0.0f, 0.0f, 0.0f };
+    int                 m_Id = 0;
+    float               m_GroupSpeed = 0.0f;
+    int                 m_SimpleTimer = -1;
 
-    CMatrixGroupObject* m_FirstObject;
-    CMatrixGroupObject* m_LastObject;
-    CMatrixGroup*       m_NextGroup;
-    CMatrixGroup*       m_PrevGroup;
+    CMatrixGroupObject* m_FirstObject = nullptr;
+    CMatrixGroupObject* m_LastObject = nullptr;
+    CMatrixGroup*       m_NextGroup = nullptr;
+    CMatrixGroup*       m_PrevGroup = nullptr;
 
-public:
+
+    CMatrixGroup() = default;
+    ~CMatrixGroup();
+
     void AddObject(CMatrixMapStatic* object, int team);
     void RemoveObject(CMatrixMapStatic* object);
     bool RemoveObject(int num);
@@ -108,12 +110,8 @@ public:
     float GetGroupSpeed() { return m_GroupSpeed; }
     void SetGroupSpeed(float speed) { m_GroupSpeed = speed; }
 
-
     int GetBombersCnt();
     int GetRepairsCnt();
-
-    CMatrixGroup();
-    ~CMatrixGroup();
 };
 
 //class CMatrixGroupList : public CMain

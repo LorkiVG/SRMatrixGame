@@ -178,7 +178,7 @@ void CWStr::SetHex(void* zn)
 	}
 }
 
-void CWStr::SetHex(BYTE zn)
+void CWStr::SetHex(byte zn)
 {
 	ModifyLenNoCopy(m_Data->m_Heap, 2);
 
@@ -394,7 +394,7 @@ bool CWStr::IsOnlyInt() const
 
 	for(int i = 0; i < tlen; ++i)
 	{
-		if(tstr[i] < L'0' || tstr[i] > L'9' && tstr[i] != L'-') return 0;
+		if((tstr[i] < L'0' || tstr[i] > L'9') && tstr[i] != L'-') return 0;
 	}
 	return 1;
 }
@@ -514,7 +514,7 @@ CWStr& CWStr::Insert(int sme, const wchar* str, int len)
 	return *this;
 }
 
-CWStr& CWStr::Replace(CWStr& substr, const CWStr& strreplace)
+CWStr& CWStr::Replace(const CWStr& substr, const CWStr& strreplace)
 {
 	int tlen = GetLen();
 	if(tlen < 1 || tlen < substr.GetLen()) return *this;
@@ -524,7 +524,7 @@ CWStr& CWStr::Replace(CWStr& substr, const CWStr& strreplace)
 	{
 		//int ff;
 		if((sme = Find(substr, sme)) == -1) break;
-		//sme+=ff;
+		//sme += ff;
 		Del(sme, substr.GetLen());
 		Insert(sme, strreplace);
 		sme += strreplace.GetLen();

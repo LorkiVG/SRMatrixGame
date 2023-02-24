@@ -1,4 +1,4 @@
-# Install script for directory: E:/!---KR---!/!PROGRAMS/MatrixGame/MatrixLib/DebugMsg
+# Install script for directory: H:/My DLLs/MatrixGame/MatrixLib/DebugMsg
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

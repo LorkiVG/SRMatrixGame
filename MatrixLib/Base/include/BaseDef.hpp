@@ -43,10 +43,10 @@ public:
 	//CRect(int zn) { left = top = right = bottom = zn; }
     CRect(int _left, int _top, int _right, int _bottom) { left = _left; top = _top; right = _right; bottom = _bottom; }
 
-    bool IsEmpty(void) const { return (right <= left) || (bottom <= top); }
+    bool IsEmpty() const { return (right <= left) || (bottom <= top); }
     bool IsInRect(const CPoint &pos) const { return(left < pos.x && top < pos.y && right > pos.x && bottom > pos.y); }
 
-    void Normalize(void)
+    void Normalize()
     {
         if(left > right)
         {
@@ -76,23 +76,57 @@ typedef unsigned long dword;
 typedef __int64 int64;
 typedef unsigned int  uint;
 
-#define LIST_ADD(el,first,last,prev,next){if(last!=nullptr) {last->next=el;} el->prev=last; el->next=nullptr;	last=el; if(first==nullptr) {first=el;}}
-#define LIST_ADD_FIRST(el,first,last,prev,next) {if(first!=nullptr) {first->prev=el;} el->next=first; el->prev=nullptr; first=el; if(last==nullptr) {last=el;}}
-#define LIST_INSERT(perel,el,first,last,prev,next) {if(perel==nullptr) { LIST_ADD(el,first,last,prev,next); }  else { el->prev=perel->prev;	el->next=perel;	if(perel->prev!=nullptr) {perel->prev->next=el;} perel->prev=el; if(perel==first) { first=el; }}}
+#define LIST_ADD(el, first, last, prev, next) \
+{                                             \
+    if(last != nullptr) last->next = el;      \
+    el->prev = last;                          \
+    el->next = nullptr;                       \
+    last = el;                                \
+    if(first == nullptr) first = el;          \
+}
 
-#define LIST_DEL(el,first,last,prev,next) \
-    {if(el->prev!=nullptr) el->prev->next=el->next;\
-	if(el->next!=nullptr) el->next->prev=el->prev;\
-	if(last==el) last=el->prev;\
-    if(first==el) first=el->next;}
+#define LIST_ADD_FIRST(el, first, last, prev, next) \
+{                                                   \
+    if(first != nullptr) first->prev = el;          \
+    el->next = first;                               \
+    el->prev = nullptr;                             \
+    first = el;                                     \
+    if(last == nullptr) last = el;                  \
+}
 
-#define LIST_DEL_CLEAR(el,first,last,prev,next) \
-    {if(el->prev!=nullptr) el->prev->next=el->next;\
-	if(el->next!=nullptr) el->next->prev=el->prev;\
-	if(last==el) last=el->prev;\
-	if(first==el) first=el->next;\
-	el->prev=nullptr;\
-    el->next=nullptr;}
+#define LIST_INSERT(perel, el, first, last, prev, next)    \
+{                                                          \
+    if(perel == nullptr)                                   \
+    {                                                      \
+        LIST_ADD(el, first, last, prev, next);             \
+    }                                                      \
+    else                                                   \
+    {                                                      \
+        el->prev = perel->prev;                            \
+        el->next = perel;                                  \
+        if(perel->prev != nullptr) perel->prev->next = el; \
+        perel->prev = el;                                  \
+        if(perel == first) first = el;                     \
+    }                                                      \
+}
+
+#define LIST_DEL(el, first, last, prev, next)          \
+{                                                      \
+    if(el->prev != nullptr) el->prev->next = el->next; \
+	if(el->next != nullptr) el->next->prev = el->prev; \
+	if(last == el) last = el->prev;                    \
+    if(first == el) first = el->next;                  \
+}
+
+#define LIST_DEL_CLEAR(el, first, last, prev, next)    \
+{                                                      \
+    if(el->prev != nullptr) el->prev->next = el->next; \
+    if(el->next != nullptr) el->next->prev = el->prev; \
+    if(last == el) last = el->prev;                    \
+    if(first == el) first = el->next;                  \
+    el->prev = nullptr;                                \
+    el->next = nullptr;                                \
+}
 
 
 #define SETBIT(x) (((dword)1) << x)

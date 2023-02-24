@@ -11,15 +11,15 @@
 
 CAnimation::CAnimation(int frames, int period) : m_Period(period), m_Frames(frames)
 {
-    m_FramesBuffer = (CIFaceStatic*)HAlloc(sizeof(CIFaceStatic) * frames, g_MatrixHeap);
-    for(int i = 0; i < frames; ++i) m_FramesBuffer[i].CIFaceStatic::CIFaceStatic();
+    m_FramesBuffer = (CIFaceStatic*)HAlloc(sizeof(CIFaceStatic) * frames, Base::g_MatrixHeap);
+    for(int i = 0; i < frames; ++i) new(&m_FramesBuffer[i]) CIFaceStatic();
 }
 CAnimation::~CAnimation()
 {
     if(m_FramesBuffer)
     {
         for(int i = 0; i < m_Frames; ++i) m_FramesBuffer[i].CIFaceStatic::~CIFaceStatic();
-        HFree(m_FramesBuffer, g_MatrixHeap);
+        HFree(m_FramesBuffer, Base::g_MatrixHeap);
     }
 }
 

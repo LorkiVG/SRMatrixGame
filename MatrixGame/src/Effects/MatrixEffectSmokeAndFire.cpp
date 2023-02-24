@@ -301,7 +301,7 @@ DTRACE();
         m_Puffs[i].m_Puff.m_Pos.z += dtime * m_Speed * (10 + (m_Puffs[i].m_Puff.m_Pos.z - m_Puffs[i].m_PuffOrig.z));
         //if(m_Puff[i].m_Pos.z > m_MaxZ) m_MaxZ = m_Puff[i].m_Pos.z;
         m_Puffs[i].m_Puff.SetScale(PUFF_FIRE_SCALE); //(1.0f - life) * (END_OF_LIFE_SCALE - 1.0f) + 1.0f;
-        //m_Puff[i].SetAlpha((BYTE)(255 * life));
+        //m_Puff[i].SetAlpha((byte)(255 * life));
 
         //÷вет мен€етс€ в зависимости от удалени€ огненного пуфа от очага пламени
         byte a = (byte)Float2Int(255.0f * (KSCALE(life, 0.0f, 0.3f) - (KSCALE(life, 0.3f, 1.0f))));

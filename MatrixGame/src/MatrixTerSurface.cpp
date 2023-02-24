@@ -98,7 +98,7 @@ void CTerSurface::ClearSurfaces(void)
 //}
 
 
-void CTerSurface::Load(BYTE *raw)
+void CTerSurface::Load(byte *raw)
 {
     if (m_BigVB == nullptr) m_BigVB = CBigVB<STerSurfVertex>::NewBigVB(g_MatrixHeap);
 
@@ -170,7 +170,7 @@ void CTerSurface::Load(BYTE *raw)
     m_BigVB->AddSource(&m_VertsSource);
 
     m_IdxsSource.size = idxsz;
-    m_IdxsSource.inds = (WORD *)HAlloc(idxsz, g_MatrixHeap);
+    m_IdxsSource.inds = (word *)HAlloc(idxsz, g_MatrixHeap);
     memcpy(m_IdxsSource.inds, raw, idxsz);
     raw += idxsz;
 
@@ -186,7 +186,7 @@ void CTerSurface::Load(BYTE *raw)
         g->AddSurface(this);       
     }
 }
-void CTerSurface::LoadM(BYTE *raw)
+void CTerSurface::LoadM(byte *raw)
 {
     if (m_BigVBM == nullptr) m_BigVBM = CBigVB<STerSurfVertexM>::NewBigVB(g_MatrixHeap);
 
@@ -258,7 +258,7 @@ void CTerSurface::LoadM(BYTE *raw)
     m_BigVBM->AddSource(&m_VertsSourceM);
 
     m_IdxsSource.size = idxsz;
-    m_IdxsSource.inds = (WORD *)HAlloc(idxsz, g_MatrixHeap);
+    m_IdxsSource.inds = (word *)HAlloc(idxsz, g_MatrixHeap);
     memcpy(m_IdxsSource.inds, raw, idxsz);
     raw += idxsz;
 
@@ -463,8 +463,8 @@ void CTerSurface::Draw(void)
 
         //if (iii == m_Index) 
         {
-            //ASSERT_DX(g_D3DD->DrawIndexedPrimitive(D3DPT_TRIANGLELIST,vbase,0,vcnt, ibase, m_IdxsSource.size / (3 * sizeof(WORD))));
-            ASSERT_DX(g_D3DD->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP,vbase,0,vcnt, ibase, m_IdxsSource.size / sizeof(WORD) - 2));
+            //ASSERT_DX(g_D3DD->DrawIndexedPrimitive(D3DPT_TRIANGLELIST,vbase,0,vcnt, ibase, m_IdxsSource.size / (3 * sizeof(word))));
+            ASSERT_DX(g_D3DD->DrawIndexedPrimitive(D3DPT_TRIANGLESTRIP,vbase,0,vcnt, ibase, m_IdxsSource.size / sizeof(word) - 2));
         }
     }
     g_Render->m_TerSurfClear[type]();

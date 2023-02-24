@@ -23,27 +23,8 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //___________CMatrixGroup________________________May i have your ATTENTION please!____________________________________//
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-CMatrixGroup::CMatrixGroup()
-{
-    m_NextGroup     = nullptr;
-    m_PrevGroup     = nullptr;
-    m_FirstObject   = nullptr;
-    m_LastObject    = nullptr;
-    m_ObjectsCnt    = 0;
-    m_RobotsCnt     = 0;
-    m_FlyersCnt     = 0;
-    m_BuildingsCnt  = 0;
-    m_Team          = -1;
-    //m_Tactics       = nullptr;
-    m_Id            = 0;
-    m_GroupPosition = D3DXVECTOR3(0, 0, 0);
-    m_GroupSpeed    = 0;
-    m_SimpleTimer   = -1;
-}
-
 CMatrixGroup::~CMatrixGroup()
 {
-	DTRACE();
     RemoveAll();
     //if(m_Tactics) HDelete(CMatrixTactics, m_Tactics, g_MatrixHeap);
 }
@@ -116,7 +97,6 @@ void CMatrixGroup::RemoveObject(CMatrixMapStatic* object)
 
 void CMatrixGroup::RemoveAll()
 {
-    DTRACE();
     CMatrixGroupObject *Objects = m_FirstObject;
 
 	while(Objects != nullptr)
@@ -193,7 +173,9 @@ void CMatrixGroup::FindNearObjects(CMatrixGroupObject *fn_object)
             ar = D3DXVECTOR2(((CMatrixFlyer*)ai_object)->GetPos().x, ((CMatrixFlyer*)ai_object)->GetPos().y);
         }
 
-        if(D3DXVec2LengthSq(&(ar - fr)) > 0 && D3DXVec2LengthSq(&(ar - fr)) <= DIF_GROUP_R * DIF_GROUP_R)
+        D3DXVECTOR2 temp1 = ar - fr;
+        D3DXVECTOR2 temp2 = ar - fr;
+        if(D3DXVec2LengthSq(&temp1) > 0 && D3DXVec2LengthSq(&temp2) <= DIF_GROUP_R * DIF_GROUP_R)
         {
             *ai_gr = *fn_gr;
             //ai_object->m_Group = fn_object->GetObject()->m_Group;

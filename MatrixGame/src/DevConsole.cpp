@@ -126,27 +126,27 @@ static void hMusic(const Base::CWStr &cmd, const Base::CWStr &params)
 }
 
 
-static void hCalcVis(const Base::CWStr &cmd, const Base::CWStr &params)
+static void hCalcVis(const Base::CWStr& cmd, const Base::CWStr& params)
 {
     g_MatrixMap->CalcVis();
 }
 
-static void hCompress(const Base::CWStr &cmd, const Base::CWStr &params)
+static void hCompress(const Base::CWStr& cmd, const Base::CWStr& params)
 {
     CWStr name(g_CacheHeap);
-    if (CFile::FileExist(name,params))
+    if(CFile::FileExist(name, params))
     {
         CBuf fil(g_CacheHeap);
         CStorage out(g_CacheHeap);
         fil.LoadFromFile(params);
 
-        CStorageRecord sr(CWStr(L"0",g_CacheHeap),g_CacheHeap);
-        sr.AddItem(CStorageRecordItem(CWStr(L"0",g_CacheHeap), ST_BYTE));
+        CStorageRecord sr(CWStr(L"0", g_CacheHeap), g_CacheHeap);
+        sr.AddItem(CStorageRecordItem(CWStr(L"0", g_CacheHeap), ST_BYTE));
         out.AddRecord(sr);
 
-        CDataBuf *b = out.GetBuf(L"0",L"0",ST_BYTE);
+        CDataBuf* b = out.GetBuf(L"0", L"0", ST_BYTE);
         b->AddArray();
-        b->AddToArray<BYTE>(0, (BYTE *)fil.Get(), fil.Len());
+        b->AddToArray<byte>(0, (byte*)fil.Get(), fil.Len());
 
         CacheReplaceFileExt(name, params, L".strg");
 
@@ -155,68 +155,71 @@ static void hCompress(const Base::CWStr &cmd, const Base::CWStr &params)
 }
 
 
-SCmdItem   CDevConsole::m_Commands[] =
+SCmdItem CDevConsole::m_Commands[] =
 {
-    {L"HELP", hHelp},
-    {L"SHADOWS", hShadows},
-    {L"CANNON", hCannon},
-    {L"LOG", hLog},
-    {L"TRACESPD", hTestSpdTrace},
-    {L"BUILDCFG", hBuildCFG},
-    {L"MUSIC", hMusic},
-    {L"COMPRESS", hCompress},
-    {L"CALCVIS", hCalcVis},
+    { L"HELP", hHelp },
+    { L"SHADOWS", hShadows },
+    { L"CANNON", hCannon },
+    { L"LOG", hLog },
+    { L"TRACESPD", hTestSpdTrace },
+    { L"BUILDCFG", hBuildCFG },
+    { L"MUSIC", hMusic },
+    { L"COMPRESS", hCompress },
+    { L"CALCVIS", hCalcVis },
 
-
-    {nullptr, nullptr} // last
+    { nullptr, nullptr } // last
 };
 
 
 static wchar Scan2Char(int scan)
 {
-    if (scan == KEY_SPACE) return ' ';
-    if (scan == KEY_A) return 'A';
-    if (scan == KEY_B) return 'B';
-    if (scan == KEY_C) return 'C';
-    if (scan == KEY_D) return 'D';
-    if (scan == KEY_E) return 'E';
-    if (scan == KEY_F) return 'F';
-    if (scan == KEY_G) return 'G';
-    if (scan == KEY_H) return 'H';
-    if (scan == KEY_I) return 'I';
-    if (scan == KEY_J) return 'J';
-    if (scan == KEY_K) return 'K';
-    if (scan == KEY_L) return 'L';
-    if (scan == KEY_M) return 'M';
-    if (scan == KEY_N) return 'N';
-    if (scan == KEY_O) return 'O';
-    if (scan == KEY_P) return 'P';
-    if (scan == KEY_Q) return 'Q';
-    if (scan == KEY_R) return 'R';
-    if (scan == KEY_S) return 'S';
-    if (scan == KEY_T) return 'T';
-    if (scan == KEY_U) return 'U';
-    if (scan == KEY_V) return 'V';
-    if (scan == KEY_W) return 'W';
-    if (scan == KEY_X) return 'X';
-    if (scan == KEY_Y) return 'Y';
-    if (scan == KEY_Z) return 'Z';
-    if (scan == KEY_0) return '0';
-    if (scan == KEY_1) return '1';
-    if (scan == KEY_2) return '2';
-    if (scan == KEY_3) return '3';
-    if (scan == KEY_4) return '4';
-    if (scan == KEY_5) return '5';
-    if (scan == KEY_6) return '6';
-    if (scan == KEY_7) return '7';
-    if (scan == KEY_8) return '8';
-    if (scan == KEY_9) return '9';
-    if (scan == KEY_LSLASH) return '\\';
-    if (scan == KEY_COMMA) return '.';
-    return 0;
+    switch(scan)
+    {
+        case KEY_SPACE: return ' ';
+        case KEY_A: return 'A';
+        case KEY_B: return 'B';
+        case KEY_C: return 'C';
+        case KEY_D: return 'D';
+        case KEY_E: return 'E';
+        case KEY_F: return 'F';
+        case KEY_G: return 'G';
+        case KEY_H: return 'H';
+        case KEY_I: return 'I';
+        case KEY_J: return 'J';
+        case KEY_K: return 'K';
+        case KEY_L: return 'L';
+        case KEY_M: return 'M';
+        case KEY_N: return 'N';
+        case KEY_O: return 'O';
+        case KEY_P: return 'P';
+        case KEY_Q: return 'Q';
+        case KEY_R: return 'R';
+        case KEY_S: return 'S';
+        case KEY_T: return 'T';
+        case KEY_U: return 'U';
+        case KEY_V: return 'V';
+        case KEY_W: return 'W';
+        case KEY_X: return 'X';
+        case KEY_Y: return 'Y';
+        case KEY_Z: return 'Z';
+        case KEY_0: return '0';
+        case KEY_1: return '1';
+        case KEY_2: return '2';
+        case KEY_3: return '3';
+        case KEY_4: return '4';
+        case KEY_5: return '5';
+        case KEY_6: return '6';
+        case KEY_7: return '7';
+        case KEY_8: return '8';
+        case KEY_9: return '9';
+        case KEY_LSLASH: return '\\';
+        case KEY_COMMA: return '.';
+
+        default: return 0;
+    }
 }
 
-bool CDevConsole::IsActive(void) const
+bool CDevConsole::IsActive() const
 {
     return FLAG(m_Flags, DCON_ACTIVE);
 }
@@ -233,9 +236,12 @@ void CDevConsole::ShowHelp(void)
     {
         CWStr desc(g_MatrixHeap);
 
-        if(i == 0) desc = L"Shows help";
-        else if(i == 1) desc = L"Switch shadows : [0|1][0|1]";
-        else if(i == 2) desc = L"Switch cannons logic : [0|1]";
+        switch(i)
+        {
+            case 0: desc = L"Shows help"; break;
+            case 1: desc = L"Switch shadows : [0|1][0|1]"; break;
+            case 2: desc = L"Switch cannons logic : [0|1]"; break;
+        }
 
         g_MatrixMap->m_DI.T(m_Commands[i].cmd, desc, 5000);
         ++i;

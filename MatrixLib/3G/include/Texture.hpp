@@ -49,15 +49,15 @@ protected:
 
     static CBaseTexture* m_TexturesFirst;
     static CBaseTexture* m_TexturesLast;
-    CBaseTexture* m_TexturesPrev;
-    CBaseTexture* m_TexturesNext;
+    CBaseTexture* m_TexturesPrev = nullptr;
+    CBaseTexture* m_TexturesNext = nullptr;
 
-    LPDIRECT3DTEXTURE9 m_Tex;
-    dword  m_Flags; // TF_*
-    CPoint m_Size;
+    LPDIRECT3DTEXTURE9 m_Tex = nullptr;
+    dword  m_Flags = 0; // TF_*
+    CPoint m_Size = { 0, 0 };
 
 public:
-    static void StaticInit(void)
+    static void StaticInit()
     {
         m_TexturesFirst = nullptr;
         m_TexturesLast = nullptr;
@@ -68,56 +68,48 @@ public:
         LIST_DEL(this, m_TexturesFirst, m_TexturesLast, m_TexturesPrev, m_TexturesNext);
     };
 
-    LPDIRECT3DTEXTURE9 DX(void) { return m_Tex; }
+    LPDIRECT3DTEXTURE9 DX() { return m_Tex; }
     LPDIRECT3DTEXTURE9 LoadTextureFromFile(bool to16bit, D3DPOOL pool = D3DPOOL_DEFAULT);
     void ParseFlags(const CWStr& name);
 
-    bool    IsTextureManaged(void) const { return m_Type == cc_TextureManaged; };
-    void    MipmapOff(void) { SETFLAG(m_Flags, TF_NOMIPMAP); }
+    bool  IsTextureManaged() const { return m_Type == cc_TextureManaged; };
+    void  MipmapOff() { SETFLAG(m_Flags, TF_NOMIPMAP); }
 
-    dword   Flags(void) { if (!m_Tex) Load(); return m_Flags; }
-    const CPoint& GetSize(void) const { return m_Size; }
-    int GetSizeX(void) const { return m_Size.x; }
-    int GetSizeY(void) const { return m_Size.y; }
+    dword Flags() { if(!m_Tex) Load(); return m_Flags; }
+    const CPoint& GetSize() const { return m_Size; }
+    int GetSizeX() const { return m_Size.x; }
+    int GetSizeY() const { return m_Size.y; }
 
     void Set(LPDIRECT3DTEXTURE9 tex, int flags = 0) { Unload(); m_Tex = tex; m_Flags = flags; }
 
-    virtual bool IsLoaded(void) { return m_Tex != nullptr; }
-    virtual void Unload(void) = 0;
-    virtual void Load(void) = 0;
+    virtual bool IsLoaded() { return m_Tex != nullptr; }
+    virtual void Unload() = 0;
+    virtual void Load() = 0;
 
-    static void OnLostDevice(void);
-    static void OnResetDevice(void);
+    static void OnLostDevice();
+    static void OnResetDevice();
 };
 
 class CTexture : public CBaseTexture
 {
     union
     {
-        int   m_OOM_counter;
-        dword m_Usage;
+        int   m_OOM_counter = 0;
+        dword m_Usage;// = 0;
     };
 
 public:
-    CTexture(void) : CBaseTexture()
+    CTexture() : CBaseTexture()
     {
-    DTRACE();
-
         m_Type = cc_Texture;
-
-        m_Tex = nullptr;
-        m_Flags = 0;
-        m_OOM_counter = 0;
     }
 
     virtual ~CTexture()
     {
-    DTRACE();
-
         CTexture::Unload();
     }
 
-    void Preload(void)
+    void Preload()
     {
         if(FLAG(m_Flags, TF_LOST)) return;
         if(m_OOM_counter > 0)
@@ -126,10 +118,7 @@ public:
             return;
         }
 
-        if(!m_Tex)
-        {
-            Load();
-        }
+        if(!m_Tex) Load();
     };
 
     LPDIRECT3DTEXTURE9 Tex(void)
@@ -150,11 +139,11 @@ public:
     void MakeSolidTexture(int sx, int sy, dword color);
     void LoadFromBitmap(CBitmap& bm);
 
-    void OnLostDevice(void);
-    void OnResetDevice(void);
+    void OnLostDevice();
+    void OnResetDevice();
 
-    virtual void Unload(void);
-    virtual void Load(void);
+    virtual void Unload();
+    virtual void Load();
 };
 
 #ifndef USE_DX_MANAGED_TEXTURES
@@ -165,34 +154,29 @@ class CTextureManaged : public CBaseTexture
 {
 #ifndef USE_DX_MANAGED_TEXTURES
     D3DFORMAT           m_Format;
-    LPDIRECT3DTEXTURE9  m_TexFrom;   // system memory texture
-    int                 m_Levelcnt;
+    LPDIRECT3DTEXTURE9  m_TexFrom = nullptr;   // system memory texture
+    int                 m_Levelcnt = 0;
     SRemindCore         m_RemindCore;
-    int                 m_OOM_counter;
+    int                 m_OOM_counter = 0;
 #endif
 
     void LoadFromBitmap(int level, const CBitmap& bm, bool convert_to_16bit); // valid only for 24 and 32 bpp images
 public:
 
 #pragma warning (disable : 4355)
-    CTextureManaged(void) :CBaseTexture()
+    CTextureManaged() : CBaseTexture()
 #ifndef USE_DX_MANAGED_TEXTURES
-        , m_TexFrom(nullptr), m_RemindCore(UnloadTextureManaged, (dword)this)
+        , m_RemindCore(UnloadTextureManaged, (dword)this)
 #endif
     {
         m_Type = cc_TextureManaged;
-        m_Tex = nullptr;
-        m_Flags = 0;
-#ifndef USE_DX_MANAGED_TEXTURES
-        m_OOM_counter = 0;
-#endif
-
     }
+
 #pragma warning (default : 4355)
 
 #ifndef USE_DX_MANAGED_TEXTURES
     static CTextureManaged* Get(const wchar* name, bool c16);
-    LPDIRECT3DTEXTURE9 TexFrom(void) { return m_TexFrom; }
+    LPDIRECT3DTEXTURE9 TexFrom() { return m_TexFrom; }
 #endif
 
 
@@ -211,12 +195,10 @@ public:
     LPDIRECT3DTEXTURE9 Tex(void)
     {
 #ifndef USE_DX_MANAGED_TEXTURES
-        if (m_OOM_counter > 0) return nullptr;
+        if(m_OOM_counter > 0) return nullptr;
 #endif
-        if (!m_Tex)
-        {
-            Load();
-        }
+        if(!m_Tex) Load();
+
 #ifndef USE_DX_MANAGED_TEXTURES
         m_RemindCore.Use(5000);
 #endif
@@ -267,7 +249,7 @@ public:
         ASSERT(m_TexFrom == nullptr);
 
         HRESULT res = g_D3DD->CreateTexture(sx, sy, levels, 0, fmt, D3DPOOL_SYSTEMMEM, &m_TexFrom, 0);
-        if (res != D3D_OK) return res;
+        if(res != D3D_OK) return res;
 
         D3DSURFACE_DESC desc;
         m_TexFrom->GetLevelDesc(0, &desc);
@@ -290,7 +272,7 @@ public:
     void LockRect(D3DLOCKED_RECT& lr, dword Flags)
     {
 #ifdef _DEBUG
-        if (FLAG(g_Flags, GFLAG_RENDERINPROGRESS)) _asm int 3
+        if(FLAG(g_Flags, GFLAG_RENDERINPROGRESS)) _asm int 3
             //ASSERT(!FLAG(g_Flags, GFLAG_RENDERINPROGRESS));
 #endif
 #ifndef USE_DX_MANAGED_TEXTURES
@@ -299,7 +281,8 @@ public:
             ASSERT_DX(Tex()->LockRect(0, &lr, nullptr, Flags));
 #endif
     }
-    void UnlockRect(void)
+
+    void UnlockRect()
     {
 #ifndef USE_DX_MANAGED_TEXTURES
         ASSERT_DX(TexFrom()->UnlockRect(0));
@@ -312,8 +295,8 @@ public:
     void LoadFromBitmap(const CBitmap& bm, D3DFORMAT fmt, int levels = 0);
     //void LoadFromBitmapAsIs(const CBitmap & bm);
 
-    virtual void Unload(void);
-    virtual void Load(void);
+    virtual void Unload();
+    virtual void Load();
 };
 
 #ifndef USE_DX_MANAGED_TEXTURES

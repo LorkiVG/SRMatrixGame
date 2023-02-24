@@ -271,8 +271,8 @@ DTRACE();
         fd->m_preIndsSize += sizeof(word) * 6;
 
         /*
-        const D3DXVECTOR3* v1 = &(((SVOVertex*)(((BYTE*)obj.m_Geometry.m_Vertices.verts) + frame_edges->v00))->v);
-        const D3DXVECTOR3* v2 = &(((SVOVertex*)(((BYTE*)obj.m_Geometry.m_Vertices.verts) + frame_edges->v01))->v);
+        const D3DXVECTOR3* v1 = &(((SVOVertex*)(((byte*)obj.m_Geometry.m_Vertices.verts) + frame_edges->v00))->v);
+        const D3DXVECTOR3* v2 = &(((SVOVertex*)(((byte*)obj.m_Geometry.m_Vertices.verts) + frame_edges->v01))->v);
 
         D3DXVECTOR3 v3(*v1 + lenv);
         D3DXVECTOR3 v4(*v2 + lenv);
@@ -280,23 +280,23 @@ DTRACE();
 #define VBUF_LOCAL fd->m_preVerts
         if(((temp0 & 0x80000000) == 0) ^ invert)
         {
-			((SVOShadowStencilVertex*)(((BYTE*)VBUF_LOCAL) + fd->m_preVertsSize))->v = *v2;
+			((SVOShadowStencilVertex*)(((byte*)VBUF_LOCAL) + fd->m_preVertsSize))->v = *v2;
             fd->m_preVertsSize += sizeof(SVOShadowStencilVertex);
-		    ((SVOShadowStencilVertex*)(((BYTE*)VBUF_LOCAL) + fd->m_preVertsSize))->v = *v1;
+		    ((SVOShadowStencilVertex*)(((byte*)VBUF_LOCAL) + fd->m_preVertsSize))->v = *v1;
             fd->m_preVertsSize += sizeof(SVOShadowStencilVertex);
-			((SVOShadowStencilVertex*)(((BYTE*)VBUF_LOCAL) + fd->m_preVertsSize))->v = v4;
+			((SVOShadowStencilVertex*)(((byte*)VBUF_LOCAL) + fd->m_preVertsSize))->v = v4;
             fd->m_preVertsSize += sizeof(SVOShadowStencilVertex);
-			((SVOShadowStencilVertex*)(((BYTE*)VBUF_LOCAL) + fd->m_preVertsSize))->v = v3;
+			((SVOShadowStencilVertex*)(((byte*)VBUF_LOCAL) + fd->m_preVertsSize))->v = v3;
 		}
         else
         {
-			((SVOShadowStencilVertex*)(((BYTE*)VBUF_LOCAL) + fd->m_preVertsSize))->v = v4;
+			((SVOShadowStencilVertex*)(((byte*)VBUF_LOCAL) + fd->m_preVertsSize))->v = v4;
             fd->m_preVertsSize += sizeof(SVOShadowStencilVertex);
-		    ((SVOShadowStencilVertex*)(((BYTE*)VBUF_LOCAL) + fd->m_preVertsSize))->v = v3;
+		    ((SVOShadowStencilVertex*)(((byte*)VBUF_LOCAL) + fd->m_preVertsSize))->v = v3;
             fd->m_preVertsSize += sizeof(SVOShadowStencilVertex);
-			((SVOShadowStencilVertex*)(((BYTE*)VBUF_LOCAL) + fd->m_preVertsSize))->v = *v2;
+			((SVOShadowStencilVertex*)(((byte*)VBUF_LOCAL) + fd->m_preVertsSize))->v = *v2;
             fd->m_preVertsSize += sizeof(SVOShadowStencilVertex);
-			((SVOShadowStencilVertex*)(((BYTE*)VBUF_LOCAL) + fd->m_preVertsSize))->v = *v1;
+			((SVOShadowStencilVertex*)(((byte*)VBUF_LOCAL) + fd->m_preVertsSize))->v = *v1;
 		}
         fd->m_preVertsSize += sizeof(SVOShadowStencilVertex);
 #undef VBUF_LOCAL

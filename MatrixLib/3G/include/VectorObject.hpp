@@ -153,9 +153,10 @@ struct SVOEdgeGroup {
 #define VO_FVF (D3DFVF_XYZ|D3DFVF_NORMAL|D3DFVF_TEX1)
 struct SVOVertex
 {
-	D3DXVECTOR3 v;
-	D3DXVECTOR3 n;
-	float       tu, tv;
+	D3DXVECTOR3 v = { 0.0f, 0.0f, 0.0f };
+    D3DXVECTOR3 n = { 0.0f, 0.0f, 0.0f };
+    float       tu = 0.0f;
+    float       tv = 0.0f;
 
     static const dword FVF = VO_FVF;
 };
@@ -166,25 +167,25 @@ struct SVOTriangle
     union
     {
         struct { int i0, i1, i2; };
-        int i[3];
+        int i[3] = { 0 };
     };
     //D3DXVECTOR3 norm;
 };
 
 struct SVOIndices16
 {
-    word i0, i1, i2;
+    word i0 = 0, i1 = 0, i2 = 0;
 };
 
 struct SVOIndices32
 {
-    dword i0, i1, i2;
+    dword i0 = 0, i1 = 0, i2 = 0;
 };
 
 struct SVOSurface
 {
-    const SSkin* skin;
-    CWStr texname;
+    const SSkin* skin = nullptr;
+    CWStr texname = (CWStr)L"";
 
     //float dr, dg, db, da;
 	//float ar, ag, ab, aa;
@@ -195,53 +196,53 @@ struct SVOSurface
 
 struct SVOUnion
 {
-	int m_Surface;
-    int m_Base;         //used for draw indexed primitives
+	int m_Surface = 0;
+    int m_Base = 0;            //used for draw indexed primitives
     union
     {
-	    int m_VerMinIndex;  // used for draw indexed primitives // always zero for optimized meshes (or negative, see m_IBase)
-        int m_IBase;        // negative value! 
+	    int m_VerMinIndex = 0; // used for draw indexed primitives // always zero for optimized meshes (or negative, see m_IBase)
+        int m_IBase;// = 0;    // negative value! 
     };
-	int m_VerCnt;       //used for draw indexed primitives
-	int m_TriCnt;
-	int m_TriStart;
+	int m_VerCnt = 0;          //used for draw indexed primitives
+	int m_TriCnt = 0;
+	int m_TriStart = 0;
 };
 
 struct SVOFrameModel
 {
-    D3DXVECTOR3 m_Min;
-    D3DXVECTOR3 m_Max;
-    D3DXVECTOR3 m_GeoCenter;
-    float       m_Radius;
+    D3DXVECTOR3 m_Min = { 0.0f, 0.0f, 0.0f };
+    D3DXVECTOR3 m_Max = { 0.0f, 0.0f, 0.0f };
+    D3DXVECTOR3 m_GeoCenter = { 0.0f, 0.0f, 0.0f };
+    float       m_Radius = 0.0f;
 
-    int         m_UnionStart;
-    int         m_UnionCnt;
-    int         m_EdgeStart;
-    int         m_EdgeCnt;
+    int         m_UnionStart = 0;
+    int         m_UnionCnt = 0;
+    int         m_EdgeStart = 0;
+    int         m_EdgeCnt = 0;
 
-    int         m_VerCnt;    // used in pick
-    int         m_VerStart;  // used in pick
+    int         m_VerCnt = 0;    // used in pick
+    int         m_VerStart = 0;  // used in pick
 };
 
 struct SVOFrameRuntime
 {
-    int m_EdgeVertexIndexMin;
-    int m_EdgeVertexIndexCount;
+    int m_EdgeVertexIndexMin = 0;
+    int m_EdgeVertexIndexCount = 0;
 };
 
 struct SVOAnimation
 {
-    dword m_Id;
-	wchar m_Name[32];
-    dword m_FramesCnt;
-    dword m_FramesStart;
+    dword m_Id = 0;
+    wchar m_Name[32] { L'\0' };
+    dword m_FramesCnt = 0;
+    dword m_FramesStart = 0;
 };
 
 struct SVOMatrix
 {
-    dword m_Id;
-	wchar m_Name[32];
-	dword m_MatrixStart; // Спиок D3DXMATRIX  (кол-во по количеству кадров)
+    dword m_Id = 0;
+	wchar m_Name[32] { L'\0' };
+	dword m_MatrixStart = 0; // Спиок D3DXMATRIX  (кол-во по количеству кадров)
 };
 
 struct SVOFrameIndex
@@ -448,7 +449,7 @@ struct SLightData
     int             period;
     dword           matid;
 
-    BYTE            bbytes[sizeof(CSprite)];
+    byte            bbytes[sizeof(CSprite)];
 
     CSprite& BB(void) { return *(CSprite*)&bbytes; }
     

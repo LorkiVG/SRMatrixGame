@@ -32,8 +32,8 @@
 #include <ddraw.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-CHeap* g_MatrixHeap;
-CBlockPar* g_MatrixData;
+CHeap* Base::g_MatrixHeap;
+CBlockPar* Base::g_MatrixData;
 CMatrixMapLogic* g_MatrixMap;
 CRenderPipeline* g_Render;
 CLoadProgress* g_LoadProgress;
@@ -51,7 +51,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
 
     //CBuf bla;
     //bla.LoadFromFile(L"test.dds");
-    //BYTE *data = (BYTE *)bla.Get();
+    //byte *data = (byte *)bla.Get();
     //DDSURFACEDESC2 *desc = (DDSURFACEDESC2 *)(data + 4);
 
     //int x = FP_NORM_TO_BYTE2(1.0f);
@@ -95,7 +95,7 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
         {
             FILE* file;
             file = fopen("calcvis.log", "a");
-            CStr name(g_MatrixMap->MapName(), g_MatrixHeap);
+            CStr name(g_MatrixMap->MapName(), Base::g_MatrixHeap);
             fwrite(name.Get(), name.Len(), 1, file);
             fwrite(" ...", 4, 1, file);
             fclose(file);
@@ -191,10 +191,10 @@ static void static_init(void)
 
 void LoadModList(CWStr& modlist)
 {
-    DTRACE();
+DTRACE();
 
-    CWStr modcfg_name(g_MatrixHeap);
-    CBlockPar modcfg(g_MatrixHeap);
+    CWStr modcfg_name(Base::g_MatrixHeap);
+    CBlockPar modcfg(Base::g_MatrixHeap);
     
     if(CFile::FileExist(modcfg_name, L"Mods\\ModCFG.txt"))
     {
@@ -208,10 +208,10 @@ void LoadCfgFromMods(CWStr& modlist, CBlockPar& base_bp, const wchar* lang, cons
 {
 DTRACE();
 
-    CWStr curmod(g_MatrixHeap);
-    CWStr moddata_name(g_MatrixHeap);
+    CWStr curmod(Base::g_MatrixHeap);
+    CWStr moddata_name(Base::g_MatrixHeap);
 
-    CBlockPar moddata(g_MatrixHeap);
+    CBlockPar moddata(Base::g_MatrixHeap);
 
     for(int i = -1; i < modlist.GetCountPar(L","); ++i)
     {
@@ -263,12 +263,12 @@ void MatrixGameInit(
 
 DTRACE();
 
-    g_MatrixHeap = HNew(nullptr) CHeap;
+    Base::g_MatrixHeap = HNew(nullptr) CHeap;
 
     CFile::AddPackFile(L"DATA\\robots.pkg", nullptr);
     CFile::OpenPackFiles();
 
-    CWStr modlist(g_MatrixHeap);
+    CWStr modlist(Base::g_MatrixHeap);
     LoadModList(modlist);
 
     CLoadProgress     lp;
@@ -276,9 +276,9 @@ DTRACE();
 
 DCP();
 
-    CStorage    stor_cfg(g_MatrixHeap);
+    CStorage    stor_cfg(Base::g_MatrixHeap);
     bool        stor_cfg_present = false;
-    CWStr       stor_cfg_name(g_MatrixHeap);
+    CWStr       stor_cfg_name(Base::g_MatrixHeap);
 	wchar       conf_file[80];
 	wcscpy(conf_file, FILE_CONFIGURATION_LOCATION);
 
@@ -296,29 +296,29 @@ DCP();
         stor_cfg_present = true;
     }
 
-	g_MatrixData = HNew(g_MatrixHeap) CBlockPar(1, g_MatrixHeap);
+    Base::g_MatrixData = HNew(Base::g_MatrixHeap) CBlockPar(1, Base::g_MatrixHeap);
     if(stor_cfg_present)
     {
-        stor_cfg.RestoreBlockPar(L"da", *g_MatrixData);
+        stor_cfg.RestoreBlockPar(L"da", *Base::g_MatrixData);
 		//stor_cfg.RestoreBlockPar(L"if", *g_MatrixData);
         //g_MatrixData->SaveInTextFile(L"bbb.txt");
 
         if(CFile::FileExist(stor_cfg_name, L"cfg\\robots\\cfg.txt"))
         {
-            CBlockPar* bpc = g_MatrixData->BlockGet(BLOCK_PATH_MAIN_CONFIG);
+            CBlockPar* bpc = Base::g_MatrixData->BlockGet(BLOCK_PATH_MAIN_CONFIG);
             bpc->LoadFromTextFile(L"cfg\\robots\\cfg.txt");
         }
     }
-    else g_MatrixData->LoadFromTextFile(L"cfg\\robots\\data.txt");
+    else Base::g_MatrixData->LoadFromTextFile(L"cfg\\robots\\data.txt");
 
     // Code for loading data configs from mods
-    LoadCfgFromMods(modlist, *g_MatrixData, lang, L"data.txt");
+    LoadCfgFromMods(modlist, *Base::g_MatrixData, lang, L"data.txt");
 
-    CBlockPar* repl = g_MatrixData->BlockGetAdd(PAR_REPLACE);
+    CBlockPar* repl = Base::g_MatrixData->BlockGetAdd(PAR_REPLACE);
 
     // init menu replaces
 
-    CBlockPar* rr = g_MatrixData->BlockGet(IF_LABELS_BLOCKPAR)->BlockGet(L"Replaces");
+    CBlockPar* rr = Base::g_MatrixData->BlockGet(IF_LABELS_BLOCKPAR)->BlockGet(L"Replaces");
     int cnt = rr->ParCount();
     for(int i = 0; i < cnt; ++i) repl->ParAdd(rr->ParGetName(i), rr->ParGet(i));
 
@@ -326,8 +326,8 @@ DCP();
     {
         if(txt_start[0] >= '1' && txt_start[0] <= '6')
         {
-            repl->ParSetAdd(PAR_REPLACE_BEGIN_ICON_RACE, CWStr(txt_start, 1, g_MatrixHeap));
-            repl->ParSetAdd(PAR_REPLACE_DIFFICULTY, CWStr(txt_start + 1, 2, g_MatrixHeap));
+            repl->ParSetAdd(PAR_REPLACE_BEGIN_ICON_RACE, CWStr(txt_start, 1, Base::g_MatrixHeap));
+            repl->ParSetAdd(PAR_REPLACE_DIFFICULTY, CWStr(txt_start + 1, 2, Base::g_MatrixHeap));
             repl->ParSetAdd(PAR_REPLACE_BEGIN_TEXT, txt_start + 3);
         }
         else
@@ -374,8 +374,8 @@ DCP();
 	g_MatrixData->BlockGet(BLOCK_PATH_MAIN_CONFIG)->SaveInTextFile(L"g_ConfigDump.txt");
 #endif
 
-	if(set) L3GInitAsDLL(inst, *g_MatrixData->BlockGet(BLOCK_PATH_MAIN_CONFIG), L"MatrixGame", L"Matrix Game", wnd, set->FDirect3D, set->FD3DDevice);
-	else L3GInitAsEXE(inst, *g_MatrixData->BlockGet(BLOCK_PATH_MAIN_CONFIG), L"MatrixGame", L"Matrix Game");
+	if(set) L3GInitAsDLL(inst, *Base::g_MatrixData->BlockGet(BLOCK_PATH_MAIN_CONFIG), L"MatrixGame", L"Matrix Game", wnd, set->FDirect3D, set->FD3DDevice);
+	else L3GInitAsEXE(inst, *Base::g_MatrixData->BlockGet(BLOCK_PATH_MAIN_CONFIG), L"MatrixGame", L"Matrix Game");
 
     if(set)
     {
@@ -383,7 +383,7 @@ DCP();
         g_ScreenY = set->m_ResolutionY;
     }
 
-    g_Render = HNew(g_MatrixHeap) CRenderPipeline;   // prepare pipelines
+    g_Render = HNew(Base::g_MatrixHeap) CRenderPipeline;   // prepare pipelines
 
 	ShowWindow(g_Wnd, SW_SHOWNORMAL);
 	UpdateWindow(g_Wnd);
@@ -412,7 +412,7 @@ DCP();
 		}
         else mapname.Set(map);
     }
-    else mapname = g_MatrixData->BlockGet(BLOCK_PATH_MAIN_CONFIG)->Par(L"Map");
+    else mapname = Base::g_MatrixData->BlockGet(BLOCK_PATH_MAIN_CONFIG)->Par(L"Map");
 
     stor.Load(mapname);
 
@@ -421,16 +421,16 @@ DCP();
     {
         CBlockPar map_data(g_CacheHeap);
         stor.RestoreBlockPar(L"da", map_data);
-        g_MatrixData->BlockMerge(map_data);
+        Base::g_MatrixData->BlockMerge(map_data);
     }
 
 DCP();
 
-	g_MatrixMap = HNew(g_MatrixHeap) CMatrixMapLogic;
+	g_MatrixMap = HNew(Base::g_MatrixHeap) CMatrixMapLogic;
 
-	g_MatrixMap->LoadSide(*g_MatrixData->BlockGet(L"Side"));
+	g_MatrixMap->LoadSide(*Base::g_MatrixData->BlockGet(L"Side"));
 	//g_MatrixMap->LoadTactics(*g_MatrixData->BlockGet(L"Tactics"));
-	g_IFaceList = HNew(g_MatrixHeap) CIFaceList;
+	g_IFaceList = HNew(Base::g_MatrixHeap) CIFaceList;
 
 	// load new map
 DCP();
@@ -443,7 +443,7 @@ DCP();
         ERROR_S(L"Unable to load map. Error happens.");
     }
 
-    CWStr mn(g_MatrixMap->MapName(), g_MatrixHeap);
+    CWStr mn(g_MatrixMap->MapName(), Base::g_MatrixHeap);
     mn.LowerCase();
     if(mn.Find(L"demo") >= 0)
     {
@@ -455,7 +455,7 @@ DCP();
     SRobotTemplate::ClearAIRobotType(); //На всякий случай
 
     //Загружаем шаблоны роботов для всех противоборствующих сторон ИИ
-    CBlockPar* robot_templates = g_MatrixData->BlockPathGet(L"RobotsConfig.RobotTemplates.ForAI");
+    CBlockPar* robot_templates = Base::g_MatrixData->BlockPathGet(L"RobotsConfig.RobotTemplates.ForAI");
     for(int i = 0; i < TOTAL_SIDES; ++i)
     {
         switch(i)
@@ -469,11 +469,11 @@ DCP();
     }
 
     //Загружаем шаблоны роботов для вызова подкреплений с вертолётов
-    robot_templates = g_MatrixData->BlockPathGet(L"RobotsConfig.RobotTemplates.ForReinforcements");
+    robot_templates = Base::g_MatrixData->BlockPathGet(L"RobotsConfig.RobotTemplates.ForReinforcements");
     SRobotTemplate::LoadAIRobotType(robot_templates, REINFORCEMENTS_TEMPLATES);
 
     //Загружаем шаблоны роботов для кабинки-спавнера (как пример, возле Террона такие есть)
-    robot_templates = g_MatrixData->BlockPathGet(L"RobotsConfig.RobotTemplates.ForRobotsSpawner");
+    robot_templates = Base::g_MatrixData->BlockPathGet(L"RobotsConfig.RobotTemplates.ForRobotsSpawner");
     SRobotTemplate::LoadAIRobotType(robot_templates, ROBOTS_SPAWNER_TEMPLATES);
 
     g_LoadProgress->SetCurLP(LP_PREPARININTERFACE);
@@ -501,7 +501,7 @@ DCP();
     g_MatrixData->SaveInTextFile(L"g_MatrixData.txt");
 #endif
 
-    g_ConfigHistory = HNew(g_MatrixHeap) CHistory;
+    g_ConfigHistory = HNew(Base::g_MatrixHeap) CHistory;
     CInterface* pInterface = nullptr;
 
     g_LoadProgress->SetCurLPPos(10);
@@ -510,54 +510,42 @@ DCP();
 
     bool iface_save = false;
 
-    g_PopupHull = (SMenuItemText*)HAlloc(sizeof(SMenuItemText) * ROBOT_HULLS_COUNT, g_MatrixHeap);
-    for(int i = 0; i < ROBOT_HULLS_COUNT; ++i)
-    {
-        g_PopupHull[i].SMenuItemText::SMenuItemText(g_MatrixHeap);
-    }
+    g_PopupHull = (SMenuItemText*)HAlloc(sizeof(SMenuItemText) * ROBOT_HULLS_COUNT, Base::g_MatrixHeap);
+    for(int i = 0; i < ROBOT_HULLS_COUNT; ++i) new(&g_PopupHull[i]) SMenuItemText();
 
-    g_PopupChassis = (SMenuItemText*)HAlloc(sizeof(SMenuItemText) * ROBOT_CHASSIS_COUNT, g_MatrixHeap);
-    for(int i = 0; i < ROBOT_CHASSIS_COUNT; ++i)
-    {
-        g_PopupChassis[i].SMenuItemText::SMenuItemText(g_MatrixHeap);
-    }
+    g_PopupChassis = (SMenuItemText*)HAlloc(sizeof(SMenuItemText) * ROBOT_CHASSIS_COUNT, Base::g_MatrixHeap);
+    for(int i = 0; i < ROBOT_CHASSIS_COUNT; ++i) new(&g_PopupChassis[i]) SMenuItemText();
 
-    g_PopupHead = (SMenuItemText*)HAlloc(sizeof(SMenuItemText) * (ROBOT_HEADS_COUNT + 1), g_MatrixHeap);
-    for(int i = 0; i < (ROBOT_HEADS_COUNT + 1); ++i)
-    {
-        g_PopupHead[i].SMenuItemText::SMenuItemText(g_MatrixHeap);
-    }
+    g_PopupHead = (SMenuItemText*)HAlloc(sizeof(SMenuItemText) * (ROBOT_HEADS_COUNT + 1), Base::g_MatrixHeap);
+    for(int i = 0; i < (ROBOT_HEADS_COUNT + 1); ++i) new(&g_PopupHead[i]) SMenuItemText();
 
-    g_PopupWeapon = (SMenuItemText*)HAlloc(sizeof(SMenuItemText) * (ROBOT_WEAPONS_COUNT + 1), g_MatrixHeap);
-    for(int i = 0; i < (ROBOT_WEAPONS_COUNT + 1); ++i)
-    {
-        g_PopupWeapon[i].SMenuItemText::SMenuItemText(g_MatrixHeap);
-    }
+    g_PopupWeapon = (SMenuItemText*)HAlloc(sizeof(SMenuItemText) * (ROBOT_WEAPONS_COUNT + 1), Base::g_MatrixHeap);
+    for(int i = 0; i < (ROBOT_WEAPONS_COUNT + 1); ++i) new(&g_PopupWeapon[i]) SMenuItemText();
 
-    CIFaceMenu::m_MenuGraphics = HNew(g_MatrixHeap) CInterface;
+    CIFaceMenu::m_MenuGraphics = HNew(Base::g_MatrixHeap) CInterface;
 
-    g_PopupMenu = HNew(g_MatrixHeap) CIFaceMenu;
+    g_PopupMenu = HNew(Base::g_MatrixHeap) CIFaceMenu;
 
-    pInterface = HNew(g_MatrixHeap) CInterface;
+    pInterface = HNew(Base::g_MatrixHeap) CInterface;
 	iface_save |= pInterface->Load(bpi, IF_TOP);
 	LIST_ADD(pInterface, g_IFaceList->m_First, g_IFaceList->m_Last, m_PrevInterface, m_NextInterface);
 
     g_LoadProgress->SetCurLPPos(100);
 
-    pInterface = HNew(g_MatrixHeap) CInterface;
+    pInterface = HNew(Base::g_MatrixHeap) CInterface;
 	iface_save |= pInterface->Load(bpi, IF_MINI_MAP);
 	LIST_ADD(pInterface, g_IFaceList->m_First, g_IFaceList->m_Last, m_PrevInterface, m_NextInterface);
 
     g_LoadProgress->SetCurLPPos(200);
 
-    pInterface = HNew(g_MatrixHeap) CInterface;
+    pInterface = HNew(Base::g_MatrixHeap) CInterface;
 	iface_save |= pInterface->Load(bpi, IF_RADAR);
 	LIST_ADD(pInterface, g_IFaceList->m_First, g_IFaceList->m_Last, m_PrevInterface, m_NextInterface);
 
     g_LoadProgress->SetCurLPPos(300);
 
     //Инициализация и загрузка элементов интерфейса из раздела Base
-    pInterface = HNew(g_MatrixHeap) CInterface;
+    pInterface = HNew(Base::g_MatrixHeap) CInterface;
 	iface_save |= pInterface->Load(bpi, IF_BASE);
     LIST_ADD(pInterface, g_IFaceList->m_First, g_IFaceList->m_Last, m_PrevInterface, m_NextInterface);
 
@@ -565,14 +553,14 @@ DCP();
     g_IFaceList->m_BaseY = Float2Int(pInterface->m_yPos);
     g_LoadProgress->SetCurLPPos(400);
 
-    pInterface = HNew(g_MatrixHeap) CInterface;
+    pInterface = HNew(Base::g_MatrixHeap) CInterface;
 	iface_save |= pInterface->Load(bpi, IF_MAIN);
     g_IFaceList->SetMainPos(pInterface->m_xPos, pInterface->m_yPos);
 	LIST_ADD(pInterface, g_IFaceList->m_First, g_IFaceList->m_Last, m_PrevInterface, m_NextInterface);
 
     g_LoadProgress->SetCurLPPos(500);
 
-    pInterface = HNew(g_MatrixHeap) CInterface;
+    pInterface = HNew(Base::g_MatrixHeap) CInterface;
 	iface_save |= pInterface->Load(bpi, IF_HINTS);
 	LIST_ADD(pInterface, g_IFaceList->m_First, g_IFaceList->m_Last, m_PrevInterface, m_NextInterface);
     g_IFaceList->m_Hints = pInterface;
@@ -587,8 +575,8 @@ DCP();
     g_LoadProgress->SetCurLPPos(700);
 
     //Слова "нет" для пустых слотов модулей голов и оружия
-    g_PopupHead[0].text = g_MatrixData->BlockPathGet(MODULES_CONFIG_PATH_HEADS)->ParGet(L"NoneChoosed");
-    g_PopupWeapon[0].text = g_MatrixData->BlockPathGet(MODULES_CONFIG_PATH_WEAPONS)->ParGet(L"NoneChoosed");
+    g_PopupHead[0].text = Base::g_MatrixData->BlockPathGet(MODULES_CONFIG_PATH_HEADS)->ParGet(L"NoneChoosed");
+    g_PopupWeapon[0].text = Base::g_MatrixData->BlockPathGet(MODULES_CONFIG_PATH_WEAPONS)->ParGet(L"NoneChoosed");
 
     if(g_RangersInterface)
     {
@@ -610,7 +598,7 @@ DCP();
     //Где-то здесь крашит, если отрубить всё модули, необходимые для загрузки стартовых роботов на карте
     g_MatrixMap->m_Transition.RenderToPrimaryScreen();
 
-    CMatrixEffect::InitEffects(*g_MatrixData);
+    CMatrixEffect::InitEffects(*Base::g_MatrixData);
     g_MatrixMap->CreatePoolDefaultResources(true); //Отсюда же в итоге вызывается сборка стартовых роботов на карте
     g_MatrixMap->InitObjectsLights();
 
@@ -620,7 +608,7 @@ DCP();
     if(!FLAG(g_MatrixMap->m_Flags, MMFLAG_FULLAUTO)) g_MatrixMap->EnterDialogMode(TEMPLATE_DIALOG_BEGIN);
 
     //Проверяем, включена ли настройка сохранения шаблонов в конфиге
-    int maxDesignsToSave = g_MatrixData->BlockGet(BLOCK_PATH_MAIN_CONFIG)->ParGet(CFG_DESIGNS_TO_SAVE).GetInt();
+    int maxDesignsToSave = Base::g_MatrixData->BlockGet(BLOCK_PATH_MAIN_CONFIG)->ParGet(CFG_DESIGNS_TO_SAVE).GetInt();
     //Загружаем сохранённые шаблоны роботов игрока из txt-конфига и заносим их в конструктор роботов
     if(maxDesignsToSave > 0)
     {
@@ -629,10 +617,10 @@ DCP();
         wcscat(robotsCFG_path, L"\\SpaceRangersHD\\RobotsCFG.txt");
 
         //Если обнаружили искомый конфиг
-        CWStr temp_path(g_MatrixHeap);
+        CWStr temp_path(Base::g_MatrixHeap);
         if(CFile::FileExist(temp_path, robotsCFG_path))
         {
-            CBlockPar robotsCFG = CBlockPar(true, g_MatrixHeap);
+            CBlockPar robotsCFG = CBlockPar(true, Base::g_MatrixHeap);
             robotsCFG.LoadFromTextFile(robotsCFG_path);
             CBlockPar* bot_designs = robotsCFG.BlockGetNE(L"BotDesigns");
             if(bot_designs != nullptr)
@@ -908,23 +896,23 @@ void MatrixGameDeinit(void)
 DTRACE();
 
     //Сохраняем указанное число шаблонов роботов игрока, если настройка MaxDesignsToSave не равна нулю
-    int maxDesignsToSave = g_MatrixData->BlockGet(BLOCK_PATH_MAIN_CONFIG)->ParGet(CFG_DESIGNS_TO_SAVE).GetInt();
+    int maxDesignsToSave = Base::g_MatrixData->BlockGet(BLOCK_PATH_MAIN_CONFIG)->ParGet(CFG_DESIGNS_TO_SAVE).GetInt();
 
     if(maxDesignsToSave > 0)
     {
         //Если есть что сохранять (игрок построил хотя бы одного робота за матч)
         if(g_ConfigHistory->m_CurrentConfig != nullptr)
         {
-            CBlockPar robotsCFG = CBlockPar(true, g_MatrixHeap);
+            CBlockPar robotsCFG = CBlockPar(true, Base::g_MatrixHeap);
             wchar robotsCFG_Path[MAX_PATH];
             SHGetSpecialFolderPathW(0, robotsCFG_Path, CSIDL_PERSONAL, true);
             wcscat(robotsCFG_Path, L"\\SpaceRangersHD\\RobotsCFG.txt");
 
             //Если обнаружили искомый конфиг, то загружаем его во избежание потери прочих, возможно содержащихся в нём, данных
-            CWStr temp_path(g_MatrixHeap);
+            CWStr temp_path(Base::g_MatrixHeap);
             if(CFile::FileExist(temp_path, robotsCFG_Path)) robotsCFG.LoadFromTextFile(robotsCFG_Path);
             //Иначе создаём совершенно новый объект документа
-            else robotsCFG = CBlockPar(true, g_MatrixHeap);
+            else robotsCFG = CBlockPar(true, Base::g_MatrixHeap);
             //Перед записью шаблонов удаляем возможно уже имевшийся там ранее блок
             robotsCFG.BlockDeleteNE(L"BotDesigns", 10);
             CBlockPar* bot_designs = robotsCFG.BlockAdd(L"BotDesigns");
@@ -947,7 +935,7 @@ DTRACE();
                 else break;
             }
 
-            CWStr to_config(g_MatrixHeap);
+            CWStr to_config(Base::g_MatrixHeap);
             counter = 0;
             while((cur_config != nullptr) && (counter < maxDesignsToSave))
             {
@@ -1001,7 +989,7 @@ DTRACE();
 
     if(g_Render)
     {
-        HDelete(CRenderPipeline, g_Render, g_MatrixHeap);
+        HDelete(CRenderPipeline, g_Render, Base::g_MatrixHeap);
         g_Render = nullptr;
     }
 
@@ -1011,41 +999,41 @@ DTRACE();
     {
 		ASSERT(g_MatrixHeap);
 
-		HDelete(CMatrixMapLogic,g_MatrixMap,g_MatrixHeap);
+		HDelete(CMatrixMapLogic, g_MatrixMap, Base::g_MatrixHeap);
 		g_MatrixMap=nullptr;
 	}
 
-    if(g_MatrixData)
+    if(Base::g_MatrixData)
     {
-        HDelete(CBlockPar,g_MatrixData,nullptr);
-        g_MatrixData = nullptr;
+        HDelete(CBlockPar, Base::g_MatrixData, nullptr);
+        Base::g_MatrixData = nullptr;
     }
 
     CMatrixRobot::DestroyWalkingChassisData();
 
     if(g_IFaceList)
     {
-		ASSERT(g_MatrixHeap);
-		HDelete(CIFaceList, g_IFaceList, g_MatrixHeap);
+		ASSERT(Base::g_MatrixHeap);
+		HDelete(CIFaceList, g_IFaceList, Base::g_MatrixHeap);
         g_IFaceList = nullptr;
     }
 
     if(g_ConfigHistory)
     {
-		ASSERT(g_MatrixHeap);
-		HDelete(CHistory, g_ConfigHistory, g_MatrixHeap);
+		ASSERT(Base::g_MatrixHeap);
+		HDelete(CHistory, g_ConfigHistory, Base::g_MatrixHeap);
         g_ConfigHistory = nullptr;
     }
 	
     if(CIFaceMenu::m_MenuGraphics)
     {
-        HDelete(CInterface, CIFaceMenu::m_MenuGraphics, g_MatrixHeap);
+        HDelete(CInterface, CIFaceMenu::m_MenuGraphics, Base::g_MatrixHeap);
         CIFaceMenu::m_MenuGraphics = nullptr;
     }
 
     if(g_PopupMenu)
     {
-        HDelete(CIFaceMenu, g_PopupMenu, g_MatrixHeap);
+        HDelete(CIFaceMenu, g_PopupMenu, Base::g_MatrixHeap);
         g_PopupMenu = nullptr;
     }
 
@@ -1056,7 +1044,7 @@ DTRACE();
             g_PopupHull[i].text.CWStr::~CWStr();
         }
         
-        HFree(g_PopupHull, g_MatrixHeap);
+        HFree(g_PopupHull, Base::g_MatrixHeap);
         g_PopupHull = nullptr;
     }
 
@@ -1067,7 +1055,7 @@ DTRACE();
             g_PopupChassis[i].text.CWStr::~CWStr();
         }
 
-        HFree(g_PopupChassis, g_MatrixHeap);
+        HFree(g_PopupChassis, Base::g_MatrixHeap);
         g_PopupChassis = nullptr;
     }
 
@@ -1078,7 +1066,7 @@ DTRACE();
             g_PopupHead[i].text.CWStr::~CWStr();
         }
 
-        HFree(g_PopupHead, g_MatrixHeap);
+        HFree(g_PopupHead, Base::g_MatrixHeap);
         g_PopupHead = nullptr;
     }
 
@@ -1089,7 +1077,7 @@ DTRACE();
             g_PopupWeapon[i].text.CWStr::~CWStr();
         }
         
-        HFree(g_PopupWeapon, g_MatrixHeap);
+        HFree(g_PopupWeapon, Base::g_MatrixHeap);
         g_PopupWeapon = nullptr;
     }
 
@@ -1098,15 +1086,15 @@ DTRACE();
 
     g_Config.Clear();
 
-    if(g_MatrixHeap) 
+    if(Base::g_MatrixHeap)
     {
-        HDelete(CHeap, g_MatrixHeap, nullptr);
-        g_MatrixHeap = nullptr;
+        HDelete(CHeap, Base::g_MatrixHeap, nullptr);
+        Base::g_MatrixHeap = nullptr;
 	}
 }
 
 
-LPCSTR PathToOutputFiles(LPSTR dest)
+LPCSTR PathToOutputFiles(LPCSTR dest)
 {
     ITEMIDLIST* pidl;
     static char lpPath[MAX_PATH];

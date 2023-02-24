@@ -192,7 +192,7 @@ bool CInfo::IsBadPlace(int place)
     return false;
 }
 
-void CInfo::AddBadCoord(CPoint& coord)
+void CInfo::AddBadCoord(const CPoint& coord)
 {
     if(IsBadCoord(coord)) return;
 
@@ -208,7 +208,7 @@ void CInfo::AddBadCoord(CPoint& coord)
     }
 }
 
-bool CInfo::IsBadCoord(CPoint& coord)
+bool CInfo::IsBadCoord(const CPoint& coord)
 {
     for(int i = 0; i < m_BadCoordCnt; ++i)
     {

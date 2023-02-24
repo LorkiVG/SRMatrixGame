@@ -128,17 +128,17 @@ public:
 	const CWStr* ParGetNE_(const wchar* name, int namelen, int index) const;
 	const CWStr& ParGet(const CWStr& name, int index = 0) const { const CWStr* str = ParGetNE_(name.Get(), name.GetLen(), index); if(str == nullptr) ERROR_S2(L"Not found: ", name.Get()); return *str; }
 	const CWStr& ParGet(const wchar* name, int index = 0) const { const CWStr* str = ParGetNE_(name, WStrLen(name), index); if(str == nullptr) ERROR_S2(L"Not found: ", name); return *str; }
-	CWStr ParGetNE(const CWStr& name, int index = 0) const
+	const CWStr& ParGetNE(const CWStr& name, int index = 0) const
 	{
 		const CWStr* str = ParGetNE_(name.Get(), name.GetLen(), index);
 		if(str != nullptr) return *str;
-		else return CWStr();
+		return CWStr(L"");
 	}
-	CWStr ParGetNE(const wchar* name, int index = 0) const
+	const CWStr& ParGetNE(const wchar* name, int index = 0) const
 	{
 		const CWStr* str = ParGetNE_(name, WStrLen(name), index);
 		if(str != nullptr) return *str;
-		else return CWStr();
+		return CWStr(L"");
 	}
 
 	void Par(const CWStr& name, const CWStr& zn) { ParSetAdd((const CWStr&)name, (const CWStr&)zn); }
@@ -147,8 +147,8 @@ public:
 	void Par(const wchar* name, const wchar* zn) { ParSetAdd(name, WStrLen(name), zn, WStrLen(zn)); }
 	const CWStr& Par(const CWStr& name)			 { return ParGet(name); }
 	const CWStr& Par(const wchar* name)			 { return ParGet(name); }
-	CWStr ParNE(const CWStr& name)				 { return ParGetNE(name); }
-	CWStr ParNE(const wchar* name)				 { return ParGetNE(name); }
+	const CWStr& ParNE(const CWStr& name)		 { return ParGetNE(name); }
+	const CWStr& ParNE(const wchar* name)		 { return ParGetNE(name); }
 
 	int ParCount(void) const					 { return m_CntPar; }
     int ParCount(const wchar* name, int namelen) const;

@@ -279,7 +279,7 @@ public:
         ERobotModuleKind kind
     );
 
-    CConstructorPanel(): m_FocusedLabel(g_MatrixHeap), m_FocusedDescription(g_MatrixHeap)                                                       
+    CConstructorPanel(): m_FocusedLabel(Base::g_MatrixHeap), m_FocusedDescription(Base::g_MatrixHeap)
     {
         m_CurrentConfig = 0;
         m_Active = 0; 

@@ -199,11 +199,11 @@ DTRACE();
     const int da_size_y = (mr.bottom-mr.top + 1);
     const int da_size = da_size_y * da_size_x;
 
-    BYTE *buff = (BYTE *)_alloca((sizeof(STempVertex) + sizeof(SPointLightVertex) + sizeof(WORD)*3) * da_size);
+    byte *buff = (byte *)_alloca((sizeof(STempVertex) + sizeof(SPointLightVertex) + sizeof(word)*3) * da_size);
 
 #define TEMP_VERTS() ((STempVertex*)buff)
 #define VERTS() ((SPointLightVertex*)(buff + (sizeof(STempVertex) ) * da_size))
-#define IDXS() ((WORD*)(buff + (sizeof(STempVertex) + sizeof(SPointLightVertex)) * da_size))
+#define IDXS() ((word*)(buff + (sizeof(STempVertex) + sizeof(SPointLightVertex)) * da_size))
 #define ADDVERT(v) if (v->index < 0) { v->index = cidx++;  verts->p = v->p; verts->tu0 = v->tu0;  verts->tv0 = v->tv0; \
                 /*verts->color = m_Color;*/ \
                 verts->color = 0; \
@@ -279,7 +279,7 @@ DTRACE();
 
 //    SPointLightStrip *strips = STRIPS();
     SPointLightVertex * verts = VERTS();
-    WORD *idxs = IDXS();
+    word *idxs = IDXS();
 
     int cidx = 0;
     int midx = da_size;
@@ -339,7 +339,7 @@ DTRACE();
     }
 
     int sz = (m_NumVerts)*sizeof(SPointLightVertex);
-    int szi = idxscnt*sizeof(WORD);
+    int szi = idxscnt*sizeof(word);
 
     if (m_DX == nullptr)
     {
@@ -402,11 +402,11 @@ void CMatrixEffectPointLight::BuildLandV(void)
     const int da_size_y = (mr.bottom-mr.top + 1);
     const int da_size = da_size_y * da_size_x;
 
-    BYTE *buff = (BYTE *)_alloca((sizeof(STempVertex) + sizeof(SPointLightVertexV) + sizeof(WORD)*3) * da_size);
+    byte *buff = (byte *)_alloca((sizeof(STempVertex) + sizeof(SPointLightVertexV) + sizeof(word)*3) * da_size);
 
 #define TEMP_VERTS() ((STempVertex*)buff)
 #define VERTS() ((SPointLightVertexV*)(buff + (sizeof(STempVertex)) * da_size))
-#define IDXS() ((WORD*)(buff + (sizeof(STempVertex) + sizeof(SPointLightVertexV)) * da_size))
+#define IDXS() ((word*)(buff + (sizeof(STempVertex) + sizeof(SPointLightVertexV)) * da_size))
 #define ADDVERT(v) if (v->index < 0) { v->index = cidx++;  verts->p = v->p;  \
                 /*verts->color = m_Color;*/ \
                 verts->color = (Float2Int(v->lum * 255) << 24) | 0x00FFFFFF; \
@@ -484,7 +484,7 @@ void CMatrixEffectPointLight::BuildLandV(void)
     tv = TEMP_VERTS();
 
     SPointLightVertexV * verts = VERTS();
-    WORD *idxs = IDXS();
+    word *idxs = IDXS();
 
     int cidx = 0;
     int midx = da_size;
@@ -545,7 +545,7 @@ void CMatrixEffectPointLight::BuildLandV(void)
     m_NumTris = idxscnt - 2;
 
     int sz = (m_NumVerts)*sizeof(SPointLightVertexV);
-    int szi = idxscnt*sizeof(WORD);
+    int szi = idxscnt*sizeof(word);
 
     if (m_DX == nullptr)
     {

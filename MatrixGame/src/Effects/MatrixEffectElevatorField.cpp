@@ -18,7 +18,7 @@ CMatrixEffect(), m_AllBBCnt(0), m_Time(0), m_NextTime(0), m_Activated(false), m_
 
     for (int i = 0; i < ELEVATORFIELD_CNT; ++i)
     {
-        m_Kords[i].CTrajectory::CTrajectory(m_Heap);
+        m_Kords[i] = CTrajectory(m_Heap);
     }
 
     UpdateData(pos0, pos1, radius, fwd);
@@ -27,26 +27,21 @@ CMatrixEffect(), m_AllBBCnt(0), m_Time(0), m_NextTime(0), m_Activated(false), m_
 }
 CMatrixEffectElevatorField::~CMatrixEffectElevatorField()
 {
-    DTRACE();
     int i;
-    for (i = 0; i<m_AllBBCnt; ++i)
-    {
-        m_BBoards[i].bb.Release();
-    }
+    for(i = 0; i < m_AllBBCnt; ++i) m_BBoards[i].bb.Release();
+
 #ifdef _DEBUG
-    for (i=m_AllBBCnt; i<ELEVATORFIELD_BB_CNT; ++i)
-        m_BBoards[i].bb.release_called = true;
+    for(i = m_AllBBCnt; i < ELEVATORFIELD_BB_CNT; ++i) m_BBoards[i].bb.release_called = true;
 #endif
 
     CSound::AddSound(S_EF_END, m_Pos, SL_ELEVATORFIELD);
 }
 
-void CMatrixEffectElevatorField::UpdateData(const D3DXVECTOR3 &pos0, const D3DXVECTOR3 &pos1, float r, const D3DXVECTOR3 & fwd)
+void CMatrixEffectElevatorField::UpdateData(const D3DXVECTOR3& pos0, const D3DXVECTOR3& pos1, float r, const D3DXVECTOR3& fwd)
 {
-    DTRACE();
-
     m_Pos = pos1;
-    D3DXVec3Normalize(&m_Dir, &(pos0-pos1));
+    D3DXVECTOR3 temp = pos0 - pos1;
+    D3DXVec3Normalize(&m_Dir, &temp);
     D3DXVECTOR3 perp;
     D3DXVec3Normalize(&perp, D3DXVec3Cross(&perp, &fwd, &m_Dir));
     
@@ -57,11 +52,11 @@ void CMatrixEffectElevatorField::UpdateData(const D3DXVECTOR3 &pos0, const D3DXV
 
     static float koefs[5][2] = 
     {
-        {0.9f, 0.0f},
-        {0.0f, -0.67f},
-        {-0.2f, 0.2f},
-        {0.32f, 0.65f},
-        {0.81f, 0.3f},
+        { 0.9f,  0.0f  },
+        { 0.0f, -0.67f },
+        { -0.2f, 0.2f  },
+        { 0.32f, 0.65f },
+        { 0.81f, 0.3f  },
     };
 
     /*
@@ -168,7 +163,7 @@ DTRACE();
             continue;
         } else
         {
-            BYTE a = BYTE(KSCALE(m_BBoards[i].t, 0, 0.2f) * 255.0);
+            byte a = byte(KSCALE(m_BBoards[i].t, 0, 0.2f) * 255.0);
             m_BBoards[i].bb.SetAlpha(a);
 
         }
@@ -186,18 +181,19 @@ DTRACE();
         {
             int m = m_BBCnt[0];
             int idx = 0;
-            for (int i=1; i<ELEVATORFIELD_CNT; ++i)
+            for(int i = 1; i < ELEVATORFIELD_CNT; ++i)
             {
-                if (m > m_BBCnt[i])
+                if(m > m_BBCnt[i])
                 {
                     idx = i;
                     m = m_BBCnt[i];
                 }
             }
+
             D3DXVECTOR3 p;
             m_Kords[idx].CalcPoint(p, 0);
 
-            m_BBoards[m_AllBBCnt].bb.CSpriteLine::CSpriteLine(TRACE_PARAM_CALL p,p,ELEVATORFIELD_BB_SIZE, 0x00FFFFFF, GetSingleBrightSpriteTex(BBT_EFIELD));
+            m_BBoards[m_AllBBCnt].bb = CSpriteLine(TRACE_PARAM_CALL p, p, ELEVATORFIELD_BB_SIZE, 0x00FFFFFF, GetSingleBrightSpriteTex(BBT_EFIELD));
             m_BBoards[m_AllBBCnt].dt = FRND(0.01f) + 0.001f;
             m_BBoards[m_AllBBCnt].t = 0;
             m_BBoards[m_AllBBCnt].kord = idx;

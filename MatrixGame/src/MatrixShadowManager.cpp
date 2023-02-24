@@ -32,7 +32,7 @@ bool CMatrixShadowProj::AlreadyDraw(void)
     return false;
 }
 
-BYTE * CMatrixShadowProj::ReadGeometry(BYTE *raw)
+byte * CMatrixShadowProj::ReadGeometry(byte *raw)
 {
     CPoint minp;
     memcpy(&minp, raw, sizeof(CPoint));
@@ -49,7 +49,7 @@ BYTE * CMatrixShadowProj::ReadGeometry(BYTE *raw)
     {
         struct SP
         {
-            WORD x,y;
+            word x,y;
             float tu,tv;
         } *spt;
 
@@ -71,12 +71,12 @@ BYTE * CMatrixShadowProj::ReadGeometry(BYTE *raw)
 
     }
 
-    //m_preIB.inds = (WORD *)HAlloc(m_preIB.size, m_Heap);
-    m_preIB.inds = (WORD *)(((BYTE *)m_preVB.verts)+m_preVB.size);
+    //m_preIB.inds = (word *)HAlloc(m_preIB.size, m_Heap);
+    m_preIB.inds = (word *)(((byte *)m_preVB.verts)+m_preVB.size);
     memcpy(m_preIB.inds, raw, m_preIB.size);
     
 
-    m_TriCnt = m_preIB.size / sizeof(WORD) - 2;
+    m_TriCnt = m_preIB.size / sizeof(word) - 2;
 
 
     m_VB->AddSource(&m_preVB);
@@ -86,57 +86,54 @@ BYTE * CMatrixShadowProj::ReadGeometry(BYTE *raw)
 }
 
 
-static void ShadowProjBuildGeomInt(CVOShadowProj & sp,const SProjData   &pd, const D3DXMATRIX & objma, int mapradius, bool join_to_group)
+static void ShadowProjBuildGeomInt(CVOShadowProj& sp, const SProjData& pd, const D3DXMATRIX& objma, int mapradius, bool join_to_group)
 {
-    DTRACE();
+    int msx = Float2Int(objma._41 / GLOBAL_SCALE) - mapradius;
+    int msy = Float2Int(objma._42 / GLOBAL_SCALE) - mapradius;
+    int mex = min(g_MatrixMap->m_Size.x, msx + mapradius * 2);
+    int mey = min(g_MatrixMap->m_Size.y, msy + mapradius * 2);
+    msx = max(0, msx);
+    msy = max(0, msy);
+    if (msx >= mex || msy >= mey) return;
 
-	int msx=Float2Int(objma._41/GLOBAL_SCALE)-mapradius;
-	int msy=Float2Int(objma._42/GLOBAL_SCALE)-mapradius;
-	int mex=min(g_MatrixMap->m_Size.x,msx+mapradius*2);
-	int mey=min(g_MatrixMap->m_Size.y,msy+mapradius*2);
-	msx=max(0,msx);
-	msy=max(0,msy);
-	if(msx>=mex || msy>=mey) return;
+    D3DXVECTOR3 vpos((pd.vx + pd.vy) * 0.5f + pd.vpos), vx, vy, vz;
 
-    D3DXVECTOR3 vpos((pd.vx+pd.vy)*0.5f + pd.vpos),vx,vy,vz;
+    D3DXVec3TransformCoord(&vpos, &vpos, &objma);
+    D3DXVec3TransformNormal(&vx, &pd.vx, &objma);
+    D3DXVec3TransformNormal(&vy, &pd.vy, &objma);
+    D3DXVec3TransformNormal(&vz, &pd.vz, &objma);
 
-	D3DXVec3TransformCoord(&vpos,&vpos,&objma);
-	D3DXVec3TransformNormal(&vx,&pd.vx,&objma);
-	D3DXVec3TransformNormal(&vy,&pd.vy,&objma);
-	D3DXVec3TransformNormal(&vz,&pd.vz,&objma);
-
-    float _sx= -1.0f/D3DXVec3Length(&vx);
-    float _sy= -1.0f/D3DXVec3Length(&vy);
+    float _sx = -1.0f / D3DXVec3Length(&vx);
+    float _sy = -1.0f / D3DXVec3Length(&vy);
 
 	D3DXMATRIX mView;
-	D3DXMatrixLookAtLH(&mView,&(vpos-vz),&vpos,&-vy);
+    D3DXVECTOR3 temp1 = vpos - vz;
+    D3DXVECTOR3 temp2 = -vy;
+    D3DXMatrixLookAtLH(&mView, &temp1, &vpos, &temp2);
 
     mView._11 *= _sx; mView._21 *= _sx; mView._31 *= _sx; mView._41 *= _sx;
     mView._12 *= _sy; mView._22 *= _sy; mView._32 *= _sy; mView._42 *= _sy;
 
-
-
     typedef struct
     {
         D3DXVECTOR3 p;
-        float       tu,tv;
+        float       tu, tv;
         bool        outside;
         int         index;
     } STempVertex;
 
+	int x, y;
+	SMatrixMapUnit* un = nullptr;
 
-	int x,y;
-	SMatrixMapUnit * un;
-
-    const int da_size_x = (mex-msx + 1);
-    const int da_size_y = (mey-msy + 1);
+    const int da_size_x = (mex - msx + 1);
+    const int da_size_y = (mey - msy + 1);
     const int da_size = da_size_y * da_size_x;
 
-    BYTE *buff = (BYTE *)_alloca((sizeof(STempVertex) + sizeof(SVOShadowProjVertex) + sizeof(WORD)*3) * da_size);
+    byte *buff = (byte *)_alloca((sizeof(STempVertex) + sizeof(SVOShadowProjVertex) + sizeof(word)*3) * da_size);
 
 #define TEMP_VERTS() ((STempVertex*)buff)
 #define VERTS() ((SVOShadowProjVertex*)(buff + (sizeof(STempVertex) ) * da_size))
-#define IDXS() ((WORD*)(buff + (sizeof(STempVertex) + sizeof(SVOShadowProjVertex)) * da_size))
+#define IDXS() ((word*)(buff + (sizeof(STempVertex) + sizeof(SVOShadowProjVertex)) * da_size))
 
     STempVertex     *tv = TEMP_VERTS();
 
@@ -182,7 +179,7 @@ static void ShadowProjBuildGeomInt(CVOShadowProj & sp,const SProjData   &pd, con
     tv = TEMP_VERTS();
 
     SVOShadowProjVertex * verts = VERTS();
-    WORD *idxs = IDXS();
+    word *idxs = IDXS();
 
     CMatrixMapGroup *pg = nullptr;
 
@@ -269,8 +266,8 @@ static void ShadowProjBuildGeomInt(CVOShadowProj & sp,const SProjData   &pd, con
 
             if (strip_in_progress)
             {
-                *idxs++ = (WORD)tv2->index;
-                *idxs++ = (WORD)tv3->index;
+                *idxs++ = (word)tv2->index;
+                *idxs++ = (word)tv3->index;
                 idxscnt += 2;
 
             } else

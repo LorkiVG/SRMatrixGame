@@ -27,7 +27,7 @@
 //char *sss5 = MAKESTR(OF)
 
 // @rdesc - размер сжатых данных  0 - ошибка
-//static int OKGF_ZLib_Compress(BYTE * desbuf,BYTE * soubuf,int len_sou_and_des_buf,int fSpeed)
+//static int OKGF_ZLib_Compress(byte * desbuf,byte * soubuf,int len_sou_and_des_buf,int fSpeed)
 //{
 //
 //    dword deslen=len_sou_and_des_buf-8;
@@ -44,7 +44,7 @@
 // if desbuf==nullptr then return размер выходного буфера
 // return размер выходного буфера
 // return 0 если ошибка
-static int OKGF_ZLib_UnCompress(BYTE * desbuf,int lendesbuf,BYTE * soubuf,int lensoubuf)
+static int OKGF_ZLib_UnCompress(byte * desbuf,int lendesbuf,byte * soubuf,int lensoubuf)
 {
     dword deslen=lendesbuf;
 
@@ -59,7 +59,7 @@ static int OKGF_ZLib_UnCompress(BYTE * desbuf,int lendesbuf,BYTE * soubuf,int le
 }
 
 
-//int OKGF_ZLib_Compress2(BYTE * desbuf,int len_des_buf, BYTE * soubuf,int len_sou_buf,int fSpeed)
+//int OKGF_ZLib_Compress2(byte * desbuf,int len_des_buf, byte * soubuf,int len_sou_buf,int fSpeed)
 //{
 //    dword deslen=len_des_buf-8;
 ////  if(len_sou_buf<16) return 0;
@@ -75,7 +75,7 @@ static int OKGF_ZLib_UnCompress(BYTE * desbuf,int lendesbuf,BYTE * soubuf,int le
 // if desbuf==nullptr then return размер выходного буфера
 // return размер выходного буфера
 // return 0 если ошибка
-int OKGF_ZLib_UnCompress2(BYTE * desbuf,int len_des_buf,BYTE * soubuf,int len_sou_buf)
+int OKGF_ZLib_UnCompress2(byte * desbuf,int len_des_buf,byte * soubuf,int len_sou_buf)
 {
     dword deslen=len_des_buf;
 
@@ -366,24 +366,24 @@ bool    CHsFolder::PathExists(const CStr &name) const
     return rem.IsEmpty();
 }
 
-SFileRec *  CHsFolder::GetFileRecEx(const CStr &name) const
+SFileRec* CHsFolder::GetFileRecEx(const CStr& name) const
 {
     CStr beg(m_Heap);
     CStr rem(m_Heap);
 
-    name.Split(beg,rem, "/\\");
-    SFileRec *PFile = GetFileRec(beg);
-    if (PFile == nullptr) return false;
-    if (PFile->m_Type == FILEEC_FOLDER)
+    name.Split(beg, rem, "/\\");
+    SFileRec* PFile = GetFileRec(beg);
+    if(PFile == nullptr) return nullptr;
+    if(PFile->m_Type == FILEEC_FOLDER)
     {
-        if (rem.IsEmpty()) return PFile;
-        CHsFolder *PFolder = (CHsFolder *)PFile->m_Extra;
+        if(rem.IsEmpty()) return PFile;
+        CHsFolder* PFolder = (CHsFolder*)PFile->m_Extra;
         return PFolder->GetFileRecEx(rem);
     }
-    return rem.IsEmpty()?PFile:nullptr;
+    return rem.IsEmpty() ? PFile : nullptr;
 }
 
-//Function    CHsFolder.ReAllocFileRecs(number:integer):boolean;
+//Function CHsFolder.ReAllocFileRecs(number:integer):boolean;
 //Var
 //    i:dword;
 //    last:dword;
@@ -650,7 +650,7 @@ dword   CHsFolder::CompressedFileSize(dword Handle, const CStr &filename)
     if (PFile == nullptr) return 0xFFFFFFFF;
 
     //dword size,temp;
-    //BYTE *soubuf,compbuf; // Иходный буфер и буфер для сжатых данных
+    //byte *soubuf,compbuf; // Иходный буфер и буфер для сжатых данных
     //dword compsize;  // Размер сжатого блока данных <65536
     //dword totalsize; // Общий размер сжатых данных + длина (4 байта)
 
@@ -1772,8 +1772,8 @@ dword CPackFile::Open(const CStr& filename, dword modeopen)
 
     if(m_Handles[H].m_Compressed)
     {
-        m_Handles[H].m_SouBuf = (BYTE*)HAlloc(72112, m_Heap);
-        m_Handles[H].m_DesBuf = (BYTE*)HAlloc(65536, m_Heap);
+        m_Handles[H].m_SouBuf = (byte*)HAlloc(72112, m_Heap);
+        m_Handles[H].m_DesBuf = (byte*)HAlloc(65536, m_Heap);
     }
     else
     {
@@ -1871,8 +1871,8 @@ bool CPackFile::Read(dword Handle, void* buf, int Size)
     if(m_Handles[Handle].m_Compressed)
     {
         //  Определение номера блока, с которого начинаются читаемые данные
-        BYTE* SouPtr = m_Handles[Handle].m_DesBuf;
-        BYTE* DesPtr = (BYTE*)buf;
+        byte* SouPtr = m_Handles[Handle].m_DesBuf;
+        byte* DesPtr = (byte*)buf;
         while(Size)
         {
             // Определяем номер блока, чтение которого надо произвести с диска

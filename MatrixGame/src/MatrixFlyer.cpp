@@ -19,12 +19,7 @@ D3D_VB CMatrixFlyer::m_VB;
 int    CMatrixFlyer::m_VB_ref;
 
 CMatrixFlyer::CMatrixFlyer() : CMatrixMapStatic()
-#ifdef _DEBUG
-, m_Ablaze(DEBUG_CALL_INFO)
-#endif
 {
-DTRACE();
-
     m_Core->m_Type = OBJECT_TYPE_FLYER;
 
     //SetDirectionAngle(1);
@@ -38,10 +33,8 @@ DTRACE();
     m_ProgressBar.Modify(1000000, 0, PB_FLYER_WIDTH, 1);
 }
 
-CMatrixFlyer::~CMatrixFlyer(void)
+CMatrixFlyer::~CMatrixFlyer()
 {
-DTRACE();
-
     UnSelect();
     ReleaseMe();
 
@@ -50,15 +43,15 @@ DTRACE();
     if(m_Modules)
     {
         for(int i = 0; i < m_ModulesCount; ++i) m_Modules[i].Release();
-        HFree(m_Modules, g_MatrixHeap);
+        HFree(m_Modules, Base::g_MatrixHeap);
     }
 
-    if(m_Trajectory) HDelete(CTrajectory, m_Trajectory, g_MatrixHeap);
+    if(m_Trajectory) HDelete(CTrajectory, m_Trajectory, Base::g_MatrixHeap);
 
     if(m_Streams)
     {
         for(int i = 0; i < m_StreamsCount; ++i) m_Streams[i].effect->Release();
-        HFree(m_Streams, g_MatrixHeap);
+        HFree(m_Streams, Base::g_MatrixHeap);
     }
 
     --m_VB_ref;
@@ -71,8 +64,6 @@ DTRACE();
 
 void CMatrixFlyer::MarkAllBuffersNoNeed(void)
 {
-DTRACE();
-
     if(IS_VB(m_VB))
     {
         DESTROY_VB(m_VB);
@@ -81,8 +72,6 @@ DTRACE();
 
 void CMatrixFlyer::InitBuffers(void)
 {
-DTRACE();
-
     if(IS_VB(m_VB)) return;
 
     CREATE_VB(4 * sizeof(SVOVertex), VO_FVF, m_VB);
@@ -121,12 +110,12 @@ DTRACE();
 
     if(m_Graph)
     {
-        UnloadObject(m_Graph, g_MatrixHeap);
+        UnloadObject(m_Graph, Base::g_MatrixHeap);
         m_Graph = nullptr;
     }
 	if(m_ShadowStencil)
     {
-        HDelete(CVOShadowStencil, m_ShadowStencil, g_MatrixHeap);
+        HDelete(CVOShadowStencil, m_ShadowStencil, Base::g_MatrixHeap);
         m_ShadowStencil = nullptr;
     }
 
@@ -380,11 +369,11 @@ void CMatrixFlyer::GetResources(dword need)
             m_ModulesCount = bcnt - m_StreamsCount;
             if(m_ModulesCount > 0)
             {
-                m_Modules = (SMatrixFlyerUnit *)HAllocClear(sizeof(SMatrixFlyerUnit) * m_ModulesCount, g_MatrixHeap);
+                m_Modules = (SMatrixFlyerUnit*)HAllocClear(sizeof(SMatrixFlyerUnit) * m_ModulesCount, Base::g_MatrixHeap);
             }
             if(m_StreamsCount > 0)
             {
-                m_Streams = (SFireStream *)HAlloc(sizeof(SFireStream) * m_StreamsCount, g_MatrixHeap);
+                m_Streams = (SFireStream*)HAlloc(sizeof(SFireStream) * m_StreamsCount, Base::g_MatrixHeap);
             }
             int findex = 0;
 
@@ -464,7 +453,7 @@ off_weapon:;
                 model = bp->ParGet(L"Model");
                 texture = bp->ParGet(L"Texture");
 
-	            m_Modules[uindex].m_Graph = LoadObject(model.Get(), g_MatrixHeap, true, texture.Get());
+	            m_Modules[uindex].m_Graph = LoadObject(model.Get(), Base::g_MatrixHeap, true, texture.Get());
 
                 if(bn == L"Body")
                 {
@@ -601,7 +590,7 @@ off_weapon:;
             {
 	            if(m_Modules[i].m_ShadowStencil == nullptr)
                 {
-                    m_Modules[i].m_ShadowStencil = HNew(g_MatrixHeap) CVOShadowStencil(g_MatrixHeap);
+                    m_Modules[i].m_ShadowStencil = HNew(Base::g_MatrixHeap) CVOShadowStencil(Base::g_MatrixHeap);
                 }
 
                 bool invert = (m_Modules[i].m_Type == FLYER_UNIT_ENGINE && m_Modules[i].m_Engine.m_Inversed) ||
@@ -995,7 +984,8 @@ static bool DoCollsion(const D3DXVECTOR3& pos, CMatrixMapStatic* ms, dword user)
     //CDText::T("JJ", CStr(jj));
 
     D3DXVECTOR3 a;
-    D3DXVec3Normalize(&a, &(pos - ms->GetGeoCenter()));
+    D3DXVECTOR3 temp = pos - ms->GetGeoCenter();
+    D3DXVec3Normalize(&a, &temp);
 
     td->reaction += a;
 
@@ -1122,7 +1112,7 @@ void CMatrixFlyer::ApplyOrder(
 
         m_Pos = pts[0];
 
-        m_Trajectory = HNew(g_MatrixHeap) CTrajectory(g_MatrixHeap);
+        m_Trajectory = HNew(Base::g_MatrixHeap) CTrajectory(Base::g_MatrixHeap);
         m_Trajectory->Init1(pts, 4);
 
         SRobotTemplate bot = SRobotTemplate::m_AIRobotTypeList[REINFORCEMENTS_TEMPLATES][robot_template];
@@ -1139,7 +1129,8 @@ void CMatrixFlyer::ApplyOrder(
         r->RChange(MR_Matrix);
         r->CalcBounds(minv, maxv);
         core->m_GeoCenter = (minv + maxv) * 0.5f;
-        core->m_Radius = D3DXVec3Length(&(minv - maxv));
+        D3DXVECTOR3 temp = minv - maxv;
+        core->m_Radius = D3DXVec3Length(&temp);
 
         core->Release();
 
@@ -1185,7 +1176,8 @@ bool CMatrixFlyer::LogicTactOrder(SFlyerTactData& td)
         if(this->CalcBounds(vmin, vmax)) return false;
 
         m_Core->m_GeoCenter = (vmin + vmax) * 0.5f;
-        m_Core->m_Radius = D3DXVec3Length(&(vmax - vmin)) * 0.5f;
+        D3DXVECTOR3 temp = vmax - vmin;
+        m_Core->m_Radius = D3DXVec3Length(&temp) * 0.5f;
         m_Core->m_TerainColor = 0xFFFFFFFF;
 
         if(m_TrajectoryPos > 0.5f && IsCarryingRobot())
@@ -1265,7 +1257,9 @@ DTRACE();
                     pos.x = m_Core->m_Matrix._41 + FSRND(m_Core->m_Radius);
                     pos.y = m_Core->m_Matrix._42 + FSRND(m_Core->m_Radius);
                     pos.z = m_Core->m_Matrix._43 + FRND(m_Core->m_Radius * 2);
-                    D3DXVec3Normalize(&dir, &D3DXVECTOR3(m_Core->m_Matrix._41 - pos.x, m_Core->m_Matrix._42 - pos.y, m_Core->m_Matrix._43 - pos.z));
+
+                    D3DXVECTOR3 temp = { m_Core->m_Matrix._41 - pos.x, m_Core->m_Matrix._42 - pos.y, m_Core->m_Matrix._43 - pos.z };
+                    D3DXVec3Normalize(&dir, &temp);
 
                 } while(!Pick(pos, dir, &t) && (--cnt > 0));
 
@@ -1526,7 +1520,7 @@ void CMatrixFlyer::CalcTrajectory(const D3DXVECTOR3& target)
 
         pts[3] = target;
 
-        m_Trajectory = HNew(g_MatrixHeap) CTrajectory(g_MatrixHeap);
+        m_Trajectory = HNew(Base::g_MatrixHeap) CTrajectory(Base::g_MatrixHeap);
         //m_Trajectory->Init1(pts, 4);
         m_Trajectory->Init2(pts, 4);
 
@@ -1560,7 +1554,7 @@ void CMatrixFlyer::CancelTrajectory(void)
 {
     if(m_Trajectory)
     {
-        HDelete(CTrajectory, m_Trajectory, g_MatrixHeap);
+        HDelete(CTrajectory, m_Trajectory, Base::g_MatrixHeap);
         m_Trajectory = nullptr;
 
 #ifdef _DEBUG
@@ -1572,7 +1566,6 @@ void CMatrixFlyer::CancelTrajectory(void)
 #define MAXDA 0.017f
 void CMatrixFlyer::ProceedTrajectory(SFlyerTactData& td)
 {
-    DTRACE();
     if(m_Trajectory == nullptr) return; //Для управляемых вертолётов траектория движения со старта не задаётся
 
     float ptp = m_TrajectoryPos;

@@ -581,7 +581,7 @@ DTRACE();
         float k = float(m_Deb[i].ttl) / 3500.0f;
         if (k < 0) k = 0;
         if (k > 1) k = 1;
-        BYTE cc = BYTE(k * 255.0f);
+        byte cc = byte(k * 255.0f);
 
         g_D3DD->SetRenderState(D3DRS_TEXTUREFACTOR,0xFF000000 | (cc<<16) | (cc<<8) | (cc<<0));
 
@@ -719,10 +719,10 @@ void CMatrixEffectExplosion::Tact(float step)
                     {0,1.01f}
                 };
 
-                BYTE a = (BYTE)Float2Int((1.0f - KSCALE(t, 0.0f, 1.0f)) * 255);
-                BYTE r = (BYTE)Float2Int(CalcGradient(t,R));
-                BYTE g = (BYTE)Float2Int(CalcGradient(t,G));
-                BYTE b = (BYTE)Float2Int(CalcGradient(t,B));
+                byte a = (byte)Float2Int((1.0f - KSCALE(t, 0.0f, 1.0f)) * 255);
+                byte r = (byte)Float2Int(CalcGradient(t,R));
+                byte g = (byte)Float2Int(CalcGradient(t,G));
+                byte b = (byte)Float2Int(CalcGradient(t,B));
                 deb->billboard->SetColor((a<<24) | (r<<16) | (g<<8) | b);
 
             }

@@ -89,7 +89,7 @@ void CVOShadowProj::DestroyTexture(void)
 }
 
 
-void CVOShadowProj::Prepare(float dx, float dy, SVOShadowProjVertex *verts, int vertscnt, WORD *idxs, int idxscnt)
+void CVOShadowProj::Prepare(float dx, float dy, SVOShadowProjVertex *verts, int vertscnt, word *idxs, int idxscnt)
 {
     DTRACE();
 
@@ -110,7 +110,7 @@ void CVOShadowProj::Prepare(float dx, float dy, SVOShadowProjVertex *verts, int 
     m_TriCnt = idxscnt - 2;
 
     m_preVB.size = vertscnt * sizeof(SVOShadowProjVertex);
-    m_preIB.size = idxscnt * sizeof(WORD);
+    m_preIB.size = idxscnt * sizeof(word);
 
     if (m_preVB.verts) HFree(m_preVB.verts, m_Heap);
 
@@ -118,7 +118,7 @@ void CVOShadowProj::Prepare(float dx, float dy, SVOShadowProjVertex *verts, int 
     memcpy(m_preVB.verts, verts, m_preVB.size);
     m_VB->AddSource(&m_preVB);
 
-    m_preIB.inds = (WORD *)(((BYTE *)m_preVB.verts)+m_preVB.size);
+    m_preIB.inds = (word *)(((byte *)m_preVB.verts)+m_preVB.size);
     memcpy(m_preIB.inds, idxs, m_preIB.size);
     m_IB->AddSource(&m_preIB);
 }

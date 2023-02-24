@@ -18,10 +18,6 @@ CIFaceStatic::CIFaceStatic()
     m_CurState = IFACE_NORMAL;
 }
 
-CIFaceStatic::~CIFaceStatic()
-{
-}
-
 bool CIFaceStatic::OnMouseMove(CPoint mouse)
 {
     if(ElementCatch(mouse))

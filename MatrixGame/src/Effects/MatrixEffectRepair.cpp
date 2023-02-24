@@ -88,10 +88,12 @@ static bool FindPatient(const D3DXVECTOR3& fpos, CMatrixMapStatic* ms, dword use
     SFindPatientData * data = (SFindPatientData*)user;
     if(ms->GetSide() != data->side_of_owner) return true;
 
-    float dist = D3DXVec3LengthSq(&(*data->wpos-ms->GetGeoCenter()));
+    D3DXVECTOR3 temp = *data->wpos - ms->GetGeoCenter();
+    float dist = D3DXVec3LengthSq(&temp);
     if(dist > data->wdist2) return true;
     
-    dist = D3DXVec3LengthSq(&(fpos-ms->GetGeoCenter()));
+    temp = fpos - ms->GetGeoCenter();
+    dist = D3DXVec3LengthSq(&temp);
     if(dist < data->dist)
     {
         if(ms->IsRobot())
@@ -261,13 +263,13 @@ DTRACE();
         float dy2 = 0.4f * m_OffTargetAmp * sins[7];
         float dz2 = 0.4f * m_OffTargetAmp * sins[9];
 
-        p4[2] = m_Pos + m_Dir * (m_SeekRadius * 2 * INVERT(3.0f)) + D3DXVECTOR3(dx2,dy2,dz2);
+        p4[2] = m_Pos + m_Dir * (m_SeekRadius * 2 * INVERT(3.0f)) + D3DXVECTOR3(dx2, dy2, dz2);
 
         float dx1 = m_OffTargetAmp * sins[1];
         float dy1 = m_OffTargetAmp * sins[4];
         float dz1 = m_OffTargetAmp * sins[8];
 
-        p4[3] = m_Pos + m_Dir * m_SeekRadius + D3DXVECTOR3(dx1,dy1,dz1);
+        p4[3] = m_Pos + m_Dir * m_SeekRadius + D3DXVECTOR3(dx1, dy1, dz1);
     }
 
     D3DXVECTOR3 p9[9];
@@ -276,7 +278,8 @@ DTRACE();
         // build p9
         ASSERT(m_Target && m_Target->m_Object);
 
-        float len = D3DXVec3Length(&(m_Pos - m_Target->m_GeoCenter));
+        D3DXVECTOR3 temp = m_Pos - m_Target->m_GeoCenter;
+        float len = D3DXVec3Length(&temp);
 
         float disp = len * 0.01f;
 
@@ -387,7 +390,7 @@ DTRACE();
             D3DXVECTOR3 p;
             m_Kord.CalcPoint(p, 0);
 
-            m_BBoards[m_BBCnt].bb.CSpriteLine::CSpriteLine(TRACE_PARAM_CALL p, p, 4, 0x00FFFFFF, GetSingleBrightSpriteTex(m_SpriteSpot));
+            m_BBoards[m_BBCnt].bb = CSpriteLine(TRACE_PARAM_CALL p, p, 4, 0x00FFFFFF, GetSingleBrightSpriteTex(m_SpriteSpot));
             m_BBoards[m_BBCnt].dt = FRND(0.03f) + 0.006f;
             m_BBoards[m_BBCnt].t = 0;
             ++m_BBCnt;

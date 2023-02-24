@@ -23,107 +23,14 @@
 
 CIFaceList* g_IFaceList = nullptr;
 
-SMenuItemText* g_PopupHull;
-SMenuItemText* g_PopupChassis;
-SMenuItemText* g_PopupHead;
-SMenuItemText* g_PopupWeapon;
+SMenuItemText* g_PopupHull = nullptr;
+SMenuItemText* g_PopupChassis = nullptr;
+SMenuItemText* g_PopupHead = nullptr;
+SMenuItemText* g_PopupWeapon = nullptr;
 
-//Constructor destructor
-CInterface::CInterface():name(g_MatrixHeap), m_strName(g_MatrixHeap), item_label1(g_MatrixHeap), item_label2(g_MatrixHeap), rcname(g_MatrixHeap)
-{
-    factory_res_income = -1;
-    base_res_income = -1;
-    btype = -1;
-    prev_titan   = -1;
-    prev_energy  = -1;
-    prev_plasma  = -1;
-    prev_electro = -1;
-
-    blazer_cnt = -1;
-    keller_cnt = -1;
-    terron_cnt = -1;
-
-    pilon1 = -1;
-    pilon2 = -1;
-    pilon3 = -1;
-    pilon4 = -1;
-    pilon5 = -1;
-
-    pilon_ch = -1;
-    pilon_he = -1;
-    pilon_hu = -1;
-
-    lives = -1;
-    max_lives = -1;
-
-    cur_sel = ESelection(-1);
-
-    titan_summ = -1;
-    electronics_summ = -1;
-    energy_summ = -1;
-    plasma_summ = -1;
-
-    titan_unit = -1;
-    electronics_unit = -1;
-    energy_unit = -1;
-    plasma_unit = -1;
-
-    weight = -1;
-    speed = -1;
-    structure = -1;
-    damage = -1;
-
-    wght = -1;
-    spd = -1;
-
-    turmax = -1;
-    turhave = -1;
-
-    robots = -1;
-    max_robots = -1;
-
-
-    titan_color = 0xFFF6c000;
-    electronics_color = 0xFFF6c000;
-    energy_color = 0xFFF6c000;
-    plasm_color = 0xFFF6c000;
-
-    titan_unit_color = 0xFFF6c000;
-    electronics_unit_color = 0xFFF6c000;
-    energy_unit_color = 0xFFF6c000;
-    plasm_unit_color = 0xFFF6c000;
-
-//////////////////
-
-
-    m_InterfaceFlags = 0;
-    m_VisibleAlpha = IS_NOT_VISIBLE;
-	m_xPos = 0;
-	m_yPos = 0;
-	m_zPos = 0;
-
-	m_FirstElement = nullptr;
-	m_LastElement = nullptr;
-    m_FirstImage = nullptr;
-    m_LastImage = nullptr;
-
-    m_strName = L"";
-	
-    //m_Vertices = nullptr;
-	m_PrevInterface = nullptr;
-	m_NextInterface = nullptr;
-
-	m_nTotalElements = 0;
-
-	m_nId = 0;
-	m_AlwaysOnTop = FALSE;
-
-    ZeroMemory(&m_Slider, sizeof(SSlide));
-}
-
+//Constructor / destructor
 CInterface::~CInterface()
 {
-	DTRACE();
     CIFaceImage* images = m_FirstImage; 
 	ASSERT(g_MatrixHeap);
 
@@ -137,13 +44,13 @@ CInterface::~CInterface()
 		if(images->m_NextImage) images = images->m_NextImage;
 		else
         {
-			HDelete(CIFaceImage, images, g_MatrixHeap);
+			HDelete(CIFaceImage, images, Base::g_MatrixHeap);
 			images = nullptr;
 			m_FirstImage = nullptr;
 			m_LastImage = nullptr;
 		}
 
-		if(images) HDelete(CIFaceImage, images->m_PrevImage, g_MatrixHeap);
+		if(images) HDelete(CIFaceImage, images->m_PrevImage, Base::g_MatrixHeap);
 	}
 }
 
@@ -222,12 +129,12 @@ bool CInterface::Load(CBlockPar& bp, const wchar* name)
 
 		if(tmpStr == L"Button")
         {
-            CIFaceButton* pButton = HNew(g_MatrixHeap) CIFaceButton;
+            CIFaceButton* pButton = HNew(Base::g_MatrixHeap) CIFaceButton;
             if_elem = (CIFaceElement*)pButton;
 			
 			pButton->m_nId = pbp2->Par(L"id").GetInt();
 			pButton->m_strName = pbp2->Par(L"Name");
-            
+
             CWStr hint_par(L"", g_CacheHeap);
             hint_par = pbp2->ParNE(L"Hint");
             if(hint_par != L"")
@@ -254,16 +161,16 @@ bool CInterface::Load(CBlockPar& bp, const wchar* name)
 			if(Const)
             {
                 if(
-                    (pButton->m_Param1 && pButton->m_Param2)       || 
-                    pButton->m_strName == IF_BASE_HULL_PYLON       || 
-                    pButton->m_strName == IF_BASE_CHASSIS_PYLON    || 
-                    pButton->m_strName == IF_BASE_HEAD_PYLON       || 
-                    pButton->m_strName == IF_BASE_WEAPON_PYLON_1   || 
-                    pButton->m_strName == IF_BASE_WEAPON_PYLON_2   || 
-                    pButton->m_strName == IF_BASE_WEAPON_PYLON_3   ||
-                    pButton->m_strName == IF_BASE_WEAPON_PYLON_4   ||
-                    pButton->m_strName == IF_BASE_WEAPON_PYLON_5   ||
-                    pButton->m_strName == IF_BASE_HEAD_PYLON_EMPTY || 
+                    (pButton->m_Param1 && pButton->m_Param2)         ||
+                    pButton->m_strName == IF_BASE_HULL_PYLON         ||
+                    pButton->m_strName == IF_BASE_CHASSIS_PYLON      ||
+                    pButton->m_strName == IF_BASE_HEAD_PYLON         ||
+                    pButton->m_strName == IF_BASE_WEAPON_PYLON_1     ||
+                    pButton->m_strName == IF_BASE_WEAPON_PYLON_2     ||
+                    pButton->m_strName == IF_BASE_WEAPON_PYLON_3     ||
+                    pButton->m_strName == IF_BASE_WEAPON_PYLON_4     ||
+                    pButton->m_strName == IF_BASE_WEAPON_PYLON_5     ||
+                    pButton->m_strName == IF_BASE_HEAD_PYLON_EMPTY   ||
                     pButton->m_strName == IF_BASE_WEAPON_PYLON_EMPTY
                   )
                 {
@@ -552,37 +459,37 @@ bool CInterface::Load(CBlockPar& bp, const wchar* name)
                 IFACE_NORMAL, 
                 (CTextureManaged*)g_Cache->Get(cc_TextureManaged,
                     g_CacheData->ParPathGet(pbp2->Par(L"sNormal")).Get()),
-                    pbp2->Par(L"sNormalX").GetDouble(),
-                    pbp2->Par(L"sNormalY").GetDouble(),
-                    pbp2->Par(L"sNormalWidth").GetDouble(),
-                    pbp2->Par(L"sNormalHeight").GetDouble());
+                    pbp2->Par(L"sNormalX").GetFloat(),
+                    pbp2->Par(L"sNormalY").GetFloat(),
+                    pbp2->Par(L"sNormalWidth").GetFloat(),
+                    pbp2->Par(L"sNormalHeight").GetFloat());
 
             pButton->SetStateImage(
                 IFACE_FOCUSED,
                 (CTextureManaged*)g_Cache->Get(cc_TextureManaged,
                     g_CacheData->ParPathGet(pbp2->Par(L"sFocused")).Get()),
-                    pbp2->Par(L"sFocusedX").GetDouble(),
-                    pbp2->Par(L"sFocusedY").GetDouble(),
-                    pbp2->Par(L"sFocusedWidth").GetDouble(),
-                    pbp2->Par(L"sFocusedHeight").GetDouble());
+                    pbp2->Par(L"sFocusedX").GetFloat(),
+                    pbp2->Par(L"sFocusedY").GetFloat(),
+                    pbp2->Par(L"sFocusedWidth").GetFloat(),
+                    pbp2->Par(L"sFocusedHeight").GetFloat());
 
             pButton->SetStateImage(
                 IFACE_PRESSED, 
                 (CTextureManaged*)g_Cache->Get(cc_TextureManaged,
                     g_CacheData->ParPathGet(pbp2->Par(L"sPressed")).Get()),
-                    pbp2->Par(L"sPressedX").GetDouble(),
-                    pbp2->Par(L"sPressedY").GetDouble(),
-                    pbp2->Par(L"sPressedWidth").GetDouble(),
-                    pbp2->Par(L"sPressedHeight").GetDouble());
+                    pbp2->Par(L"sPressedX").GetFloat(),
+                    pbp2->Par(L"sPressedY").GetFloat(),
+                    pbp2->Par(L"sPressedWidth").GetFloat(),
+                    pbp2->Par(L"sPressedHeight").GetFloat());
 
             pButton->SetStateImage(
                 IFACE_DISABLED, 
                 (CTextureManaged*)g_Cache->Get(cc_TextureManaged,
                     g_CacheData->ParPathGet(pbp2->Par(L"sDisabled")).Get()),
-                    pbp2->Par(L"sDisabledX").GetDouble(),
-                    pbp2->Par(L"sDisabledY").GetDouble(),
-                    pbp2->Par(L"sDisabledWidth").GetDouble(),
-                    pbp2->Par(L"sDisabledHeight").GetDouble());
+                    pbp2->Par(L"sDisabledX").GetFloat(),
+                    pbp2->Par(L"sDisabledY").GetFloat(),
+                    pbp2->Par(L"sDisabledWidth").GetFloat(),
+                    pbp2->Par(L"sDisabledHeight").GetFloat());
 
             if(pButton->m_Type == IFACE_CHECK_BUTTON || pButton->m_Type == IFACE_CHECK_BUTTON_SPECIAL || pButton->m_Type == IFACE_CHECK_PUSH_BUTTON)
             {
@@ -590,10 +497,10 @@ bool CInterface::Load(CBlockPar& bp, const wchar* name)
                     IFACE_PRESSED_UNFOCUSED, 
                     (CTextureManaged*)g_Cache->Get(cc_TextureManaged,
                         g_CacheData->ParPathGet(pbp2->Par(L"sPressedUnFocused")).Get()),
-                        pbp2->Par(L"sPressedUnFocusedX").GetDouble(),
-                        pbp2->Par(L"sPressedUnFocusedY").GetDouble(),
-                        pbp2->Par(L"sPressedUnFocusedWidth").GetDouble(),
-                        pbp2->Par(L"sPressedUnFocusedHeight").GetDouble());
+                        pbp2->Par(L"sPressedUnFocusedX").GetFloat(),
+                        pbp2->Par(L"sPressedUnFocusedY").GetFloat(),
+                        pbp2->Par(L"sPressedUnFocusedWidth").GetFloat(),
+                        pbp2->Par(L"sPressedUnFocusedHeight").GetFloat());
             }
             
             //Animation
@@ -609,7 +516,7 @@ bool CInterface::Load(CBlockPar& bp, const wchar* name)
                     int width = par.GetIntPar(2, L",");
                     int height = par.GetIntPar(3, L",");
 
-                    pButton->m_Animation = HNew(g_MatrixHeap) CAnimation(frames_cnt, period);
+                    pButton->m_Animation = HNew(Base::g_MatrixHeap) CAnimation(frames_cnt, period);
                     SFrame frame;
                     //frame.name = pButton->m_strName;
                     frame.height = height;
@@ -646,7 +553,7 @@ bool CInterface::Load(CBlockPar& bp, const wchar* name)
 		}
         else if(tmpStr == L"Static")
         {
-            CIFaceStatic* pStatic = HNew(g_MatrixHeap) CIFaceStatic;
+            CIFaceStatic* pStatic = HNew(Base::g_MatrixHeap) CIFaceStatic;
             if_elem = (CIFaceElement*)pStatic;
 
 			pStatic->m_strName = pbp2->Par(L"Name");
@@ -660,11 +567,11 @@ bool CInterface::Load(CBlockPar& bp, const wchar* name)
                 pStatic->m_Hint.y = hint_par.GetIntPar(2, L",");
             }
             
-            pStatic->m_xPos = (float)pbp2->Par(L"xPos").GetDouble();
-			pStatic->m_yPos = (float)pbp2->Par(L"yPos").GetDouble();
-			pStatic->m_zPos = (float)pbp2->Par(L"zPos").GetDouble();
-			pStatic->m_xSize = (float)pbp2->Par(L"xSize").GetDouble();
-			pStatic->m_ySize = (float)pbp2->Par(L"ySize").GetDouble();
+            pStatic->m_xPos = pbp2->Par(L"xPos").GetFloat();
+			pStatic->m_yPos = pbp2->Par(L"yPos").GetFloat();
+			pStatic->m_zPos = pbp2->Par(L"zPos").GetFloat();
+			pStatic->m_xSize = pbp2->Par(L"xSize").GetFloat();
+			pStatic->m_ySize = pbp2->Par(L"ySize").GetFloat();
 			pStatic->m_DefState = (IFaceElementState)pbp2->Par(L"dState").GetInt();
 
             //pStatic->m_Hint. = pbp2->ParNE(L"Hint");
@@ -677,7 +584,7 @@ bool CInterface::Load(CBlockPar& bp, const wchar* name)
             {
                 g_MatrixMap->m_Minimap.SetOutParams(Float2Int(m_xPos) + 13, Float2Int(m_yPos) + 51, 145, 145, D3DXVECTOR2(g_MatrixMap->m_Size.x * GLOBAL_SCALE * 0.5f, g_MatrixMap->m_Size.y * GLOBAL_SCALE * 0.5f) ,1.0f, 0xFFFFFFFF);
 
-                //FSET(ON_UN_PRESS,pStatic, cl, fn, &g_MatrixMap->m_Minimap, CMinimap::ButtonClick);
+                //FSET(ON_UN_PRESS, pStatic, cl, fn, &g_MatrixMap->m_Minimap, CMinimap::ButtonClick);
                 pStatic->m_iParam = IF_MAP_PANELI;
             }
             else if(pStatic->m_strName == IF_RADAR_PN)
@@ -780,7 +687,7 @@ bool CInterface::Load(CBlockPar& bp, const wchar* name)
 		}
         else if(tmpStr == L"Image")
         {
-			CIFaceImage* image = HNew(g_MatrixHeap) CIFaceImage;
+			CIFaceImage* image = HNew(Base::g_MatrixHeap) CIFaceImage;
 			image->m_strName = pbp2->Par(L"Name");
 
             image->m_Image = (CTextureManaged*)g_Cache->Get(cc_TextureManaged, g_CacheData->ParPathGet(pbp2->Par(L"TextureFile")).Get());
@@ -791,7 +698,6 @@ bool CInterface::Load(CBlockPar& bp, const wchar* name)
             image->m_TexHeight = pbp2->Par(L"TextureHeight").GetDouble();
             image->m_Width     = pbp2->Par(L"Width").GetDouble();
             image->m_Height    = pbp2->Par(L"Height").GetDouble();
-
 
             LIST_ADD(image, m_FirstImage, m_LastImage, m_PrevImage, m_NextImage);
             ++nElementNum;
@@ -1005,7 +911,7 @@ DCP();
     LIST_DEL(pElement, m_FirstElement, m_LastElement, m_PrevElement, m_NextElement);
 DCP();
 
-    HDelete(CIFaceElement, pElement, g_MatrixHeap);
+    HDelete(CIFaceElement, pElement, Base::g_MatrixHeap);
 DCP();
 
     return next;
@@ -1214,7 +1120,7 @@ void CInterface::Reset()
     }
 }
 
-void CInterface::SetAlpha(BYTE alpha)
+void CInterface::SetAlpha(byte alpha)
 {
     CIFaceElement* objects = m_FirstElement;
     while(objects)
@@ -3404,7 +3310,10 @@ void CInterface::CopyElements(CIFaceElement* el_src, CIFaceElement* el_dest)
 
     el_dest->m_Param1 = el_src->m_Param1;
     el_dest->m_Param2 = el_src->m_Param2;
-    memcpy(el_dest->m_Actions, el_src->m_Actions, sizeof(SAction) * USER_ACTIONS_TOTAL);
+    memcpy(el_dest->m_Actions, el_src->m_Actions, sizeof(CIFaceElement::SAction) * USER_ACTIONS_TOTAL);
+    //Старый вариант
+    //memcpy(el_dest->m_Actions, el_src->m_Actions, sizeof(SAction) * USER_ACTIONS_TOTAL);
+
     //el_dest->m_Actions = el_src->m_Actions;
 }
 
@@ -3423,7 +3332,7 @@ CIFaceStatic* CInterface::CreateStaticFromImage(float x, float y, float z, const
 {
 DTRACE();
 
-    CIFaceStatic* stat = HNew(g_MatrixHeap) CIFaceStatic;
+    CIFaceStatic* stat = HNew(Base::g_MatrixHeap) CIFaceStatic;
 
     stat->m_strName = image.m_strName;
 	stat->m_xPos = x;
@@ -3458,19 +3367,23 @@ void CInterface::LogicTact(int ms)
         {
             SlideStep();
         }
-        //if(!ps->IsArcadeMode() && (GetAsyncKeyState(g_MatrixMap->m_Config.m_KeyActions[KA_UNIT_ROTATE_LEFT]) & 0x8000)==0x8000){
+        //if(!ps->IsArcadeMode() && (GetAsyncKeyState(g_MatrixMap->m_Config.m_KeyActions[KA_UNIT_ROTATE_LEFT]) & 0x8000) == 0x8000)
+        //{
         //    MoveLeft();
         //    ReCalcElementsPos();
         //}
-        //if(!ps->IsArcadeMode() && (GetAsyncKeyState(g_MatrixMap->m_Config.m_KeyActions[KA_UNIT_ROTATE_RIGHT]) & 0x8000)==0x8000){
+        //if(!ps->IsArcadeMode() && (GetAsyncKeyState(g_MatrixMap->m_Config.m_KeyActions[KA_UNIT_ROTATE_RIGHT]) & 0x8000) == 0x8000)
+        //{
         //    MoveRight();
         //    ReCalcElementsPos();
         //}
-        //if(!ps->IsArcadeMode() && (GetAsyncKeyState(g_MatrixMap->m_Config.m_KeyActions[KA_UNIT_FORWARD]) & 0x8000)==0x8000){
+        //if(!ps->IsArcadeMode() && (GetAsyncKeyState(g_MatrixMap->m_Config.m_KeyActions[KA_UNIT_FORWARD]) & 0x8000) == 0x8000)
+        //{
         //    MoveUp();
         //    ReCalcElementsPos();
         //}
-        //if(!ps->IsArcadeMode() && (GetAsyncKeyState(g_MatrixMap->m_Config.m_KeyActions[KA_UNIT_BACKWARD]) & 0x8000)==0x8000){
+        //if(!ps->IsArcadeMode() && (GetAsyncKeyState(g_MatrixMap->m_Config.m_KeyActions[KA_UNIT_BACKWARD]) & 0x8000) == 0x8000)
+        //{
         //    MoveDown();
         //    ReCalcElementsPos();
         //}
@@ -3615,49 +3528,10 @@ bool CInterface::FindElementByName(const CWStr& name)
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
-CIFaceList::CIFaceList():m_CurrentHintControlName(g_MatrixHeap)
+CIFaceList::CIFaceList()
 {
-    m_First = nullptr;
-	m_Last = nullptr;
-    m_IfListFlags = 0;
-    m_FocusedInterface = nullptr;
-    m_FocusedElement = nullptr;
-
-    ZeroMemory(m_WeaponPilon, sizeof(m_WeaponPilon));
-    ZeroMemory(m_Turrets, sizeof(m_Turrets));
-
-    m_ChassisPilon = nullptr;
-    m_ArmorPilon = nullptr;
-    m_HeadPilon = nullptr;
-    m_BuildCa = nullptr;
-
-    CInterface::m_ClearRects = HNew(g_MatrixHeap) CBuf(g_MatrixHeap);
-
-    m_RCountControl = HNew(g_MatrixHeap) CIFaceCounter;
-    m_CurrentHint = nullptr;
-
-    m_DynamicTY = 153;
-    m_DynamicTX[0] = 280;
-    m_DynamicTX[1] = 262;
-    m_DynamicTX[2] = 304;
-    m_DynamicTX[3] = 242;
-    m_DynamicTX[4] = 279;
-    m_DynamicTX[5] = 316;
-    m_DynamicTX[6] = 231;
-    m_DynamicTX[7] = 265;
-    m_DynamicTX[8] = 299;
-    m_DynamicTX[9] = 333;
-
-    m_DWeaponX[0] = 243;
-    m_DWeaponY[0] = 106;
-    m_DWeaponX[1] = 283;
-    m_DWeaponY[1] = 106;
-    m_DWeaponX[2] = 243;
-    m_DWeaponY[2] = 65;
-    m_DWeaponX[3] = 283;
-    m_DWeaponY[3] = 65;
-    m_DWeaponX[4] = 323;
-    m_DWeaponY[4] = 65;
+    CInterface::m_ClearRects = HNew(Base::g_MatrixHeap) CBuf(Base::g_MatrixHeap);
+    m_RCountControl = HNew(Base::g_MatrixHeap) CIFaceCounter;
 
     //Используем костыль для выделения памяти под эти массивы чуть позже
     m_Hull = new CIFaceElement * [ROBOT_HULLS_COUNT];
@@ -3673,7 +3547,7 @@ CIFaceList::CIFaceList():m_CurrentHintControlName(g_MatrixHeap)
     ZeroMemory(m_Weapon, sizeof(*m_Weapon) * (ROBOT_WEAPONS_COUNT + 1));
 
     //Необходимо для соотнесения номеров слотов пушек на правой панели выбранного робота с Id матриц в его корпусе
-    m_WeaponPylonNumsForPicsInMenu = new byte [ROBOT_HULLS_COUNT + 1][RUK_WEAPON_PYLONS_COUNT];
+    m_WeaponPylonNumsForPicsInMenu = new byte[ROBOT_HULLS_COUNT + 1][RUK_WEAPON_PYLONS_COUNT];
     for(int i = 1; i <= ROBOT_HULLS_COUNT; ++i)
     {
         ZeroMemory(m_WeaponPylonNumsForPicsInMenu[i], sizeof(byte) * RUK_WEAPON_PYLONS_COUNT); //Инициализация
@@ -3687,22 +3561,22 @@ CIFaceList::CIFaceList():m_CurrentHintControlName(g_MatrixHeap)
 
 CIFaceList::~CIFaceList()
 {
-    if(m_RCountControl) HDelete(CIFaceCounter, m_RCountControl, g_MatrixHeap);
+    if(m_RCountControl) HDelete(CIFaceCounter, m_RCountControl, Base::g_MatrixHeap);
 
     while(m_First != nullptr)
     {
 		if(m_First->m_NextInterface) m_First = m_First->m_NextInterface;
 		else
         {
-			HDelete(CInterface, m_First, g_MatrixHeap);
+			HDelete(CInterface, m_First, Base::g_MatrixHeap);
 			m_First = nullptr;
 			m_Last = nullptr;
 		}
 
-		if(m_First) HDelete(CInterface, m_First->m_PrevInterface, g_MatrixHeap);
+		if(m_First) HDelete(CInterface, m_First->m_PrevInterface, Base::g_MatrixHeap);
 	}
 
-    if(CInterface::m_ClearRects) HDelete(CBuf, CInterface::m_ClearRects, g_MatrixHeap);
+    if(CInterface::m_ClearRects) HDelete(CBuf, CInterface::m_ClearRects, Base::g_MatrixHeap);
     if(g_IFaceList->m_CurrentHint) g_IFaceList->m_CurrentHint->Release();
     g_IFaceList->m_CurrentHint = nullptr;
 
@@ -4887,7 +4761,6 @@ void CIFaceList::CreateGroupSelection(CInterface* iface)
 void CIFaceList::DeleteGroupSelection()
 {
     CMatrixSideUnit* player_side = g_MatrixMap->GetPlayerSide();
-
     CMatrixMapStatic* so = CMatrixMapStatic::GetFirstLogic();
 
     while(so)
@@ -4988,7 +4861,7 @@ DTRACE();
     CInterface* interfaces = m_First;
     CMatrixGroupObject* so = player_side->GetCurGroup()->m_FirstObject;
 
-    CIFaceImage* image = HNew(g_MatrixHeap) CIFaceImage;
+    CIFaceImage* image = HNew(Base::g_MatrixHeap) CIFaceImage;
 
     while(interfaces)
     {
@@ -5058,7 +4931,7 @@ DTRACE();
         interfaces = interfaces->m_NextInterface;
     }
 
-    HDelete(CIFaceImage, image, g_MatrixHeap);
+    HDelete(CIFaceImage, image, Base::g_MatrixHeap);
 }
 
 void CIFaceList::DeleteGroupIcons()
@@ -5118,7 +4991,7 @@ DTRACE();
             bool flyer = false;
             bool robot = false;
 
-            CIFaceImage* image = HNew(g_MatrixHeap) CIFaceImage;
+            CIFaceImage* image = HNew(Base::g_MatrixHeap) CIFaceImage;
             
             if(go->GetObject()->GetObjectType() == OBJECT_TYPE_ROBOTAI)
             {
@@ -5180,7 +5053,7 @@ DTRACE();
             }
 
             interfaces->SortElementsByZ();
-            HDelete(CIFaceImage, image, g_MatrixHeap);
+            HDelete(CIFaceImage, image, Base::g_MatrixHeap);
             break;
         }
 
@@ -5411,7 +5284,7 @@ void CIFaceList::CreateQueueIcon(int num, CMatrixBuilding* base, CMatrixMapStati
             {
                 if(tex_med)
                 {
-                    image = HNew(g_MatrixHeap) CIFaceImage;
+                    image = HNew(Base::g_MatrixHeap) CIFaceImage;
                     image->m_Image = tex_med;
                     image->m_Height = 42;
                     image->m_Width = 42;
@@ -5449,7 +5322,7 @@ void CIFaceList::CreateQueueIcon(int num, CMatrixBuilding* base, CMatrixMapStati
             {
                 if(tex_small)
                 {
-                    image = HNew(g_MatrixHeap) CIFaceImage;
+                    image = HNew(Base::g_MatrixHeap) CIFaceImage;
                     image->m_Image = tex_small;
                     image->m_Height = 25;
                     image->m_Width = 25;
@@ -5473,8 +5346,8 @@ void CIFaceList::CreateQueueIcon(int num, CMatrixBuilding* base, CMatrixMapStati
                         image->m_xTexPos = 0;
                         image->m_yTexPos = 0;
                         s = ifs->CreateStaticFromImage(225+(((float)num-2)*31), 105, 0, *image, true);
-                    }/*else if(turret){
-                    }*/
+                    }
+                    //else if(turret) {}
 
                     if(s)
                     {
@@ -5490,7 +5363,7 @@ void CIFaceList::CreateQueueIcon(int num, CMatrixBuilding* base, CMatrixMapStati
             
             if(image)
             {
-                HDelete(CIFaceImage, image, g_MatrixHeap);
+                HDelete(CIFaceImage, image, Base::g_MatrixHeap);
             }
 
             return;
@@ -5605,56 +5478,56 @@ void CIFaceList::CreateHintButton(int x, int y, EHintButton type, DialogButtonHa
     {
         if(type == HINT_OK && els->m_strName == IF_HINTS_OK)
         {
-            els->m_Actions[ON_UN_PRESS].m_function = handler;
+            els->m_Actions[ON_UN_PRESS].m_nonclassfunction = handler;
             els->RecalcPos((float)x, (float)y, false);
             els->SetVisibility(true);
             return;
         }
         else if(type == HINT_CANCEL && els->m_strName == IF_HINTS_CANCEL)
         {
-            els->m_Actions[ON_UN_PRESS].m_function = handler;
+            els->m_Actions[ON_UN_PRESS].m_nonclassfunction = handler;
             els->RecalcPos((float)x, (float)y, false);
             els->SetVisibility(true);
             return;
         }
         else if(type == HINT_CANCEL_MENU && els->m_strName == IF_HINTS_CANCEL_MENU)
         {
-            els->m_Actions[ON_UN_PRESS].m_function = handler;
+            els->m_Actions[ON_UN_PRESS].m_nonclassfunction = handler;
             els->RecalcPos((float)x, (float)y, false);
             els->SetVisibility(true);
             return;
         }
         else if(type == HINT_CONTINUE && els->m_strName == IF_HINTS_CONTINUE)
         {
-            els->m_Actions[ON_UN_PRESS].m_function = handler;
+            els->m_Actions[ON_UN_PRESS].m_nonclassfunction = handler;
             els->RecalcPos((float)x, (float)y, false);
             els->SetVisibility(true);
             return;
         }
         else if(type == HINT_SURRENDER && els->m_strName == IF_HINTS_SURRENDER)
         {
-            els->m_Actions[ON_UN_PRESS].m_function = handler;
+            els->m_Actions[ON_UN_PRESS].m_nonclassfunction = handler;
             els->RecalcPos((float)x, (float)y, false);
             els->SetVisibility(true);
             return;
         }
         else if(type == HINT_EXIT && els->m_strName == IF_HINTS_EXIT)
         {
-            els->m_Actions[ON_UN_PRESS].m_function = handler;
+            els->m_Actions[ON_UN_PRESS].m_nonclassfunction = handler;
             els->RecalcPos((float)x, (float)y, false);
             els->SetVisibility(true);
             return;
         }
         else if(type == HINT_RESET && els->m_strName == IF_HINTS_RESET)
         {
-            els->m_Actions[ON_UN_PRESS].m_function = handler;
+            els->m_Actions[ON_UN_PRESS].m_nonclassfunction = handler;
             els->RecalcPos((float)x, (float)y, false);
             els->SetVisibility(true);
             return;
         }
         else if(type == HINT_HELP && els->m_strName == IF_HINTS_HELP)
         {
-            els->m_Actions[ON_UN_PRESS].m_function = handler;
+            els->m_Actions[ON_UN_PRESS].m_nonclassfunction = handler;
             els->RecalcPos((float)x, (float)y, false);
             els->SetVisibility(true);
             return;
@@ -6163,7 +6036,7 @@ void CIFaceList::BeginBuildTurret(int no)
     if(!ps->IsEnoughResourcesForTurret(&g_Config.m_TurretsConsts[no])) return;
 
     ps->m_CannonForBuild.Delete();
-    CMatrixCannon* cannon = HNew(g_MatrixHeap) CMatrixCannon;
+    CMatrixCannon* cannon = HNew(Base::g_MatrixHeap) CMatrixCannon;
     cannon->m_Pos.x = g_MatrixMap->m_TraceStopPos.x;
     cannon->m_Pos.y = g_MatrixMap->m_TraceStopPos.y;
     cannon->SetSide(PLAYER_SIDE);
@@ -6247,6 +6120,6 @@ void SStateImages::SetStateText(bool copy)
 CBuf* CInterface::m_ClearRects;
 
 #ifdef _DEBUG
-void t_pause(void)    { g_MatrixMap->Pause(true); }
-void t_unpause(void)    { g_MatrixMap->Pause(false); }
+void t_pause()   { g_MatrixMap->Pause(true); }
+void t_unpause() { g_MatrixMap->Pause(false); }
 #endif

@@ -193,7 +193,7 @@ public:
 
         void Clear(void);
 
-        void BuildBottom(int x, int y, BYTE *rawbottom);
+        void BuildBottom(int x, int y, byte *rawbottom);
         void BuildWater(int x, int y);
         void InitInshoreWaves(int n, const float *xx, const float *yy, const float *nxx, const float *nyy);
 

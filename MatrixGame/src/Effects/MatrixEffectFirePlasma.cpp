@@ -28,14 +28,13 @@ DTRACE();
     CMatrixEffect::CreatePointLight(&m_Light, start, 20, 0x80202030, true);
     //CMatrixEffect::CreatePointLight(&m_Light, start, 20, 0xFFFFFFFF, true);
 
-    D3DXVec3Normalize(&m_Dir, &(m_End - m_Pos));
-    m_Prevdist = D3DXVec3Length(&(m_End - m_Pos));
+    const D3DXVECTOR3 temp = m_End - m_Pos;
+    D3DXVec3Normalize(&m_Dir, &temp);
+    m_Prevdist = D3DXVec3Length(&temp);
 }
 
 CMatrixEffectFirePlasma::~CMatrixEffectFirePlasma()
 {
-    DTRACE();
-
     m_BBLine.Release();
     m_BB1.Release();
     m_BB2.Release();
@@ -87,7 +86,8 @@ DTRACE();
     m_Pos = newpos;
     if(m_Light.effect) ((CMatrixEffectPointLight*)m_Light.effect)->SetPos(m_Pos);
 
-    float newdist = D3DXVec3Length(&(m_End-m_Pos));
+    D3DXVECTOR3 temp = m_End - m_Pos;
+    float newdist = D3DXVec3Length(&temp);
     if(newdist > m_Prevdist)
     {
         hit = true;

@@ -150,7 +150,7 @@ void SInshorewave::Draw(void)
     m._31 = 0; m._32 = 0; m._33 = 1;  m._34 = 0;
     m._41 = xx; m._42 = yy; m._43 = WATER_LEVEL; m._44 = 1;
 
-    BYTE a = BYTE((KSCALE(t, 0, 0.6f) * 255) - (KSCALE(t, 0.6f, 1.0f) * 255));
+    byte a = byte((KSCALE(t, 0, 0.6f) * 255) - (KSCALE(t, 0.6f, 1.0f) * 255));
 
     ASSERT_DX(g_D3DD->SetTransform(D3DTS_WORLD, &m));
 
@@ -222,7 +222,7 @@ void CMatrixWater::Init()
 
     // build indexes
 
-    WORD* ibuf;
+    word* ibuf;
     LOCK_IB(m_IB, &ibuf);
     int k = 0;
 
@@ -241,8 +241,8 @@ void CMatrixWater::Init()
         ibuf[k++] = i * (WATER_SIZE + 1);
         for(int j = 0; j < WATER_SIZE; ++j)
         {
-            ibuf[k++] = (WORD)(j + (WATER_SIZE + 2)) + i * (WATER_SIZE + 1);
-            ibuf[k++] = (WORD)(j + 1) + i * (WATER_SIZE + 1);
+            ibuf[k++] = (word)(j + (WATER_SIZE + 2)) + i * (WATER_SIZE + 1);
+            ibuf[k++] = (word)(j + 1) + i * (WATER_SIZE + 1);
         }
 
     }

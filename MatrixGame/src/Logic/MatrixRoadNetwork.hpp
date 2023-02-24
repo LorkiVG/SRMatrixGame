@@ -193,7 +193,7 @@ struct SMatrixPlaceList {
 };
 
 struct SMatrixRegion {
-    CPoint m_Center = { 0.0f, 0.0f };
+    CPoint m_Center = { 0, 0 };
     int m_RadiusPlace = 0;
 
     int m_CrotchCnt = 0;

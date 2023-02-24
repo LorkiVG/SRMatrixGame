@@ -66,7 +66,7 @@ public:
         }
         m_Tex->RefInc();
 
-        m_Coord = (SPBPos*)HAlloc(sizeof(SPBPos), g_MatrixHeap);
+        m_Coord = (SPBPos*)HAlloc(sizeof(SPBPos), Base::g_MatrixHeap);
         m_CoordCount = 1;
         m_Coord[0].present = true;
 
@@ -80,7 +80,7 @@ public:
         m_Tex->RefDecUnload();
         if(m_Tex->Ref() <= 0) m_Tex = nullptr;
 
-        HFree(m_Coord, g_MatrixHeap);
+        HFree(m_Coord, Base::g_MatrixHeap);
 
         if(m_CoordCount > 1)
         {

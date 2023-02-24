@@ -103,7 +103,7 @@ __inline D3DResource* D3DResource::BuildIB16(int cnti, const char *file, int lin
     r->m_Type = D3DRESTYPE_IB;
     r->m_File = file;
     r->m_Line = line;
-    if (D3D_OK != (g_D3DD->CreateIndexBuffer(cnti*sizeof(WORD),D3DUSAGE_WRITEONLY,D3DFMT_INDEX16,D3DPOOL_DEFAULT,&r->m_IB,nullptr)))
+    if (D3D_OK != (g_D3DD->CreateIndexBuffer(cnti*sizeof(word),D3DUSAGE_WRITEONLY,D3DFMT_INDEX16,D3DPOOL_DEFAULT,&r->m_IB,nullptr)))
     {
         HDelete(D3DResource, r, g_CacheHeap);
         return nullptr;
@@ -239,7 +239,7 @@ typedef D3DResource * D3D_VB;
 typedef IDirect3DIndexBuffer9 * D3D_IB;
 typedef IDirect3DVertexBuffer9 * D3D_VB;
 
-#define  CREATE_IB16(indexcnt,  ib) { if(D3D_OK != (g_D3DD->CreateIndexBuffer(indexcnt * sizeof(WORD), D3DUSAGE_WRITEONLY, D3DFMT_INDEX16,D3DPOOL_DEFAULT, &ib, nullptr))) ib = nullptr; }
+#define  CREATE_IB16(indexcnt,  ib) { if(D3D_OK != (g_D3DD->CreateIndexBuffer(indexcnt * sizeof(word), D3DUSAGE_WRITEONLY, D3DFMT_INDEX16,D3DPOOL_DEFAULT, &ib, nullptr))) ib = nullptr; }
 #define  CREATE_IBM16(ibsize,  ib) {ASSERT_DX(g_D3DD->CreateIndexBuffer(ibsize,D3DUSAGE_WRITEONLY,D3DFMT_INDEX16,D3DPOOL_MANAGED,&(ib),nullptr));}
 #define  CREATE_IBD16(ibsize,  ib) {ASSERT_DX(g_D3DD->CreateIndexBuffer(ibsize,D3DUSAGE_WRITEONLY|D3DUSAGE_DYNAMIC,D3DFMT_INDEX16,D3DPOOL_DEFAULT,&(ib),nullptr));}
 #define  CREATE_IB32(indexcnt,  ib) {ASSERT_DX(g_D3DD->CreateIndexBuffer(indexcnt*sizeof(dword),D3DUSAGE_WRITEONLY,D3DFMT_INDEX32,D3DPOOL_DEFAULT,&(ib),nullptr));}

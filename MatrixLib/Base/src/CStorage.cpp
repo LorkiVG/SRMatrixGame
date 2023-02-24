@@ -15,7 +15,7 @@
 namespace Base {
 
 
-static int ZL03_UnCompress(CBuf &out, BYTE *in, int inlen)
+static int ZL03_UnCompress(CBuf &out, byte *in, int inlen)
 {
     out.Clear();
 
@@ -34,7 +34,7 @@ static int ZL03_UnCompress(CBuf &out, BYTE *in, int inlen)
 
         dword len = out.Len() - optr;
         int szb = *(dword *)(in + iptr);
-        if(uncompress(out.Buff<BYTE>() + optr,&len, in + iptr + 4, szb)!=Z_OK)
+        if(uncompress(out.Buff<byte>() + optr,&len, in + iptr + 4, szb)!=Z_OK)
         {
             out.Clear();
             return 0;
@@ -51,7 +51,7 @@ static int ZL03_UnCompress(CBuf &out, BYTE *in, int inlen)
 }
 
 
-static void ZL03_Compression(CBuf &out, BYTE *in, int inlen)
+static void ZL03_Compression(CBuf &out, byte *in, int inlen)
 {
     out.Clear();
     out.Byte('Z');
@@ -73,14 +73,14 @@ static void ZL03_Compression(CBuf &out, BYTE *in, int inlen)
         out.Expand(65536 * 2);
 
         dword len = out.Len() - ptro + 4;
-        int res = compress2(out.Buff<BYTE>() + ptro + 4, &len,in + ptri,65000,Z_BEST_COMPRESSION);
+        int res = compress2(out.Buff<byte>() + ptro + 4, &len,in + ptri,65000,Z_BEST_COMPRESSION);
         if (res != Z_OK)
         {
             _asm int 3
         }
         ptri += 65000;
 
-        *(dword *)(out.Buff<BYTE>() + ptro) = len;
+        *(dword *)(out.Buff<byte>() + ptro) = len;
         ptro += len + 4;
         out.SetLenNoShrink(ptro);
 
@@ -94,16 +94,16 @@ static void ZL03_Compression(CBuf &out, BYTE *in, int inlen)
         out.Expand(szi * 2);
 
         dword len = szi;
-        compress2(out.Buff<BYTE>() + ptro + 4, &len,in + ptri,szi,Z_BEST_COMPRESSION);
+        compress2(out.Buff<byte>() + ptro + 4, &len,in + ptri,szi,Z_BEST_COMPRESSION);
 
-        *(dword *)(out.Buff<BYTE>() + ptro) = len;
+        *(dword *)(out.Buff<byte>() + ptro) = len;
         ptro += len + 4;
 
         ++cnt;
     }
 
     out.SetLenNoShrink(ptro);
-    *(dword *)(out.Buff<BYTE>() + 4) = cnt;
+    *(dword *)(out.Buff<byte>() + 4) = cnt;
 
 }
 
@@ -144,7 +144,7 @@ void CStorageRecordItem::Save(CBuf &buf, bool compression)
     {
         buf.Dword(m_Type|ST_COMPRESSED);
         CBuf cb(buf.m_Heap);
-        ZL03_Compression(cb, (BYTE *)m_Buf->Get(), m_Buf->Len());
+        ZL03_Compression(cb, (byte *)m_Buf->Get(), m_Buf->Len());
 
         buf.Dword(cb.Len());
         buf.BufAdd(cb.Get(), cb.Len());
@@ -167,7 +167,7 @@ bool CStorageRecordItem::Load(CBuf& buf)
     if(m_Type & ST_COMPRESSED)
     {
         m_Type = (EStorageType)(m_Type & ST_COMPRESSED);
-        if(0 == ZL03_UnCompress(*m_Buf, buf.Buff<BYTE>() + buf.Pointer(), sz)) return false;
+        if(0 == ZL03_UnCompress(*m_Buf, buf.Buff<byte>() + buf.Pointer(), sz)) return false;
     }
     else
     {
@@ -378,11 +378,11 @@ void CStorage::Save(CBuf &buf, bool compression)
     if (compression)
     {
         CBuf buf2(buf.m_Heap);
-        ZL03_Compression(buf2, buf.Buff<BYTE>() + 8, buf.Len() - 8);
+        ZL03_Compression(buf2, buf.Buff<byte>() + 8, buf.Len() - 8);
         buf.SetLenNoShrink(8);
         buf.Expand(buf2.Len());
         buf.SetLenNoShrink(8 + buf2.Len());
-        memcpy(buf.Buff<BYTE>() + 8, buf2.Get(), buf2.Len());
+        memcpy(buf.Buff<byte>() + 8, buf2.Get(), buf2.Len());
     }
 }
 
@@ -401,7 +401,7 @@ bool CStorage::Load(CBuf &buf_in)
     if (ver == 1)
     {
         // compression!
-        ZL03_UnCompress(buf2, buf_in.Buff<BYTE>() + 8, buf_in.Len() - 8);
+        ZL03_UnCompress(buf2, buf_in.Buff<byte>() + 8, buf_in.Len() - 8);
         buf = &buf2;
         buf2.Pointer(0);
     }

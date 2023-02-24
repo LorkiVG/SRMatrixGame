@@ -18,11 +18,11 @@ typedef void (*SELECT_ENUM)(CMatrixMapStatic* ms, dword param);
 #define MS_FLAG_ROBOTS      SETBIT(1)
 #define MS_FLAG_BUILDINGS   SETBIT(2)
 
-#define MULTISEL_FVF (D3DFVF_XYZRHW|D3DFVF_TEX1)
+#define MULTISEL_FVF (D3DFVF_XYZRHW | D3DFVF_TEX1)
 struct SMultiSelVertex
 {
-    D3DXVECTOR4 p;
-    float       u,v;
+    D3DXVECTOR4 p = { 0.0f, 0.0f, 0.0f, 0.0f };
+    float       u = 0.0f, v = 0.0f;
 };
 
 
@@ -33,8 +33,8 @@ class CMultiSelection : public CMain
     CMultiSelection* m_Next = nullptr;
     CMultiSelection* m_Prev = nullptr;
 
-    Base::CPoint m_LT;
-    Base::CPoint m_RB;
+    Base::CPoint m_LT = { 0.0f, 0.0f };
+    Base::CPoint m_RB = { 0.0f, 0.0f };
 
     dword m_Flags = 0;
 
@@ -44,20 +44,20 @@ class CMultiSelection : public CMain
 
     static int m_Time;
 
-    //CTextureManaged* m_Tex;
+    //CTextureManaged* m_Tex = nullptr;
 
-    CMultiSelection::CMultiSelection(const Base::CPoint& pos);
+    CMultiSelection(const Base::CPoint& pos);
     ~CMultiSelection()
     {
         if(CMultiSelection::m_GameSelection == this) CMultiSelection::m_GameSelection = nullptr;
         LIST_DEL(this, m_First, m_Last, m_Prev, m_Next);
     };
 
-    void Draw(void);
+    void Draw();
 
-    bool DrawPass1(void);
-    void DrawPass2(void);
-    void DrawPassEnd(void);
+    bool DrawPass1();
+    void DrawPass2();
+    void DrawPassEnd();
     
     void RemoveSelItems()
     {
@@ -71,7 +71,7 @@ public:
 
     static CMultiSelection* m_GameSelection;
 
-    static void StaticInit(void)
+    static void StaticInit()
     {
         m_First = nullptr;
         m_Last = nullptr;
@@ -81,7 +81,7 @@ public:
         //m_LastItem = nullptr;
     }
 
-    static bool DrawAllPass1Begin(void)
+    static bool DrawAllPass1Begin()
     {
         bool ret = false;
         CMultiSelection* f = m_First;
@@ -93,7 +93,7 @@ public:
         return ret;
     }
 
-    static void DrawAllPass2Begin(void)
+    static void DrawAllPass2Begin()
     {
         CMultiSelection* f = m_First;
         while(f)
@@ -103,10 +103,10 @@ public:
         }
     }
 
-    static void DrawAllPassEnd(void)
+    static void DrawAllPassEnd()
     {
         CMultiSelection* f = m_First;
-        while (f)
+        while(f)
         {
             f->DrawPassEnd();
             f = f->m_Next;

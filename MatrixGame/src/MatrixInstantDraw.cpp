@@ -11,7 +11,7 @@ E_FVF    CInstDraw::m_Current;
 D3D_IB   CInstDraw::m_IB;
 int      CInstDraw::m_IB_Count;
 
-void CInstDraw::MarkAllBuffersNoNeed(void)
+void CInstDraw::MarkAllBuffersNoNeed()
 {
     for(int i = 0; i < IDFVF_CNT; ++i)
     {
@@ -24,20 +24,19 @@ void CInstDraw::MarkAllBuffersNoNeed(void)
 
     if(IS_IB(m_IB)) DESTROY_IB(m_IB);
     m_IB_Count = 0;
-
 }
 
-void CInstDraw::ClearAll(void)
+void CInstDraw::ClearAll()
 {
-    for (int i = 0; i < IDFVF_CNT; ++i)
+    for(int i = 0; i < IDFVF_CNT; ++i)
     {
-        if (IS_VB(m_FVFs[i].vb)) 
+        if(IS_VB(m_FVFs[i].vb)) 
         {
             DESTROY_VB(m_FVFs[i].vb);
         }
-        if (m_FVFs[i].sets)
+        if(m_FVFs[i].sets)
         {
-            for (int s=0;s<m_FVFs[i].sets_alloc;++s)
+            for(int s = 0; s < m_FVFs[i].sets_alloc; ++s)
             {
                 HFree(m_FVFs[i].sets[s].accum, g_MatrixHeap);
             }
@@ -49,18 +48,17 @@ void CInstDraw::ClearAll(void)
 #endif
     memset(m_FVFs, 0, sizeof(m_FVFs));
 
-    if (IS_IB(m_IB)) DESTROY_IB(m_IB);
+    if(IS_IB(m_IB)) DESTROY_IB(m_IB);
     m_IB_Count = 0;
 }
 
-void    CInstDraw::BeginDraw(E_FVF fvf)
+void CInstDraw::BeginDraw(E_FVF fvf)
 {
 #ifdef _DEBUG
-    if (m_Current != IDFVF_CNT) ERROR_S(L"Error #1 in instant draw");
+    if(m_Current != IDFVF_CNT) ERROR_S(L"Error #1 in instant draw");
 #endif
 
     m_Current = fvf;
-
 }
 
 
@@ -102,12 +100,12 @@ void CInstDraw::AddVerts(void* v, CBaseTexture* tex)
         os->accum = HAllocEx( os->accum, cvb->stride * os->accumcnt, g_MatrixHeap);
         os->accumcntalloc = os->accumcnt;
     }
-    memcpy((BYTE*)os->accum + (cvb->stride * (os->accumcnt - 4)), v, cvb->stride * 4);
+    memcpy((byte*)os->accum + (cvb->stride * (os->accumcnt - 4)), v, cvb->stride * 4);
 
     cvb->statistic += 4;
 }
 
-void    CInstDraw::AddVerts(void *v, CBaseTexture *tex, dword tf)
+void CInstDraw::AddVerts(void* v, CBaseTexture* tex, dword tf)
 {
 #ifdef _DEBUG
     if(m_Current == IDFVF_CNT)
@@ -135,7 +133,7 @@ void    CInstDraw::AddVerts(void *v, CBaseTexture *tex, dword tf)
         if(cvb->sets_cnt >= cvb->sets_alloc)
         {
             ++cvb->sets_alloc;
-            cvb->sets = (SOneSet *)HAllocEx(m_FVFs[m_Current].sets, sizeof(SOneSet) * (cvb->sets_alloc), g_MatrixHeap);
+            cvb->sets = (SOneSet*)HAllocEx(m_FVFs[m_Current].sets, sizeof(SOneSet) * (cvb->sets_alloc), g_MatrixHeap);
             cvb->sets[i].accum = nullptr;
             cvb->sets[i].accumcntalloc = 0;
         }
@@ -147,20 +145,20 @@ void    CInstDraw::AddVerts(void *v, CBaseTexture *tex, dword tf)
         ++cvb->sets_cnt;
     }
 
-    SOneSet *os = cvb->sets + i;
+    SOneSet* os = cvb->sets + i;
 
     os->accumcnt += 4;
-    if (os->accumcnt > os->accumcntalloc)
+    if(os->accumcnt > os->accumcntalloc)
     {
         os->accum = HAllocEx( os->accum, cvb->stride * os->accumcnt, g_MatrixHeap);
         os->accumcntalloc = os->accumcnt;
     }
-    memcpy((BYTE *)os->accum + (cvb->stride * (os->accumcnt - 4)), v, cvb->stride * 4);
+    memcpy((byte*)os->accum + (cvb->stride * (os->accumcnt - 4)), v, cvb->stride * 4);
 
     cvb->statistic += 4;
 }
 
-void    CInstDraw::DrawFrameBegin(void)
+void CInstDraw::DrawFrameBegin()
 {
     for(int i = 0; i < IDFVF_CNT; ++i)
     {
@@ -168,31 +166,32 @@ void    CInstDraw::DrawFrameBegin(void)
     }
 }
 
-void    CInstDraw::ActualDraw(void)
+void CInstDraw::ActualDraw()
 {
 #ifdef _DEBUG
-    if (m_Current == IDFVF_CNT) ERROR_S(L"Error #0 in instant draw");
+    if(m_Current == IDFVF_CNT) ERROR_S(L"Error #0 in instant draw");
 #endif
 
-    SFVF_VB *cvb = m_FVFs + m_Current;
+    SFVF_VB* cvb = m_FVFs + m_Current;
+    int disp = 0;
 
-    if (cvb->statistic == 0) goto final;
+    if(cvb->statistic == 0) goto final;
 
-    if (!IS_VB(cvb->vb) || (cvb->statistic+cvb->disp) > cvb->cursize)
+    if(!IS_VB(cvb->vb) || (cvb->statistic+cvb->disp) > cvb->cursize)
     {
         cvb->cursize = (cvb->statistic+cvb->disp);
 
-        if (IS_VB(cvb->vb)) DESTROY_VB(cvb->vb);
+        if(IS_VB(cvb->vb)) DESTROY_VB(cvb->vb);
         CREATE_VB_DYNAMIC(cvb->stride * (cvb->statistic+cvb->disp), cvb->fvf, cvb->vb);
-        if (!IS_VB(cvb->vb))
+        if(!IS_VB(cvb->vb))
         {
             cvb->cursize = 0;
             goto final;
         }
     }
 
-    byte *verts;
-    if (cvb->disp == 0)
+    byte* verts;
+    if(cvb->disp == 0)
     {
         LOCKP_VB_DYNAMIC(cvb->vb, 0, cvb->stride * cvb->statistic, &verts);
     }
@@ -215,29 +214,28 @@ void    CInstDraw::ActualDraw(void)
 
     UNLOCK_VB(cvb->vb);
 
-    if (!IS_IB(m_IB) || cvb->statistic_max_tex > m_IB_Count)
+    if(!IS_IB(m_IB) || cvb->statistic_max_tex > m_IB_Count)
     {
         m_IB_Count = cvb->statistic_max_tex;
 
-        if (IS_IB(m_IB)) DESTROY_VB(m_IB);
-        CREATE_IBD16(cvb->statistic_max_tex * sizeof(WORD) * 6 / 4, m_IB);
-        if (!IS_IB(m_IB))
+        if(IS_IB(m_IB)) DESTROY_VB(m_IB);
+        CREATE_IBD16(cvb->statistic_max_tex * sizeof(word) * 6 / 4, m_IB);
+        if(!IS_IB(m_IB))
         {
             m_IB_Count = 0;
             goto final;
         }
 
-
-        WORD *p;
+        word* p;
         LOCKD_IB(m_IB, &p);
 
         int cc = cvb->statistic_max_tex / 4;
-        for (int i = 0; i < cc; ++i)
+        for(int i = 0; i < cc; ++i)
         {
             dword vol = i * 4;
-            *(dword *)p = vol | ((vol + 1) << 16);
-            *(dword *)(p+2) = (vol + 2) | ((vol + 1) << 16);
-            *(dword *)(p+4) = (vol + 3) | ((vol + 2) << 16);
+            *(dword*)p = vol | ((vol + 1) << 16);
+            *(dword*)(p + 2) = (vol + 2) | ((vol + 1) << 16);
+            *(dword*)(p + 4) = (vol + 3) | ((vol + 2) << 16);
 
             p += 6;
         }
@@ -246,31 +244,28 @@ void    CInstDraw::ActualDraw(void)
     }
 
     // draw!
-
     g_D3DD->SetStreamSource(0,GET_VB(cvb->vb),0,cvb->stride);
     ASSERT_DX(g_D3DD->SetIndices(GET_IB(m_IB)));
     g_D3DD->SetFVF(cvb->fvf);
 
-
-    int disp = 0;
-    for (int i = 0; i < cvb->sets_cnt; ++i)
+    for(int i = 0; i < cvb->sets_cnt; ++i)
     {
-        CBaseTexture *tex = cvb->sets[i].tex;
+        CBaseTexture* tex = cvb->sets[i].tex;
 
-        if (cvb->sets[i].tf_used)
+        if(cvb->sets[i].tf_used)
         {
             g_D3DD->SetRenderState(D3DRS_TEXTUREFACTOR, cvb->sets[i].tf);
         }
 
-        if (tex != nullptr)
+        if(tex != nullptr)
         {
-            if (tex->IsTextureManaged())
+            if(tex->IsTextureManaged())
             {
-                ASSERT_DX(g_D3DD->SetTexture(0, ((CTextureManaged *)tex)->Tex()));
+                ASSERT_DX(g_D3DD->SetTexture(0, ((CTextureManaged*)tex)->Tex()));
             }
             else
             {
-                ASSERT_DX(g_D3DD->SetTexture(0, ((CTexture *)tex)->Tex()));
+                ASSERT_DX(g_D3DD->SetTexture(0, ((CTexture*)tex)->Tex()));
             }
         }
 
@@ -291,6 +286,3 @@ final:
     m_Current = IDFVF_CNT;
 #endif
 }
-
-
-

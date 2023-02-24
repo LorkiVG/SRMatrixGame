@@ -52,40 +52,42 @@ enum EActions
 	USER_ACTIONS_TOTAL
 };
 
+/*
 struct SAction
 {
 	void* m_class;
 	void* m_function;
 
-    SAction(): m_class(nullptr), m_function(nullptr) {}
+	SAction() : m_class(nullptr), m_function(nullptr) {}
 };
+*/
 
 struct SStateImages
 {
-	CTextureManaged*        pImage;
-	SVert_V4_UV             m_Geom[4];
-	float                   xTexPos;
-	float                   yTexPos;
-	float                   TexWidth;
-	float                   TexHeight;
+	CTextureManaged* pImage = nullptr;
+	SVert_V4_UV      m_Geom[4]; //По умолчанию инициализированы нулями
+	float            xTexPos = 0.0f;
+	float            yTexPos = 0.0f;
+	float            TexWidth = 0.0f;
+	float            TexHeight = 0.0f;
 
+    int              m_x = 0;
+    int              m_y = 0;
+    int              m_boundX = 0;
+    int              m_boundY = 0;
+    int              m_xAlign = 0;
+    int              m_yAlign = 0;
+    int              m_Perenos = 0;
+    int              m_SmeX = 0;
+    int              m_SmeY = 0;
+	CRect            m_ClipRect = { 0, 0, 0, 0 };
+    CWStr            m_Caption = (CWStr)L"";
+    CWStr            m_Font = (CWStr)L"";
+    dword            m_Color = 0;
 
-    int                     m_x;
-    int                     m_y;
-    int                     m_boundX;
-    int                     m_boundY;
-    int                     m_xAlign;
-    int                     m_yAlign;
-    int                     m_Perenos;
-    int                     m_SmeX;
-    int                     m_SmeY;
-    CRect                   m_ClipRect;
-    CWStr                   m_Caption;
-    CWStr                   m_Font;
-    dword                   m_Color;
+	bool             Set = false;
 
-	dword                   Set; // This is boolean var. Used dword because align!
-
+	//SStateImages() : m_Caption(Base::g_MatrixHeap), m_Font(Base::g_MatrixHeap) {}
 
 	void SetStateText(bool copy);
 	void SetStateLabelParams(
@@ -103,17 +105,6 @@ struct SStateImages
 		CWStr font,
 		dword color
 	);
-
-	SStateImages() :m_Caption(g_MatrixHeap), m_Font(g_MatrixHeap)
-	{
-		xTexPos = yTexPos = TexWidth = TexHeight = 0;
-		m_x = m_y = m_boundX = m_boundY = m_xAlign = m_yAlign = m_Perenos = m_SmeX = m_SmeY = 0;
-		m_Color = 0;
-		pImage = nullptr;
-		ZeroMemory(m_Geom, sizeof(m_Geom));
-		ZeroMemory(&m_ClipRect, sizeof(CRect));
-		Set = false;
-	}
 };
 
 /*
@@ -122,42 +113,48 @@ void* g_asm_iface_tmp;
 #define FSET(dest, pObj, src) \
 	dest.m_class = (void*)pObj; \
 	g_asm_iface_tmp = dest.m_function; \
-	__asm {mov eax, src} \
-	__asm {mov g_asm_iface_tmp, eax} \
+	__asm { mov eax, src } \
+	__asm { mov g_asm_iface_tmp, eax } \
 	dest.m_function = g_asm_iface_tmp;
 */
 
 //Производит начальную настройку кнопки при подгрузке элементов интерфейса
+#define FSET(act, pBut, cl, fn, pObj, src)														  \
+      pBut->m_Actions[act].m_classfunction = static_cast<void (__stdcall CMain::*)(void*)>(&src); \
+      pBut->m_Actions[act].m_object = pObj;
+
+//Старый вариант
+/*
 #define FSET(act, pBut, cl, fn, pObj, src) \
-	cl = (void*)pObj; \
-	__asm {mov eax, offset src} \
-	__asm {mov [fn], eax} \
-	pBut->m_Actions[act].m_class = cl; \
+	cl = (void*)pObj;					   \
+	__asm { mov eax, offset src }		   \
+	__asm { mov [fn], eax }				   \
+	pBut->m_Actions[act].m_class = cl;	   \
 	pBut->m_Actions[act].m_function = fn;
+*/
 
-
-#define FCALL(a, from) \
-	__asm push	from \
-	__asm mov	eax, (a)->m_class \
-	__asm push	eax \
+#define FCALL(a, from)				 \
+	__asm push	from				 \
+	__asm mov	eax, (a)->m_class    \
+	__asm push	eax					 \
 	__asm mov	eax, (a)->m_function \
 	__asm call	eax
 
-#define FCALLFROMCLASS(a) \
-	__asm push	this \
-	__asm mov	eax, dword ptr a \
+#define FCALLFROMCLASS(a)			\
+	__asm push	this				\
+	__asm mov	eax, dword ptr a    \
 	__asm add	eax, dword ptr this \
-	__asm push	[eax] \
-	__asm add	eax, 4 \
-	__asm mov	eax, [eax] \
+	__asm push	[eax]				\
+	__asm add	eax, 4				\
+	__asm mov	eax, [eax]			\
 	__asm call	eax
 
-#define FCALLFROMCLASS2(a) \
-	__asm push	this \
+#define FCALLFROMCLASS2(a)		 \
+	__asm push	this			 \
 	__asm mov	eax, dword ptr a \
-	__asm push	[eax] \
-	__asm add	eax, 4 \
-	__asm mov	eax, [eax] \
+	__asm push	[eax]			 \
+	__asm add	eax, 4			 \
+	__asm mov	eax, [eax]		 \
 	__asm call	eax
 
 

@@ -1,4 +1,4 @@
-﻿  Building Custom Rule E:/!---KR---!/!PROGRAMS/MatrixGame/MatrixLib/FilePNG/CMakeLists.txt
+﻿  1>Building Custom Rule H:/My DLLs/MatrixGame/MatrixLib/FilePNG/CMakeLists.txt
 cl : command line  warning D9035: option 'Gm' has been deprecated and will be removed in a future release
   FilePNG.cpp
 cl : command line  warning D9035: option 'Gm' has been deprecated and will be removed in a future release
@@ -19,4 +19,4 @@ cl : command line  warning D9035: option 'Gm' has been deprecated and will be re
   pngerror.c
   png.c
   Generating Code...
-  FilePNG.vcxproj -> E:\!---KR---!\!PROGRAMS\MatrixGame\MatrixLib\FilePNG\Debug\FilePNG.lib
+  FilePNG.vcxproj -> H:\My DLLs\MatrixGame\MatrixLib\FilePNG\Debug\FilePNG.lib

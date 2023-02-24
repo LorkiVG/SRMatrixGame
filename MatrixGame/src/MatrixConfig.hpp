@@ -17,8 +17,9 @@
 
 struct SStringPair
 {
-    CWStr   key;
-    CWStr   val;
+    //Если объявить заранее, то на этапе первичного заполнения конфига будут крашить, хз
+    CWStr key = (CWStr)L"";
+    CWStr val = (CWStr)L"";
 };
 
 enum ERes
@@ -28,9 +29,7 @@ enum ERes
     ENERGY,
     PLASMA,
 
-    MAX_RESOURCES,
-
-    ERes_FORCE_DWORD = 0x7FFFFFFF
+    MAX_RESOURCES
 };
 
 enum ERobotModuleType
@@ -39,9 +38,7 @@ enum ERobotModuleType
     MRT_CHASSIS = 1,
     MRT_WEAPON = 2,
     MRT_HULL = 3,
-    MRT_HEAD = 4,
-
-    ERobotModuleType_FORCE_DWORD = 0x7FFFFFFF
+    MRT_HEAD = 4
 };
 
 enum ERobotModuleKind
@@ -236,16 +233,16 @@ enum ESide
 
 struct SCamParam
 {
-    float m_CamMouseWheelStep;
-    float m_CamRotSpeedX;
-    float m_CamRotSpeedZ;
-    float m_CamRotAngleMin;
-    float m_CamRotAngleMax;
-    float m_CamDistMin;
-    float m_CamDistMax;
-    float m_CamDistParam;
-    float m_CamAngleParam;
-    float m_CamHeight;
+    float m_CamMouseWheelStep = 0.0f;
+    float m_CamRotSpeedX = 0.0f;
+    float m_CamRotSpeedZ = 0.0f;
+    float m_CamRotAngleMin = 0.0f;
+    float m_CamRotAngleMax = 0.0f;
+    float m_CamDistMin = 0.0f;
+    float m_CamDistMax = 0.0f;
+    float m_CamDistParam = 0.0f;
+    float m_CamAngleParam = 0.0f;
+    float m_CamHeight = 0.0f;
 };
 
 struct SGammaVals
@@ -602,13 +599,13 @@ struct SWeaponsConsts
 class CMatrixConfig : public CMain
 {
 public:
-    int m_RobotHullsCount;
+    int m_RobotHullsCount = 0;
     std::vector<SRobotHullsConsts> m_RobotHullsConsts;
-    int m_RobotChassisCount;
+    int m_RobotChassisCount = 0;
     std::vector<SRobotChassisConsts> m_RobotChassisConsts;
-    int m_RobotHeadsCount;
+    int m_RobotHeadsCount = 0;
     std::vector<SRobotHeadsConsts> m_RobotHeadsConsts;
-    int m_RobotWeaponsCount;
+    int m_RobotWeaponsCount = 0;
     std::vector<SRobotWeaponsConsts> m_RobotWeaponsConsts;
 
     std::vector<STurretsConsts> m_TurretsConsts;
@@ -623,59 +620,62 @@ public:
 
     int          m_ReinforcementsTime = 0;
 
-    //int m_PlayerRobotsCnt;
-    //int m_CompRobotsCnt;
+    //int m_PlayerRobotsCnt = 0;
+    //int m_CompRobotsCnt = 0;
 
     // camera params
 
     SCamParam m_CamParams[CAMERA_PARAM_CNT];
 
-    float m_CamBaseAngleZ;
-    float m_CamMoveSpeed;
-    float m_CamInRobotForward0;
-    float m_CamInRobotForward1;
+    float m_CamBaseAngleZ = 0.0f;
+    float m_CamMoveSpeed = 0.0f;
+    float m_CamInRobotForward0 = 0.0f;
+    float m_CamInRobotForward1 = 0.0f;
 
-    //float m_CamRotAngleMinInFlyer;
-    //float m_CamDistMinInFlyer;
+    //float m_CamRotAngleMinInFlyer = 0.0f;
+    //float m_CamDistMinInFlyer = 0.0f;
 
     SGammaVals m_GammaR, m_GammaG, m_GammaB;
 
     // params
-    dword m_DIFlags;
-    //int m_TexTopMinSize;
-    //int m_TexTopDownScalefactor;
-    //int m_TexBotMinSize;
-    //int m_TexBotDownScalefactor;
+    dword m_DIFlags = 0;
+    //int m_TexTopMinSize = 0;
+    //int m_TexTopDownScalefactor = 0;
+    //int m_TexBotMinSize = 0;
+    //int m_TexBotDownScalefactor = 0;
 
-    bool m_ShowStencilShadows;
-    bool m_ShowProjShadows;
-    bool m_CannonsLogic;
-    //bool m_LandTextures16;
+    bool m_ShowStencilShadows = false;
+    bool m_ShowProjShadows = false;
+    bool m_CannonsLogic = false;
+    //bool m_LandTextures16 = false;
 
-    bool m_LandTexturesGloss;
-    bool m_SoftwareCursor;
-    bool m_VertexLight;
+    bool m_LandTexturesGloss = false;
+    bool m_SoftwareCursor = false;
+    bool m_VertexLight = false;
 
-    bool m_ObjTexturesGloss;
-    //bool m_ObjTextures16;
+    bool m_ObjTexturesGloss = false;
+    //bool m_ObjTextures16 = false;
 
-    bool m_IzvratMS;
-    byte m_SkyBox;                  // 0 - none, 1 - dds (low quality), 2 - png (high quality)
-    byte m_DrawAllObjectsToMinimap; // 0 - none, 1 - force yes, 2 - auto
+    bool m_IzvratMS = false;
+    byte m_SkyBox = 0;                  // 0 - none, 1 - dds (low quality), 2 - png (high quality)
+    byte m_DrawAllObjectsToMinimap = 0; // 0 - none, 1 - force yes, 2 - auto
 
-    int  m_CaptureTimeErase;
-    int  m_CaptureTimePaint;
-    int  m_CaptureTimeRolback;
+    int  m_CaptureTimeErase = 0;
+    int  m_CaptureTimePaint = 0;
+    int  m_CaptureTimeRolback = 0;
 
-    int  m_KeyActions[KA_LAST];
+    int  m_KeyActions[KA_LAST] = { 0 };
     bool m_IsManualMissileControl = false; //Маркер активации режима ручного управления наведением ракет для робота под прямым управлением игрока
 
-    int  m_Timings[TIMING_LAST];
+    int  m_Timings[TIMING_LAST] = { 0 };
 
-    float m_RobotRadarRadius;
-    float m_FlyerRadarRadius;
+    float m_RobotRadarRadius = 1000.0f;
+    float m_FlyerRadarRadius = 1200.0f;
 
-    EShadowType m_RobotShadow;
+    EShadowType m_RobotShadow = SHADOW_STENCIL;
+
+    CMatrixConfig() = default;
+    ~CMatrixConfig() = default;
 
     void Clear();
 
@@ -687,7 +687,7 @@ public:
 
     void ApplyGammaRamp(void);
 
-    static const wchar* CMatrixConfig::KeyActionCode2KeyName(const int& num);
+    static const wchar* KeyActionCode2KeyName(const int& num);
 
     dword RGBAStringToABGRColorHEX(const CWStr* par)
     {
@@ -722,9 +722,6 @@ public:
             else return (a - cur) / (a - b) * (toB - fromA) + fromA;
         }
     }
-
-    CMatrixConfig() : CMain() {};
-    ~CMatrixConfig() = default;
 };
 
 extern CMatrixConfig g_Config;

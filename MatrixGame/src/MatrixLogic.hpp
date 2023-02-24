@@ -94,7 +94,7 @@ public:
     int ZoneFindNear(int nsh, int mx, int my);
     void PlaceGet(int nsh, float wx, float wy, int* mx, int* my);
     bool IsAbsenceWall(int nsh, int size, int mx, int my);
-    BYTE GetCellMoveType(int nsh, int mx, int my) // ff-free 0-box 1-sphere
+    byte GetCellMoveType(int nsh, int mx, int my) // ff-free 0-box 1-sphere
     {
         SMatrixMapMove* smm = MoveGetTest(mx, my);
         if(!smm) return 0xff;
@@ -117,11 +117,11 @@ public:
     void SetWeightFromTo(int size, int x1, int y1, int x2, int y2);
     int FindLocalPath(
         int nsh, int size,
-        int mx, int my, // Начальная точка
+        int mx, int my,           // Начальная точка
         int* zonepath, int zonepathcnt, // Список зон через которые нужной найти путь
-        int dx, int dy, // Точка назначения
-        CPoint* path,   // Рассчитанный путь
-        int other_cnt,  // Кол-во путей от других роботов
+        int dx, int dy,           // Точка назначения
+        CPoint* path,             // Рассчитанный путь
+        int other_cnt,            // Кол-во путей от других роботов
         int* other_size,          // Список размеров в других путях
         CPoint** other_path_list, // Список указателей на другие пути
         int* other_path_cnt,      // Список кол-во элементов в других путях
@@ -139,7 +139,7 @@ public:
     int FindNearPlace(byte mm, const CPoint& mappos);
     int FindPlace(const CPoint& mappos);
 
-    int PlaceList(byte mm, CPoint& from, CPoint& to, int radius, bool farpath, int* list, int* listcnt, int* outdist = nullptr); // Return 0-not found 1-can move to 2-barrier
+    int PlaceList(byte mm, const CPoint& from, const CPoint& to, int radius, bool farpath, int* list, int* listcnt, int* outdist = nullptr); // Return 0-not found 1-can move to 2-barrier
     int PlaceListGrow(byte mm, int* list, int* listcnt, int growcnt);
 
     SMatrixPathObj* ObjAdd(void);

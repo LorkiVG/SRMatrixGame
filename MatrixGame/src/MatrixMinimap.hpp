@@ -168,29 +168,29 @@ public:
         m_Dirty = 1;
     }
 
-    void BeforeDraw(void);
+    void BeforeDraw();
     void DrawOutIndicator(const D3DXVECTOR2 &in, float r, dword c1, dword c2, bool doclip, EMMTex tex);
-    void Draw(void);
+    void Draw();
     void DrawRadar(float x, float y, float radius);
     void Tact(float tact);
     void PauseTact(float tact);
 
-    void World2Map(D3DXVECTOR2 &out, const D3DXVECTOR2& in);
-    void Map2World(D3DXVECTOR2 &out, const D3DXVECTOR2& in);
-    bool CalcMinimap2World(D3DXVECTOR2 &tgt);
+    void World2Map(D3DXVECTOR2& out, const D3DXVECTOR2& in);
+    void Map2World(D3DXVECTOR2& out, const D3DXVECTOR2& in);
+    bool CalcMinimap2World(D3DXVECTOR2& tgt);
 
     void AddEvent(float x, float y, dword color1, dword color2);
 
-    void RenderBackground(const CWStr &name, dword uniq);
-    void RenderObjectToBackground(CMatrixMapStatic *s);
+    void RenderBackground(const CWStr& name, dword uniq);
+    void RenderObjectToBackground(CMatrixMapStatic* s);
 
-    void Init(void);
-    void Clear(void);
+    void Init();
+    void Clear();
 
-    float GetCurrentScale(){ return m_TgtScale;}
+    float GetCurrentScale() { return m_TgtScale; }
 
-    void __stdcall ButtonZoomIn(void *object);
-    void __stdcall ButtonZoomOut(void *object);
-    void __stdcall ButtonClick(void *object);
-    void __stdcall ShowPlayerBots(void *object);
+    void __stdcall ButtonZoomIn(void* object);
+    void __stdcall ButtonZoomOut(void* object);
+    void __stdcall ButtonClick(void* object);
+    void __stdcall ShowPlayerBots(void* object);
 };

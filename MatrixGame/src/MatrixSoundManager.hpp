@@ -39,7 +39,8 @@ enum ESoundInterruptFlag
     SEF_SKIP
 };
 
-enum ESound
+//Базовые звуки, которые по умолчанию задействованы в ПБ (не менять размер с int, т.к. массив базовых звуков расширяется после загрузки новых из конфига)
+enum ESound : int
 {
     // interface
     S_BCLICK = 0,

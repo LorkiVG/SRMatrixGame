@@ -36,7 +36,7 @@ static void FilePNG_png_default_read_data(png_structp png_ptr, png_bytep data, p
 
 	if(sdata->LenSouBuf-sdata->SmeBuf<int(length)) throw "Read Error";
 
-	CopyMemory(data,((BYTE *)(sdata->SouBuf))+sdata->SmeBuf,length);
+	CopyMemory(data,((byte *)(sdata->SouBuf))+sdata->SmeBuf,length);
 	
 	sdata->SmeBuf+=length;
 }
@@ -45,7 +45,7 @@ static void FilePNG_png_default_write_data(png_structp png_ptr, png_bytep data, 
 {
 	SPNGData* sdata = (SPNGData*)(png_ptr->io_ptr);
 
-	if((sdata->SmeBuf + int(length)) < sdata->LenSouBuf) CopyMemory(((BYTE*)sdata->SouBuf) + sdata->SmeBuf, data, length);
+	if((sdata->SmeBuf + int(length)) < sdata->LenSouBuf) CopyMemory(((byte*)sdata->SouBuf) + sdata->SmeBuf, data, length);
 
 	sdata->SmeBuf += length;
 }
@@ -110,7 +110,7 @@ DWORD FilePNG_Read(DWORD id, void* buf, DWORD lenline, DWORD* arraycolor)
 {
 	SPNGData* data = (SPNGData*)id;
 	png_bytep* row_pointers = nullptr;
-	BYTE* tbuf;
+	byte* tbuf;
 
 	try
 	{
@@ -125,7 +125,7 @@ DWORD FilePNG_Read(DWORD id, void* buf, DWORD lenline, DWORD* arraycolor)
 		if(png_get_rowbytes(data->png_ptr, data->info_ptr) > lenline) throw "Error";
 
 		row_pointers = (png_bytep*)malloc((data->LenY) * sizeof(png_bytep));
-		tbuf = (BYTE*)buf;
+		tbuf = (byte*)buf;
 		for(int i = 0; i < data->LenY; ++i, tbuf += lenline) row_pointers[i] = tbuf;
 
 		png_read_image(data->png_ptr, row_pointers);
@@ -152,7 +152,7 @@ int FilePNG_Write(void* bufout, int bufoutlen, void* buf, DWORD ll, DWORD lx, DW
 	png_structp png_ptr = nullptr;
 	png_infop info_ptr = nullptr;
 	SPNGData data;
-	BYTE** rows = nullptr;
+	byte** rows = nullptr;
 
 	try
 	{
@@ -181,8 +181,8 @@ int FilePNG_Write(void* bufout, int bufoutlen, void* buf, DWORD ll, DWORD lx, DW
 
 		if (rgb_to_bgr) png_set_bgr(png_ptr);
 
-		rows = (BYTE**)malloc(ly * sizeof(BYTE*));
-		for(int i = 0; i < int(ly); i++) rows[i] = ((BYTE*)buf) + i * ll;
+		rows = (byte**)malloc(ly * sizeof(byte*));
+		for(int i = 0; i < int(ly); i++) rows[i] = ((byte*)buf) + i * ll;
 
 		png_write_image(png_ptr, rows);
 

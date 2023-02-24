@@ -47,8 +47,8 @@ DTRACE();
 
     for(int i = 0; i < FLAME_NUM_BILLS; ++i)
     {
-        if(m_Owner->m_SpriteTextures[SPR_FLAMETHROWER_SPOT].IsSingleBrightTexture()) m_Flames[i].m_Flame.CSprite::CSprite(TRACE_PARAM_CALL m_Pos,1,0,0xFFFFFFFF,m_Owner->m_SpriteTextures[SPR_FLAMETHROWER_SPOT].tex);
-        else m_Flames[i].m_Flame.CSprite::CSprite(TRACE_PARAM_CALL m_Pos,1,0,0xFFFFFFFF,&m_Owner->m_SpriteTextures[SPR_FLAMETHROWER_SPOT].spr_tex);
+        if(m_Owner->m_SpriteTextures[SPR_FLAMETHROWER_SPOT].IsSingleBrightTexture()) m_Flames[i].m_Flame = CSprite(TRACE_PARAM_CALL m_Pos, 1, 0, 0xFFFFFFFF, m_Owner->m_SpriteTextures[SPR_FLAMETHROWER_SPOT].tex);
+        else m_Flames[i].m_Flame = CSprite(TRACE_PARAM_CALL m_Pos, 1, 0, 0xFFFFFFFF, &m_Owner->m_SpriteTextures[SPR_FLAMETHROWER_SPOT].spr_tex);
         m_Flames[i].m_Sign = (FRND(1) > 0.5f) ? 1.0f : -1.0f;
     }
 
@@ -84,22 +84,22 @@ void CFlamePuff::Release(void)
 
 void CFlamePuff::Draw(void)
 {
-    DTRACE();
-
-    for (int i = 0; i<FLAME_NUM_BILLS; ++i)
+    for(int i = 0; i < FLAME_NUM_BILLS; ++i)
     {
         m_Flames[i].m_Flame.Sort(g_MatrixMap->m_Camera.GetViewMatrix());
     }
-    if (m_Shleif)
+
+    if(m_Shleif)
     {
-        if (m_Prev)
+        if(m_Prev)
         {
-            BYTE a = BYTE(m_CurAlpha);
+            byte a = byte(m_CurAlpha);
             m_Shleif->SetPos(m_Prev->m_Pos, m_Pos);
-            float l = D3DXVec3Length(&(m_Prev->m_Pos - m_Pos));
+            D3DXVECTOR3 temp = m_Prev->m_Pos - m_Pos;
+            float l = D3DXVec3Length(&temp);
             if (l < (m_Scale * 2.0f))
             {
-                a = BYTE(float(m_CurAlpha) * (l*0.5f/m_Scale));
+                a = byte(float(m_CurAlpha) * (l*0.5f/m_Scale));
             }
             m_Shleif->SetWidth(m_Scale * 2.0f);
             m_Shleif->SetAlpha(a);
@@ -122,7 +122,8 @@ static bool FlameEnum(const D3DXVECTOR3& center, CMatrixMapStatic* ms, dword use
     if(ms->GetObjectType() != OBJECT_TYPE_ROBOTAI)
     {
         D3DXVECTOR3 anorm;
-        D3DXVec3Normalize(&anorm, &(center - ms->GetGeoCenter()));
+        D3DXVECTOR3 temp = center - ms->GetGeoCenter();
+        D3DXVec3Normalize(&anorm, &temp);
         fd->norm += anorm;
     }
 
@@ -192,25 +193,26 @@ DTRACE();
         }
 
     }
-    if (m_Owner->m_hitmask & TRACE_LANDSCAPE)
+    if(m_Owner->m_hitmask & TRACE_LANDSCAPE)
     {
         float z = g_MatrixMap->GetZ(m_Pos.x, m_Pos.y);
-        if ((m_Pos.z - m_Scale) <= z)
+        if((m_Pos.z - m_Scale) <= z)
         {
-            float l = D3DXVec3Length(&(m_Pos-oldpos));
+            const D3DXVECTOR3 temp = m_Pos - oldpos;
+            float l = D3DXVec3Length(&temp);
             m_Pos.z = z + m_Scale;
 
             D3DXVECTOR3 n;
-            D3DXVec3Normalize(&n, &(m_Pos-oldpos));
-            m_Pos = oldpos + n*l;
+            D3DXVec3Normalize(&n, &temp);
+            m_Pos = oldpos + n * l;
 
         }
     }
 
-    if (m_Time > m_NextSeekTime)
+    if(m_Time > m_NextSeekTime)
     {
         m_NextSeekTime = m_Time + FLAME_TIME_SEEK_PERIOD;
-        if (m_Owner->m_hitmask & TRACE_ANYOBJECT)
+        if(m_Owner->m_hitmask & TRACE_ANYOBJECT)
         {
             hit = g_MatrixMap->FindObjects(m_Pos, m_Scale, 0.7f, m_Owner->m_hitmask, m_Owner->m_skip, FlameEnum, (dword)&data);
         }
@@ -223,11 +225,11 @@ DTRACE();
     }
 
     float k1 = 1.0f - KSCALE(k, 0.5f, 1.0f);
-    m_CurAlpha = BYTE(m_Alpha * k1);
+    m_CurAlpha = byte(m_Alpha * k1);
     if (m_Light.effect)
     {
-        BYTE alpha2 = BYTE(m_Alpha * k1 * 0.3f);
-        BYTE alpha3 = BYTE(m_Alpha * k1 * 0.1f);
+        byte alpha2 = byte(m_Alpha * k1 * 0.3f);
+        byte alpha3 = byte(m_Alpha * k1 * 0.1f);
         ((CMatrixEffectPointLight *)m_Light.effect)->SetColor((alpha2 << 24) | (alpha2 << 16) | (alpha2 << 8) | (alpha3));
         ((CMatrixEffectPointLight *)m_Light.effect)->SetPosAndRadius(m_Pos, m_Scale * 3);
     }
@@ -265,7 +267,7 @@ DTRACE();
         if(m_Prev == nullptr)
         {
             m_Shleif->Release();
-            HFree(m_Shleif,m_Owner->m_Heap);
+            HFree(m_Shleif, m_Owner->m_Heap);
             m_Shleif = nullptr;
         }
     }
@@ -273,17 +275,19 @@ DTRACE();
     {
         if(m_Prev && (!m_Break))
         {
-            float l = D3DXVec3Length(&(m_Prev->m_Pos - m_Pos));
-            BYTE a = BYTE(m_CurAlpha);
+            D3DXVECTOR3 temp = m_Prev->m_Pos - m_Pos;
+            float l = D3DXVec3Length(&temp);
+            byte a = byte(m_CurAlpha);
             if(l < (m_Scale * 2.0f))
             {
-                a = BYTE(float(m_CurAlpha) * (l*0.5f/m_Scale));
+                a = byte(float(m_CurAlpha) * (l * 0.5f / m_Scale));
             }
-            m_Shleif = (CSpriteLine *)HAlloc(sizeof(CSpriteLine),m_Owner->m_Heap);
-            m_Shleif->CSpriteLine::CSpriteLine(TRACE_PARAM_CALL m_Prev->m_Pos, m_Pos, m_Scale * 2.0f, (a << 24) | 0xFFFFFF, m_Owner->GetSingleBrightSpriteTex(SPR_FLAMETHROWER_BEAM));
+
+            //Создаём и линкуем на указатель новый CSpriteLine
+            m_Shleif = (CSpriteLine*)HAlloc(sizeof(CSpriteLine), m_Owner->m_Heap);
+            new(m_Shleif) CSpriteLine(TRACE_PARAM_CALL m_Prev->m_Pos, m_Pos, m_Scale * 2.0f, (a << 24) | 0xFFFFFF, m_Owner->GetSingleBrightSpriteTex(SPR_FLAMETHROWER_BEAM));
         }
     }
-
 }
 
 ////////////////

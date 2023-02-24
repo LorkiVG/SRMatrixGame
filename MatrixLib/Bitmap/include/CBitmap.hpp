@@ -133,7 +133,7 @@ public:
     dword ARGBPixel(int x, int y) // get ARGB color of specified pixel
     {
         dword c;
-		c = *(dword*)((BYTE*)m_Data + (y * m_Pitch + x * m_BytePP));
+		c = *(dword*)((byte*)m_Data + (y * m_Pitch + x * m_BytePP));
         if(m_Format==BMF_PALATE)
         {
             return 0; // не работаем с палитровыми изображениями

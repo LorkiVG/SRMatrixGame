@@ -142,7 +142,7 @@ class CDebugTracer
 
 
 #ifdef ENABLE_HISTORY
-        static              BYTE  m_history[HISTORY_SIZE*sizeof(SDebugCallInfo)];
+        static              byte  m_history[HISTORY_SIZE*sizeof(SDebugCallInfo)];
         static              int             m_hist_start;
         static              int             m_hist_end;
 #endif

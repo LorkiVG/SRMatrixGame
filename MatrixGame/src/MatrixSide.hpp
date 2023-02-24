@@ -4,14 +4,13 @@
 // Refer to the LICENSE file included
 
 #pragma once
-
 #include "VectorObject.hpp"
 #include "Effects/MatrixEffect.hpp"
 #include "Logic/MatrixRoadNetwork.hpp"
 #include "MatrixConfig.hpp"
 #include <vector>
 
-//#define MAX_ROBOTS_BUILD        10
+//#define MAX_ROBOTS_BUILD      10
 #define MAX_ROBOTS              60
 #define MAX_FACTORIES           10
 #define MAX_LOGIC_GROUP         (MAX_ROBOTS + 1)
@@ -63,9 +62,7 @@ enum EStat
     STAT_TURRET_BUILD,
     STAT_TURRET_KILL,
     STAT_BUILDING_KILL,
-    STAT_TIME,
-
-    EStat_FORCE_DWORD = 0x7FFFFFFF
+    STAT_TIME
 };
 
 enum ESelection
@@ -76,9 +73,7 @@ enum ESelection
     NOTHING_SELECTED = 4,
     BASE_SELECTED = 5,
     GROUP_SELECTED = 6,
-    ARCADE_SELECTED = 7,
-
-    ESelection_FORCE_DWORD = 0x7FFFFFFF
+    ARCADE_SELECTED = 7
 };
 
 enum ESelType
@@ -89,27 +84,22 @@ enum ESelType
 	BUILDING = 3,
     NOTHING = 4,
     GROUP = 5,
-    ARCADE = 6,
-
-    ESelType_FORCE_DWORD = 0x7FFFFFFF
+    ARCADE = 6
 };
 
 struct SRobot
 {
-	CMatrixRobotAI* m_Robot;
-	D3DXVECTOR3 m_Mark;
-	dword m_CrossCatched; // this is bool variable
-    SRobot() : m_Robot(nullptr), m_CrossCatched(false) {};
+	CMatrixRobotAI* m_Robot = nullptr;
+    D3DXVECTOR3 m_Mark = { 0.0f, 0.0f, 0.0f };
+	//bool m_CrossCatched = false;
 };
 
 enum ESideStatus
 {
     SS_NONE,        // side absent
     SS_ACTIVE,      // active side
-    SS_JUST_DEAD,   // just dead side. switch this status to SS_NONE, after you get it
-    SS_JUST_WIN,    // valid only for player side
-
-    ESideStatus_FORCE_DWORD = 0x7FFFFFFF
+    SS_JUST_DEAD,   // just dead side. switch this status to SS_NONE after you get it
+    SS_JUST_WIN     // valid only for player side
 };
 
 enum EPlayerActions
@@ -119,38 +109,25 @@ enum EPlayerActions
     TRANSPORTING_ROBOT,
     DROPING_ROBOT,
     GETING_IN_ROBOT,
-    BUILDING_TURRET,
-
-    EPlayerActions_FORCE_DWORD = 0x7FFFFFFF
+    BUILDING_TURRET
 };
 
 struct SCannonForBuild
 {
-    CMatrixCannon*              m_Cannon;
-    CMatrixBuilding*            m_ParentBuilding;
-    SEffectHandler              m_ParentSpot;
-    int                         m_CanBuildFlag;
+    CMatrixCannon*   m_Cannon = nullptr;
+    CMatrixBuilding* m_ParentBuilding = nullptr;
+    SEffectHandler   m_ParentSpot;
+    int              m_CanBuildFlag = 0;
 
+    SCannonForBuild() : m_ParentSpot() {}
     void Delete();
-    SCannonForBuild():
-#ifdef _DEBUG
-    m_ParentSpot(DEBUG_CALL_INFO)
-#else
-    m_ParentSpot()
-#endif
-    {
-        m_Cannon            = nullptr;
-        m_ParentBuilding    = nullptr;
-        m_CanBuildFlag      = 0;
-    }
 };
 
 struct SCallback
 {
-    CPoint  mp;
-    int     calls;
+    CPoint mp = { 0, 0 };
+    int    calls = 0;
 };
-
 
 enum EMatrixLogicActionType
 {
@@ -160,9 +137,7 @@ enum EMatrixLogicActionType
     mlat_Forward,
     mlat_Retreat,
     mlat_Capture,
-    mlat_Intercept,
-
-    EMatrixLogicActionType_FORCE_DWORD = 0x7FFFFFFF
+    mlat_Intercept
 };
 
 #define MLRG_CAPTURE 1
@@ -172,31 +147,30 @@ enum EMatrixLogicActionType
 
 struct SMatrixLogicAction
 {
-    EMatrixLogicActionType m_Type;
-    int m_Region;
-    int m_RegionPathCnt;                          // Кол-во регионов в пути
-    int m_RegionPath[REGION_PATH_MAX_CNT];        // Путь по регионам
+    EMatrixLogicActionType m_Type = mlat_None;
+    int m_Region = 0;
+    int m_RegionPathCnt = 0;                       // Кол-во регионов в пути
+    int m_RegionPath[REGION_PATH_MAX_CNT] = { 0 }; // Путь по регионам
 };
 
 struct SMatrixLogicGroup
 {
 private:
-    dword m_Bits;
-    //int m_RobotCnt;
-    //bool m_War;                             // Группа вступила в бой
+    dword m_Bits = 0;
+    //int m_RobotCnt = 0;
+    //bool m_War = false; // Группа вступила в бой
 
 public:
-    int RobotsCnt(void) const {return m_Bits & 0xFFFF; }
-    void RobotsCnt(int a) { m_Bits = (m_Bits & 0xFFFF0000) | a; }
-    __forceinline void IncRobotsCnt(int cc=1) { m_Bits += cc; }
-
-    bool IsWar(void) const { return FLAG(m_Bits, SETBIT(31)); }
-    void SetWar(bool w) { INITFLAG(m_Bits, SETBIT(31), w); }
-    
-
     SMatrixLogicAction m_Action;
-    int m_Team;
-    float m_Strength;
+    int m_Team = 0;
+    float m_Strength = 0.0f;
+
+    int RobotsCnt() const { return m_Bits & 0xFFFF; }
+    void RobotsCnt(int a) { m_Bits = (m_Bits & 0xFFFF0000) | a; }
+    __forceinline void IncRobotsCnt(int cc = 1) { m_Bits += cc; }
+
+    bool IsWar() const { return FLAG(m_Bits, SETBIT(31)); }
+    void SetWar(bool w) { INITFLAG(m_Bits, SETBIT(31), w); }
 };
 
 enum EMatrixPlayerOrder
@@ -210,210 +184,212 @@ enum EMatrixPlayerOrder
     mpo_Bomb,
     mpo_AutoCapture,
     mpo_AutoAttack,
-    mpo_AutoDefence,
-
-    EMatrixPlayerOrder_FORCE_DWORD = 0x7FFFFFFF
+    mpo_AutoDefence
 };
 
 struct SMatrixPlayerGroup
 {
 private:
-    dword m_Bits;
-    //bool m_War;                       //Группа вступила в бой
-    //bool m_ShowPlace;                 //Отображение точки, на которую направлен приказ
-    //bool m_PatrolReturn;
-    //EMatrixPlayerOrder m_Order;
+    dword m_Bits = 0;
+    //bool m_War = false;           //Группа вступила в бой
+    //bool m_ShowPlace = false;     //Отображение точки, на которую направлен приказ
+    //bool m_PatrolReturn = false;
+    //EMatrixPlayerOrder m_Order = mpo_Stop;
+
 public:
+    int m_RobotCnt = 0;
+    CPoint m_From = { 0, 0 };
+    CPoint m_To = { 0, 0 };
+    CMatrixMapStatic* m_Obj = nullptr;
+    int m_Region = 0;
+    int m_RegionPathCnt = 0;                       //Кол-во регионов в пути
+    int m_RegionPath[REGION_PATH_MAX_CNT] = { 0 }; //Путь по регионам
+    CMatrixRoadRoute* m_RoadPath = nullptr;
 
     //Какой тип приказа задан
-    EMatrixPlayerOrder Order(void) const { return EMatrixPlayerOrder(m_Bits & 0xFF); }
+    EMatrixPlayerOrder Order() const { return EMatrixPlayerOrder(m_Bits & 0xFF); }
     //Задать тип приказа
     void Order(EMatrixPlayerOrder o) { m_Bits = (m_Bits & 0xFFFFFF00) | o; }
 
-    bool IsWar(void) const { return FLAG(m_Bits, SETBIT(31)); }
+    bool IsWar() const { return FLAG(m_Bits, SETBIT(31)); }
     void SetWar(bool w) { INITFLAG(m_Bits, SETBIT(31), w); }
 
-    bool IsShowPlace(void) const { return FLAG(m_Bits, SETBIT(30)); }
+    bool IsShowPlace() const { return FLAG(m_Bits, SETBIT(30)); }
     void SetShowPlace(bool w) { INITFLAG(m_Bits, SETBIT(30), w); }
 
-    bool IsPatrolReturn(void) const { return FLAG(m_Bits, SETBIT(29)); }
+    bool IsPatrolReturn() const { return FLAG(m_Bits, SETBIT(29)); }
     void SetPatrolReturn(bool w) { INITFLAG(m_Bits, SETBIT(29), w); }
-
-    int m_RobotCnt;
-    CPoint m_From;
-    CPoint m_To;
-    CMatrixMapStatic *m_Obj;
-    int m_Region;
-    int m_RegionPathCnt;                          //Кол-во регионов в пути
-    int m_RegionPath[REGION_PATH_MAX_CNT];        //Путь по регионам
-    CMatrixRoadRoute *m_RoadPath;
 };
 
 struct SMatrixTeam
 {
 private:
-    dword m_Bits;
+    dword m_Bits = 0;
 
-    //byte m_Move;
-    //bool m_War;
-    //bool m_Stay;
-    //bool m_WaitUnion;
-    //bool m_RobotInDesRegion;
-    //bool m_RegroupOnlyAfterWar;
+    //byte m_Move = 0;
+    //bool m_War = false;
+    //bool m_Stay = false;
+    //bool m_WaitUnion = false;
+    //bool m_RobotInDesRegion = false;
+    //bool m_RegroupOnlyAfterWar = false;
 
-    //bool m_lOk;
+    //bool m_lOk = false;
 public:
+    int m_RobotCnt = 0;                         // Кол-во роботов в команде
+    int m_GroupCnt = 0;
 
-    BYTE Move(void) const { return BYTE(m_Bits & 0xFF); }
-    void Move(BYTE m) { m_Bits = (m_Bits & 0xFFFFFF00) | m; }
-    void OrMove(BYTE m) { m_Bits |= m; }
+    int m_WaitUnionLast = 0;
 
-    bool IsWar(void) const { return FLAG(m_Bits, SETBIT(31)); }
-    void SetWar(bool w) { INITFLAG(m_Bits, SETBIT(31), w); }
+    float m_Strength = 0.0f;
 
-    bool IsStay(void) const { return FLAG(m_Bits, SETBIT(30)); }
-    void SetStay(bool w) { INITFLAG(m_Bits, SETBIT(30), w); }
+    int m_TargetRegion = -1;
+    int m_TargetRegionGoal = 0;
 
-    bool IsWaitUnion(void) const { return FLAG(m_Bits, SETBIT(29)); }
-    void SetWaitUnion(bool w) { INITFLAG(m_Bits, SETBIT(29), w); }
+    CPoint m_CenterMass = { 0, 0 };
+    int m_RadiusMass = 0;
+    CRect m_Rect = { 0, 0, 0, 0 };
+    CPoint m_Center = { 0, 0 };
+    int m_Radius = 0;
+    int m_RegionMassPrev = 0;
+    int m_RegionMass = 0;
+    int m_RegionNearDanger = 0;                 // Самый опасный регион, включая текущий
+    int m_RegionFarDanger = 0;
+    int m_RegionNearEnemy = 0;
+    int m_RegionNearRetreat = 0;
+    int m_RegionNearForward = 0;
+    int m_RegionNerestBase = 0;
 
-    bool IsRobotInDesRegion(void) const { return FLAG(m_Bits, SETBIT(28)); }
-    void SetRobotInDesRegion(bool w) { INITFLAG(m_Bits, SETBIT(28), w); }
+    int m_Brave = 0;
+    float m_BraveStrangeCancel = 0.0f;
 
-    bool IsRegroupOnlyAfterWar(void) const { return FLAG(m_Bits, SETBIT(27)); }
-    void SetRegroupOnlyAfterWar(bool w) { INITFLAG(m_Bits, SETBIT(27), w); }
-
-    bool IslOk(void) const { return FLAG(m_Bits, SETBIT(26)); }
-    void SetlOk(bool w) { INITFLAG(m_Bits, SETBIT(26), w); }
-
-    int m_RobotCnt;                         // Кол-во роботов в команде
-    int m_GroupCnt;
-
-    int m_WaitUnionLast;
-
-    float m_Strength;
-
-    int m_TargetRegion;
-    int m_TargetRegionGoal;
-
-    CPoint m_CenterMass;
-    int m_RadiusMass;
-    CRect m_Rect;
-    CPoint m_Center;
-    int m_Radius;
-    int m_RegionMassPrev;
-    int m_RegionMass;
-    int m_RegionNearDanger;                 // Самый опасный регион, включая текущий
-    int m_RegionFarDanger;
-    int m_RegionNearEnemy;
-    int m_RegionNearRetreat;
-    int m_RegionNearForward;
-    int m_RegionNerestBase;
-
-    int m_Brave;
-    float m_BraveStrangeCancel;
-
-
-    int m_ActionCnt;
+    int m_ActionCnt = 0;
     SMatrixLogicAction m_ActionList[16];
     SMatrixLogicAction m_Action;
     SMatrixLogicAction m_ActionPrev;
-    int m_ActionTime;
-    int m_RegionNext;
-    CMatrixRoadRoute * m_RoadPath;
+    int m_ActionTime = 0;
+    int m_RegionNext = 0;
+    CMatrixRoadRoute* m_RoadPath = nullptr;
+
+    int m_RegionListCnt = 0;                    // Список регионов, в которых находятся роботы 
+    int m_RegionList[MAX_ROBOTS] = { 0 };       // Регионы
+    int m_RegionListRobots[MAX_ROBOTS] = { 0 }; // Кол-во роботов
 
 
-    int m_RegionListCnt;                    // Список регионов, в которых находятся роботы 
-    int m_RegionList[MAX_ROBOTS];           // Регионы
-    int m_RegionListRobots[MAX_ROBOTS];     // Кол-во роботов
+    byte Move() const { return byte(m_Bits & 0xFF); }
+    void Move(byte m) { m_Bits = (m_Bits & 0xFFFFFF00) | m; }
+    void OrMove(byte m) { m_Bits |= m; }
+
+    bool IsWar() const { return FLAG(m_Bits, SETBIT(31)); }
+    void SetWar(bool w) { INITFLAG(m_Bits, SETBIT(31), w); }
+
+    bool IsStay() const { return FLAG(m_Bits, SETBIT(30)); }
+    void SetStay(bool w) { INITFLAG(m_Bits, SETBIT(30), w); }
+
+    bool IsWaitUnion() const { return FLAG(m_Bits, SETBIT(29)); }
+    void SetWaitUnion(bool w) { INITFLAG(m_Bits, SETBIT(29), w); }
+
+    bool IsRobotInDesRegion() const { return FLAG(m_Bits, SETBIT(28)); }
+    void SetRobotInDesRegion(bool w) { INITFLAG(m_Bits, SETBIT(28), w); }
+
+    bool IsRegroupOnlyAfterWar() const { return FLAG(m_Bits, SETBIT(27)); }
+    void SetRegroupOnlyAfterWar(bool w) { INITFLAG(m_Bits, SETBIT(27), w); }
+
+    bool IslOk() const { return FLAG(m_Bits, SETBIT(26)); }
+    void SetlOk(bool w) { INITFLAG(m_Bits, SETBIT(26), w); }
 };
 
 struct SMatrixLogicRegion
 {
-    int m_WarEnemyRobotCnt;
-    int m_WarEnemyCannonCnt;
-    int m_WarEnemyBuildingCnt;
-    int m_WarEnemyBaseCnt;
+    int m_WarEnemyRobotCnt = 0;
+    int m_WarEnemyCannonCnt = 0;
+    int m_WarEnemyBuildingCnt = 0;
+    int m_WarEnemyBaseCnt = 0;
 
-    int m_EnemyRobotCnt;
-    int m_EnemyCannonCnt;
-    int m_EnemyBuildingCnt;
-    int m_EnemyBaseCnt;
+    int m_EnemyRobotCnt = 0;
+    int m_EnemyCannonCnt = 0;
+    int m_EnemyBuildingCnt = 0;
+    int m_EnemyBaseCnt = 0;
 
-    float m_Danger;                         // Кофициент опасности
-    float m_DangerAdd;                      // Выращенная опасность
+    float m_Danger = 0.0f;        // Кофициент опасности
+    float m_DangerAdd = 0.0f;     // Выращенная опасность
 
-    int m_NeutralCannonCnt;
-    int m_NeutralBuildingCnt;
-    int m_NeutralBaseCnt;
+    int m_NeutralCannonCnt = 0;
+    int m_NeutralBuildingCnt = 0;
+    int m_NeutralBaseCnt = 0;
 
-    int m_OurRobotCnt;
-    int m_OurCannonCnt;
-    int m_OurBuildingCnt;
-    int m_OurBaseCnt;
+    int m_OurRobotCnt = 0;
+    int m_OurCannonCnt = 0;
+    int m_OurBuildingCnt = 0;
+    int m_OurBaseCnt = 0;
 
-    int m_EnemyRobotDist;
-    int m_EnemyBuildingDist;
-    int m_OurBaseDist;
+    int m_EnemyRobotDist = 0;
+    int m_EnemyBuildingDist = 0;
+    int m_OurBaseDist = 0;
 
-    dword m_Data;
+    dword m_Data = 0;
 };
 
-class CMatrixSideUnit : public CMain 
+class CMatrixSideUnit : public CMain
 {
 private:
-    int         m_TimeLastBomb;
+    ESideStatus m_SideStatus = SS_NONE;
+    int         m_RobotsCnt = 0;
 
-    ESideStatus m_SideStatus;
-    int         m_RobotsCnt;
+    float m_Strength = 0.0f;               //Сила стороны
+    int m_WarSide = -1;                    //На какую сторону стараемся напасть
+    //float m_WarSideStrangeCancel = 0.0f; //Перерассчитываем сторону с которой воюем, когда сила стороны упадет ниже критической
 
-    float m_Strength;                       //Сила стороны
-    int m_WarSide;                          //На какую сторону стараемся напасть
-    //float m_WarSideStrangeCancel;         //Перерассчитываем сторону с которой воюем, когда сила стороны упадет ниже критической
+    SMatrixLogicRegion* m_Region = nullptr;
+    int* m_RegionIndex = nullptr;
+    int m_LastTactHL = 0;
+    int m_LastTactTL = 0;
+    int m_LastTeamChange = 0;
+    int m_LastTactUnderfire = 0;
 
-    SMatrixLogicRegion* m_Region;
-    int* m_RegionIndex;
-    int m_LastTactHL;
-    int m_LastTactTL;
-    int m_LastTeamChange;
-    int m_LastTactUnderfire;
+    int m_NextWarSideCalcTime = 0;
 
-    int m_NextWarSideCalcTime;
-
-    //int m_TitanCnt;
-    //int m_ElectronicCnt;
-    //int m_EnergyCnt;
-    //int m_PlasmaCnt;
+    //int m_TitanCnt = 300;
+    //int m_ElectronicCnt = 300;
+    //int m_EnergyCnt = 300;
+    //int m_PlasmaCnt = 300;
 
     int m_BaseResForce = 0;
-    int m_Resources[MAX_RESOURCES];
-    int m_CurSelNum;
+    int m_Resources[MAX_RESOURCES] = { 0 };
+    int m_CurSelNum = 0;
 
     int m_Statistic[MAX_STATISTICS] = { 0 };
 
-    CMatrixMapStatic* m_Arcaded;
-    dword             m_ArcadedP_available;
-    D3DXVECTOR3       m_ArcadedP_cur;
-    D3DXVECTOR3       m_ArcadedP_prevrp;
+    CMatrixMapStatic* m_Arcaded = nullptr;
+    dword             m_ArcadedP_available = 0;
+    D3DXVECTOR3       m_ArcadedP_cur = { 0.0f, 0.0f, 0.0f };
+    D3DXVECTOR3       m_ArcadedP_prevrp = { 0.0f, 0.0f, 0.0f };
 
-    D3DXVECTOR3       m_ArcadedP_ppos0;
-    D3DXVECTOR3       m_ArcadedP_ppos1;
+    D3DXVECTOR3       m_ArcadedP_ppos0 = { 0.0f, 0.0f, 0.0f };
+    D3DXVECTOR3       m_ArcadedP_ppos1 = { 0.0f, 0.0f, 0.0f };
     float             m_ArcadedP_k = 0.0f;
 
-    CMatrixGroup* m_CurSelGroup;
-    CMatrixGroup* m_FirstGroup;
-    CMatrixGroup* m_LastGroup;
+    CMatrixGroup* m_FirstGroup = nullptr;
+    CMatrixGroup* m_LastGroup = nullptr;
+    CMatrixGroup* m_CurrentGroup = nullptr; //CMatrixGroup* m_CurGroup;
+
+    CMatrixGroup* m_CurSelGroup = nullptr;
 
 public:
     //In map options
-    int         m_TimeNextBomb;
-    float       m_StrengthMul;
-    float       m_BraveMul;
-    int         m_TeamCnt;
-    float       m_DangerMul;
-    float       m_WaitResMul;
+    int   m_TimeNextBomb = 60000;
+    int   m_TimeLastBomb = 0;
 
-    int*        m_PlaceList;
+    float m_StrengthMul = 1.0f;
+    float m_BraveMul = 0.5f;
+    int   m_TeamCnt = 3;
+    float m_DangerMul = 1.0f;
+    float m_WaitResMul = 1.0f;
+
+    int*  m_PlaceList = nullptr;
+
+    CMatrixMapStatic* m_ActiveObject = nullptr;
+    SRobot            m_Robots[MAX_ROBOTS];
+    SCannonForBuild   m_CannonForBuild;
 
     //Отдельные логические группы роботов для доминаторов и игрока
     //Логические группы разбиваются по исполняемым приказам,
@@ -422,18 +398,45 @@ public:
     //которая была задана автоматически. Но может я не прав и группа игрока всего лишь дублирует отображение логической группы
     SMatrixLogicGroup m_LogicGroup[MAX_LOGIC_GROUP];
     SMatrixPlayerGroup m_PlayerGroup[MAX_LOGIC_GROUP];
-    int m_WaitResForBuildRobot;
+    int m_WaitResForBuildRobot = 0;
 
     SMatrixTeam m_Team[MAX_TEAM_CNT];
 
-    void BufPrepare(void);
+    int m_Id = 0;
+    CWStr m_Name = (CWStr)L"";
 
-    void ClearLogicGroupsOrderLists(void);
+    dword     m_Color = 0;
+    dword     m_ColorMM = 0;
+    CTexture* m_ColorTexture = nullptr;
+
+    CConstructor* m_Constructor = nullptr;
+
+    int m_BuildRobotLast = -1;
+    int m_BuildRobotLast2 = -1;
+    int m_BuildRobotLast3 = -1;
+
+    //Player
+    CConstructorPanel* m_ConstructPanel = nullptr;
+    CWStr m_PlayerName = (CWStr)L"Player1";
+    EPlayerActions m_CurrentAction = NOTHING_SPECIAL;
+    int m_nCurrRobotPos = -1;
+    ESelection m_CurrSel = NOTHING_SELECTED;
+
+    //CBlockPar* m_TacticsPar = nullptr;
+    //CMatrixGroupList* m_GroupsList = nullptr;
+
+    CMatrixSideUnit();
+    ~CMatrixSideUnit();
+
+    void BufPrepare();
+    void InitPlayerSide();
+
+    void ClearLogicGroupsOrderLists();
 
     void SetStatus(ESideStatus s) { m_SideStatus = s; }
-    ESideStatus GetStatus(void) const { return m_SideStatus; }
+    ESideStatus GetStatus() const { return m_SideStatus; }
 
-    void ClearStatistics(void) { memset(m_Statistic, 0, sizeof(m_Statistic)); }
+    void ClearStatistics() { memset(m_Statistic, 0, sizeof(m_Statistic)); }
     int  GetStatValue(EStat stat) const { return m_Statistic[stat]; }
     void SetStatValue(EStat stat, int v) { m_Statistic[stat] = v; }
     void IncStatValue(EStat stat, int v = 1) { m_Statistic[stat] += v; }
@@ -448,7 +451,7 @@ public:
     void AddResourceAmount(ERes res, int amount) { m_Resources[res] += amount; if(m_Resources[res] > 9000) m_Resources[res] = 9000; if(m_Resources[res] < 0) m_Resources[res] = 0; }
     void SetResourceAmount(ERes res, int amount) { m_Resources[res] = amount; }
     void SetResourceForceUp(int fu) { m_BaseResForce = fu; }
-    int  GetResourceForceUp(void) { return m_BaseResForce; }
+    int  GetResourceForceUp() { return m_BaseResForce; }
     bool IsEnoughResources(const int* resources) { if(m_Resources[0] >= resources[0] && m_Resources[1] >= resources[1] && m_Resources[2] >= resources[2] && m_Resources[3] >= resources[3]) return true; else return false; }
     bool IsEnoughResourcesForTurret(const STurretsConsts* resources) { if(m_Resources[0] >= resources->cost_titan && m_Resources[1] >= resources->cost_electronics && m_Resources[2] >= resources->cost_energy && m_Resources[3] >= resources->cost_plasma) return true; else return false; }
 
@@ -457,45 +460,16 @@ public:
     void PLDropAllActions();
     SMatrixTeam* GetTeam(int no) { return m_Team + no; }
 
-    int m_Id;
-    CWStr m_Name;
-
-    dword     m_Color = 0;
-    dword     m_ColorMM = 0;
-    CTexture* m_ColorTexture = nullptr;
-
-    CConstructor* m_Constructor = nullptr;
-
-    int m_BuildRobotLast;
-    int m_BuildRobotLast2;
-    int m_BuildRobotLast3;
 
     int GetSideRobots() { return m_RobotsCnt; }
     int GetMaxSideRobots();
 
-
     void LogicTact(int ms);
 
-//Player
-    CConstructorPanel* m_ConstructPanel;
-    void InitPlayerSide();
-    CWStr m_PlayerName;
-    EPlayerActions m_CurrentAction;
-    int m_nCurrRobotPos;
-    ESelection m_CurrSel;
-
-private:
-    CMatrixGroup* m_CurrentGroup; //CMatrixGroup* m_CurGroup;
-
-public:
     CMatrixGroup* GetCurGroup() { return m_CurrentGroup; }
     void SetCurGroup(CMatrixGroup* group);
 
     void RemoveObjectFromSelectedGroup(CMatrixMapStatic* o);
-
-    CMatrixMapStatic* m_ActiveObject;
-    SRobot           m_Robots[MAX_ROBOTS];
-    SCannonForBuild  m_CannonForBuild;
 
     int  GetCurSelNum() { return m_CurSelNum; }
     void SetCurSelNum(int i);
@@ -525,7 +499,7 @@ public:
     void RobotStop(void* pObject);
     void Select(ESelType type, CMatrixMapStatic* object);
     void Reselect();
-    void ShowOrderState(void);
+    void ShowOrderState();
     bool MouseToLand(const CPoint& mouse, float* pWorldX, float* pWorldY, int* pMapX, int* pMapY);
     CMatrixMapStatic* MouseToLand();
     void OnRButtonDown(const CPoint& mouse);
@@ -542,10 +516,8 @@ public:
 
     // Tactics
     //void GiveRandomOrder();
-    //CBlockPar* m_TacticsPar;
 
-    // Groups        
-    //CMatrixGroupList* m_GroupsList;
+    // Groups
     //CMatrixGroup* GetGroup(int id, int t);
 
     bool IsArcadeMode() const { return m_Arcaded != nullptr; }
@@ -560,21 +532,18 @@ public:
 
     void SpawnDeliveryFlyer(const D3DXVECTOR2& to, EFlyerOrder order, float ang, int place, const CPoint& bpos, int robot_template, enum EFlyerKind flyer_type, float flyer_structure);
 
-    CMatrixSideUnit();
-    ~CMatrixSideUnit();
-
     // STUB:
     int IsInPlaces(const CPoint* places, int placescnt, int x, int y);
 
     // High logic
-    void CalcStrength(void);
-    void Regroup(void);
+    void CalcStrength();
+    void Regroup();
     void ClearTeam(int team);
     int ClacSpawnTeam(int region, int nsh);
-    void EscapeFromBomb(void);
-    void GroupNoTeamRobot(void);
-    void CalcMaxSpeed(void);
-    void TactHL(void);
+    void EscapeFromBomb();
+    void GroupNoTeamRobot();
+    void CalcMaxSpeed();
+    void TactHL();
     int FindNearRegionWithUTR(int from, int* exclude_list, int exclude_cnt, dword flags); // 1-our 2-netral 4-enemy 8-base 16-building 32-robot 64-cannon
     int CompareRegionForward(int team, int r1, int r2);
     int CompareAction(int team, SMatrixLogicAction* a1, SMatrixLogicAction* a2);
@@ -582,10 +551,10 @@ public:
     void LiveAction(int team);
     float BuildRobotMinStrange(CMatrixBuilding* base);
     void ChooseAndBuildAIRobot(int cur_side = 0);
-    void ChooseAndBuildAICannon(void);
+    void ChooseAndBuildAICannon();
 
     // Theam logic
-    void TactTL(void);
+    void TactTL();
     void WarTL(int group);
     void RepairTL(int group);
     void AssignPlace(CMatrixRobotAI* robot, int region, CPoint* target = nullptr, std::vector<SMatrixRegion*>* all_regions = nullptr);
@@ -607,38 +576,37 @@ public:
     bool FirePL(int group);
     void RepairPL(int group);
     void WarPL(int group);
-    int SelGroupToLogicGroup(void);
+    int SelGroupToLogicGroup();
     int RobotToLogicGroup(CMatrixRobotAI* robot);
     void PGOrderStop(int no);
-    void PGOrderMoveTo(int no, CPoint& tp);
+    void PGOrderMoveTo(int no, const CPoint& tp);
     void PGOrderCapture(int no, CMatrixBuilding* building);
     void PGOrderAttack(int no, const CPoint& tp, CMatrixMapStatic* target_obj);
-    void PGOrderPatrol(int no, CPoint& tp);
+    void PGOrderPatrol(int no, const CPoint& tp);
     void PGOrderRepair(int no, CMatrixMapStatic* target_obj);
-    void PGOrderBomb(int no, CPoint& tp, CMatrixMapStatic* target_obj);
+    void PGOrderBomb(int no, const CPoint& tp, CMatrixMapStatic* target_obj);
     void PGOrderAutoCapture(int no);
     void PGOrderAutoAttack(int no);
     void PGOrderAutoDefence(int no);
     void PGRemoveAllPassive(int no, CMatrixMapStatic* skip);
     void PGAssignPlace(int no, CPoint& center);
-    void PGAssignPlacePlayer(int no, CPoint& center);
-    void PGSetPlace(CMatrixRobotAI* robot, CPoint& p);
+    void PGAssignPlacePlayer(int no, const CPoint& center);
+    void PGSetPlace(CMatrixRobotAI* robot, const CPoint& p);
     void PGPlaceClear(int no);
     CPoint PGCalcCenterGroup(int no);
     CPoint PGCalcPlaceCenter(int no);
     void PGShowPlace(int no);
-    void PGCalcStat(void);
+    void PGCalcStat();
     void PGFindCaptureBuilding(int no);
     void PGFindAttackTarget(int no);
     void PGFindDefenceTarget(int no);
     void PGCalcRegionPath(SMatrixPlayerGroup* pg, int rend, byte mm);
     void PGAutoBoomSet(CMatrixGroup* work_group, bool set);
 
-    void BuildCrazyBot(void);
+    void BuildCrazyBot();
 
     void DMTeam(int team, EMatrixLogicActionType ot, int state, const wchar* format, ...);
     void DMSide(const wchar* format, ...);
-
 };
 
 void SideSelectionCallBack(CMatrixMapStatic* ms, dword param);
