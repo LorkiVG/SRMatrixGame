@@ -7,7 +7,7 @@
 #  DIRECTX9_ROOT_DIR, directory where DirectX was installed.
 
 # SDK download link:
-# https://download.microsoft.com/download/A/E/7/AE743F1F-632B-4809-87A9-AA1BB3458E31/DXSDK_Jun10.exe
+# https://download.microsoft.com/download/A/E/7/AE743F1F-632B-4809-87A9-AA1BB3458E31/DXSDK_Jun10.exee
 
 if(MSVC)
     set(DIRECTX9_INCLUDE_PATHS

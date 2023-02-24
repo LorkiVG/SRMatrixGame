@@ -175,11 +175,11 @@ public:
 
 public:
     CSpriteLine() = default; //ќбъ€вление нужно, т.к. в некоторых местах вызываетс€ именно дефолтный конструктор
-    CSpriteLine(TRACE_PARAM_DEF const D3DXVECTOR3& pos0, const D3DXVECTOR3& pos1, float width, dword color, CTextureManaged* tex) :
-#ifdef _DEBUG
-        m_file(_file), m_line(_line), release_called(false)
-#endif
-        CMain(), m_Pos0(pos0), m_Pos1(pos1), m_Width(width), m_Color(color), m_Tex(tex) {}
+    
+    #ifdef _DEBUG
+        CSpriteLine(TRACE_PARAM_DEF const D3DXVECTOR3& pos0, const D3DXVECTOR3& pos1, float width, dword color, CTextureManaged* tex) : m_file(_file), m_line(_line), release_called(false) {}
+    #endif
+        CSpriteLine(TRACE_PARAM_DEF const D3DXVECTOR3& pos0, const D3DXVECTOR3& pos1, float width, dword color, CTextureManaged* tex) : CMain(), m_Pos0(pos0), m_Pos1(pos1), m_Width(width), m_Color(color), m_Tex(tex) {}
     ~CSpriteLine() = default;
 
     static void StaticInit() { m_First = nullptr; }
