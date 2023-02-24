@@ -1,7 +1,5 @@
 # Space Rangers 2 Planetary Battles Engine
 
-------
-
 ## Информация
 
 Оригинальные исходники: https://github.com/twoweeks/MatrixGame
