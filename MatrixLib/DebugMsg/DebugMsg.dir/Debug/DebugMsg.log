@@ -1,8 +1,0 @@
-﻿  1>Building Custom Rule H:/My DLLs/MatrixGame/MatrixLib/DebugMsg/CMakeLists.txt
-  StdAfx.cpp
-  main.cpp
-  DebugMsg.cpp
-  FastBuf.cpp
-  SynBuf.cpp
-  Generating Code...
-  DebugMsg.vcxproj -> H:\My DLLs\MatrixGame\MatrixLib\DebugMsg\Debug\DebugMsg.lib
